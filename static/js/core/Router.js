@@ -8,7 +8,7 @@ Router = new Class({
     "([^\/]+)": /\:\w+/g,
     "(.*)": /\*\w+/g
   },
-  _parsedRoutes: {},
+  _parsedRoutes: [],
   routes: {},
   initialize: function(options) {
     this.setOptions(options);
@@ -34,7 +34,7 @@ Router = new Class({
     for (route in routes) {
       funcName = routes[route];
       routeRegEx = this._createRouteRegex(route);
-      _results.push(this._parsedRoutes[funcName] = routeRegEx);
+      _results.push(this._parsedRoutes.push([routeRegEx, funcName]));
     }
     return _results;
   },
@@ -56,10 +56,10 @@ Router = new Class({
     return new URI(path);
   },
   findRoute: function(path) {
-    var args, funcName, match, regEx, _ref;
+    var args, funcName, match, regEx, _i, _len, _ref, _ref1;
     _ref = this._parsedRoutes;
-    for (funcName in _ref) {
-      regEx = _ref[funcName];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      _ref1 = _ref[_i], regEx = _ref1[0], funcName = _ref1[1];
       match = regEx.exec(path);
       if (match != null) {
         args = match.slice(1);

@@ -75,6 +75,7 @@ do ->
 
         it 'routes to correct function yo', ->
             routes =
+                'page/:number/': 'someRoute'
                 'page/:number/*stuff': 'someRoute'
 
             found = null
@@ -86,3 +87,4 @@ do ->
             r.findRoute 'page/343/asd/fe'
 
             expect(flatten found).toBe(flatten ['343', 'asd/fe'])
+

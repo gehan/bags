@@ -72,6 +72,7 @@
     return it('routes to correct function yo', function() {
       var found, routes;
       routes = {
+        'page/:number/': 'someRoute',
         'page/:number/*stuff': 'someRoute'
       };
       found = null;

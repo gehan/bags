@@ -6,7 +6,7 @@ Router = new Class
         "([^\/]+)": /\:\w+/g
         "(.*)": /\*\w+/g
 
-    _parsedRoutes: {}
+    _parsedRoutes: []
     routes: {}
     #    "path/:param/*catchall": "functionName"
 
@@ -28,7 +28,7 @@ Router = new Class
     _parseRoutes: (routes=@routes) ->
         for route, funcName of routes
             routeRegEx = @_createRouteRegex route
-            @_parsedRoutes[funcName] = routeRegEx
+            @_parsedRoutes.push [routeRegEx, funcName]
 
     _createRouteRegex: (route) ->
         # Convert route into a regex to match path on
@@ -46,7 +46,7 @@ Router = new Class
         new URI path
 
     findRoute: (path) ->
-        for funcName, regEx of @_parsedRoutes
+        for [regEx, funcName] in @_parsedRoutes
             match = regEx.exec path
             if match?
                 args = match.slice(1)

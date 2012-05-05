@@ -4,6 +4,7 @@ var AppRouter;
 AppRouter = new Class({
   Extends: Router,
   routes: {
+    'page/:pageId/': 'page',
     'page/:pageId/:pageNumber/': 'page'
   },
   page: function(pageId, pageNumber) {
