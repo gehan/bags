@@ -1,0 +1,16 @@
+@import "compass/css3/pie";
+@import "compass/css3";
+
+/* PIE for IE */
+$pie-behavior: url("/static/css/PIE.htc");
+
+/* Clear child elements */
+.group:before,
+.group:after {
+    content:"";
+    display:table;
+}
+.group:after {
+    clear:both;
+}
+

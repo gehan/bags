@@ -1,0 +1,12 @@
+@import "base";
+
+.dropdown {
+    position: relative;
+    .dropdown-menu {
+        position: absolute;
+        display: none;
+        left: 0px;
+        top: 100%;
+        background-color: #fff;
+    }
+}

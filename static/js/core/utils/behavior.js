@@ -28,25 +28,31 @@
             </li>
     */
 
-    Dropdown: function(element, api) {
-      var dropdown, options;
-      options = JSON.decode(api.get('options'));
-      dropdown = new InlineDropdown(element, options);
-      api.addEvents({
-        cleanup: function() {
-          return dropdown.destroy();
-        }
-      });
-      return dropdown;
+    Dropdown: {
+      defaults: {
+        allowClicks: false
+      },
+      setup: function(element, api) {
+        var dropdown;
+        dropdown = new InlineDropdown(element, {
+          allowClicks: api.getAs(Boolean, 'allowClicks')
+        });
+        api.addEvents({
+          cleanup: function() {
+            return dropdown.destroy();
+          }
+        });
+        return dropdown;
+      }
     },
     /*
             Provides the user profile dropdown, for logging out etc
     */
 
-    ProfileDropdown: function(element, api) {
-      var profile;
-      profile = new ProfileDropdown(element, Globals.user);
-      return profile;
+    ProfileDropdown: {
+      setup: function(element, api) {
+        return new ProfileDropdown(element, Globals.user);
+      }
     }
   });
   behavior = new Behavior({

@@ -24,21 +24,25 @@ do ->
             </ul>
         </li>
         ###
-        Dropdown: (element, api) ->
-            options = JSON.decode(api.get 'options')
+        Dropdown:
+            defaults:
+                allowClicks: false
 
-            dropdown = new InlineDropdown element, options
-            api.addEvents
-                cleanup: -> dropdown.destroy()
+            setup: (element, api) ->
+                dropdown = new InlineDropdown element,
+                    allowClicks: api.getAs Boolean, 'allowClicks'
 
-            return dropdown
+                api.addEvents
+                    cleanup: -> dropdown.destroy()
+
+                return dropdown
 
         ###
         Provides the user profile dropdown, for logging out etc
         ###
-        ProfileDropdown: (element, api) ->
-            profile = new ProfileDropdown element, Globals.user
-            return profile
+        ProfileDropdown:
+            setup: (element, api) ->
+                new ProfileDropdown element, Globals.user
 
     behavior = new Behavior
         breakOnErrors: true
