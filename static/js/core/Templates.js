@@ -9,8 +9,6 @@ var Templates;
 Templates = new Class({
   TEMPLATES: {},
   refs: {},
-  el: null,
-  events: {},
   loadAllTemplates: function() {
     var k, v, _i, _len, _ref, _ref1, _results;
     _ref = this.TEMPLATES;
@@ -34,14 +32,10 @@ Templates = new Class({
     if (events == null) {
       events = null;
     }
-    Timer.start('render');
     rendered = this._renderDustTemplate(templateName, data);
-    Timer.add('render');
-    Timer.start('elementsFrom');
     els = Elements.from(rendered);
-    Timer.add('elementsFrom');
     if (events != null) {
-      this.addChildEvents(els, events);
+      this.delegateEvents(els, events);
     }
     if (els.length === 1) {
       return els[0];
@@ -49,80 +43,11 @@ Templates = new Class({
       return els;
     }
   },
-  addChildEvents: function(els, events) {
-    var el, eventKey, eventType, fn, parent, selector, _ref, _ref1, _results;
-    if (events == null) {
-      events = {};
-    }
-    if ((_ref = typeOf(els)) === 'array' || _ref === 'elements') {
-      el = els[0];
-    } else {
-      el = els;
-    }
-    parent = el.getParent();
-    _results = [];
-    for (eventKey in events) {
-      fn = events[eventKey];
-      _ref1 = eventKey.split(':'), eventType = _ref1[0], selector = _ref1[1];
-      _results.push(parent.getElements(selector).addEvent(eventType, fn));
-    }
-    return _results;
-  },
-  initDelegatedEvents: function() {
-    var boundFn, eventKey, fnName, _ref, _results;
-    if (!(this.childEventContainer != null)) {
-      throw "Must define childEventContainer to delegate events";
-    }
-    _ref = this.childEvents;
-    _results = [];
-    for (eventKey in _ref) {
-      fnName = _ref[eventKey];
-      boundFn = function(fnName, event, target) {
-        var childObj, fn, rootEl;
-        if (target.hasClass('el-root')) {
-          rootEl = target;
-        } else {
-          rootEl = target.getParent('.el-root');
-        }
-        if (!(rootEl != null)) {
-          return;
-        }
-        childObj = rootEl.retrieve('obj');
-        if (target.get('tag') === 'a') {
-          event.preventDefault();
-        }
-        fn = childObj[fnName];
-        return fn.call(childObj, event, target);
-      };
-      boundFn = boundFn.bind(this, fnName);
-      _results.push(this.childEventContainer.addDelegatedEvent(eventKey, boundFn));
-    }
-    return _results;
-  },
-  initEvents: function(el) {
-    var boundFn, eventKey, fnName, _ref, _results;
-    if (el == null) {
-      el = this.el;
-    }
-    _ref = this.events;
-    _results = [];
-    for (eventKey in _ref) {
-      fnName = _ref[eventKey];
-      boundFn = function(fnName, event, target) {
-        event.preventDefault();
-        return this[fnName](event, target);
-      };
-      boundFn = boundFn.bind(this, fnName);
-      _results.push(el.addDelegatedEvent(eventKey, boundFn));
-    }
-    return _results;
-  },
   getRefs: function(els, ref) {
     var el, elRefName, refEl, refName, refs, _i, _j, _len, _len1, _ref, _ref1;
     if (ref == null) {
       ref = null;
     }
-    Timer.start('getRefs');
     refs = {};
     _ref = Array.from(els);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -142,54 +67,12 @@ Templates = new Class({
           return el;
         }
         refs[refName] = refEl;
-        if (refName === 'fbTag') {
-          FBParse.queue(refs.fbTag);
-        }
       }
     }
-    Timer.add('getRefs');
     return refs;
   },
   getRef: function(el, ref) {
     return this.getRefs(el, ref);
-  },
-  render: function(data, template) {
-    var el;
-    if (data == null) {
-      data = {};
-    }
-    if (template == null) {
-      template = this.template;
-    }
-    el = this.renderTemplate(template, data);
-    if (this.el) {
-      el.replaces(this.el);
-    }
-    this.el = el;
-    Object.merge(this.refs, this.getRefs(el));
-    el.store('obj', this);
-    this.initEvents(el);
-    this.fireEvent('render');
-    return el;
-  },
-  rerender: function(refs, data, template) {
-    var el,
-      _this = this;
-    if (template == null) {
-      template = this.template;
-    }
-    el = this.renderTemplate(template, data);
-    Array.from(refs).each(function(ref) {
-      var newEl, replaceThis;
-      replaceThis = _this.refs[ref];
-      if (!replaceThis) {
-        throw "Cannot find ref " + ref + " in template " + template;
-      }
-      newEl = _this.getRefs(el)[ref];
-      Object.merge(_this.refs, _this.getRefs(newEl));
-      return _this.refs[ref].replaces(replaceThis);
-    });
-    return el;
   },
   _renderDustTemplate: function(templateName, data) {
     var rendered;
@@ -226,7 +109,24 @@ Templates = new Class({
     }
     throw "Cannot find template " + templateName;
   },
-  toElement: function() {
-    return this.el;
+  delegateEvents: function(el, events) {
+    var boundFn, eventKey, fnName, _results;
+    _results = [];
+    for (eventKey in events) {
+      fnName = events[eventKey];
+      boundFn = function(fnName, event, target) {
+        event.preventDefault();
+        return this[fnName](event, target);
+      };
+      boundFn = boundFn.bind(this, fnName);
+      _results.push(this._addDelegatedEvent(el, eventKey, boundFn));
+    }
+    return _results;
+  },
+  _addDelegatedEvent: function(el, eventKey, fn) {
+    var mtEvent;
+    eventKey = eventKey.split(":");
+    mtEvent = "" + eventKey[0] + ":relay(" + eventKey[1] + ")";
+    return el.addEvent(mtEvent, fn);
   }
 });

@@ -69,7 +69,13 @@
       expect(match[1]).toBe('internet');
       return expect(match[2]).toBe('fecker/balls/mate');
     });
-    return it('routes to correct function yo', function() {
+    it('remembers params', function() {
+      var positions, route;
+      route = 'page/:pageId/:section/*path';
+      positions = r._extractParamPositions(route);
+      return expect(flatten(positions)).toBe(flatten(['pageId', 'section', 'path']));
+    });
+    return it('routes to correct function', function() {
       var found, routes;
       routes = {
         'page/:number/': 'someRoute',
@@ -80,8 +86,17 @@
         return found = Array.from(arguments);
       };
       r._parseRoutes(routes);
-      r.findRoute('page/343/asd/fe');
-      return expect(flatten(found)).toBe(flatten(['343', 'asd/fe']));
+      r.findRoute('page/343/asd/fe', {
+        param: 'something'
+      });
+      return expect(flatten(found)).toBe(flatten([
+        {
+          number: '343',
+          stuff: 'asd/fe'
+        }, {
+          param: 'something'
+        }
+      ]));
     });
   });
 })();

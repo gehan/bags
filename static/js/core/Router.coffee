@@ -1,57 +1,70 @@
-Router = new Class
-    Binds: ['startRoute']
-    Implements: [Options, Events]
+do ->
+    reParam = "\\:(\\w+)"
+    reSplat = "\\*(\\w+)"
+    reCombine = new RegExp "#{reParam}|#{reSplat}", 'g'
 
-    _replaceRegex:
-        "([^\/]+)": /\:\w+/g
-        "(.*)": /\*\w+/g
+    window.Router = new Class
+        Binds: ['startRoute']
+        Implements: [Options, Events]
 
-    _parsedRoutes: []
-    routes: {}
-    #    "path/:param/*catchall": "functionName"
+        _replaceRegex:
+            "([^\/]+)": new RegExp reParam, 'g'
+            "(.*)": new RegExp reSplat, 'g'
 
-    initialize: (options) ->
-        @setOptions options
-        @_parseRoutes()
-        @
+        _parsedRoutes: []
+        routes: {}
+        #    "path/:param/*catchall": "functionName"
 
-    attach: ->
-        window.addEvent 'statechange', @startRoute
+        initialize: (options) ->
+            @setOptions options
+            @_parseRoutes()
+            @
 
-    startRoute: ->
-        uri = @parseURI()
-        path = uri.get('directory') + uri.get('file')
-        data = uri.getData()
+        attach: ->
+            window.addEvent 'statechange', @startRoute
 
-        @findRoute path
+        startRoute: ->
+            uri = @parseURI()
+            path = uri.get('directory') + uri.get('file')
+            data = uri.getData()
 
-    _parseRoutes: (routes=@routes) ->
-        for route, funcName of routes
-            routeRegEx = @_createRouteRegex route
-            @_parsedRoutes.push [routeRegEx, funcName]
+            @findRoute path, data
 
-    _createRouteRegex: (route) ->
-        # Convert route into a regex to match path on
-        for replaceWith, findRe of @_replaceRegex
-            route = route.replace findRe, replaceWith
-        new RegExp route + '$'
+        _parseRoutes: (routes=@routes) ->
+            for route, funcName of routes
+                routeRegEx = @_createRouteRegex route
+                paramNames = @_extractParamPositions route
+                @_parsedRoutes.push [routeRegEx, funcName, paramNames]
 
-    parseURI: ->
-        path = History.getState().hash
+        _createRouteRegex: (route) ->
+            # Convert route into a regex to match path on
+            for replaceWith, findRe of @_replaceRegex
+                route = route.replace findRe, replaceWith
+            new RegExp route + '$'
 
-        # Normalize between html4/html5 browsers
-        if path.substr(0,1) == '/'
-            path = path.substr 1
+        _extractParamPositions: (route) ->
+            params = []
+            while (s = reCombine.exec route)
+                params.push s.slice(1).pick()
+            params
 
-        new URI path
+        parseURI: ->
+            path = History.getState().hash
 
-    findRoute: (path) ->
-        for [regEx, funcName] in @_parsedRoutes
-            match = regEx.exec path
-            if match?
-                args = match.slice(1)
-                return @[funcName].apply @, args if match?
+            # Normalize between html4/html5 browsers
+            if path.substr(0,1) == '/'
+                path = path.substr 1
 
-    destroy: ->
-        window.removeEvent 'statechange', @startRoute
+            new URI path
+
+        findRoute: (path, data) ->
+            for [regEx, funcName, paramNames] in @_parsedRoutes
+                match = regEx.exec path
+                if match?
+                    args = [match.slice(1).associate paramNames]
+                    args.push data
+                    return @[funcName].apply @, args if match?
+
+        destroy: ->
+            window.removeEvent 'statechange', @startRoute
 

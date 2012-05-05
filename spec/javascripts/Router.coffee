@@ -1,5 +1,4 @@
 do ->
-
     flatten = (obj) ->
         JSON.encode obj
 
@@ -73,7 +72,13 @@ do ->
             expect(match[1]).toBe 'internet'
             expect(match[2]).toBe 'fecker/balls/mate'
 
-        it 'routes to correct function yo', ->
+        it 'remembers params', ->
+            route = 'page/:pageId/:section/*path'
+            positions = r._extractParamPositions route
+
+            expect(flatten positions).toBe(flatten ['pageId', 'section', 'path'])
+
+        it 'routes to correct function', ->
             routes =
                 'page/:number/': 'someRoute'
                 'page/:number/*stuff': 'someRoute'
@@ -84,7 +89,7 @@ do ->
 
             r._parseRoutes routes
 
-            r.findRoute 'page/343/asd/fe'
+            r.findRoute 'page/343/asd/fe', param: 'something'
 
-            expect(flatten found).toBe(flatten ['343', 'asd/fe'])
+            expect(flatten found).toBe(flatten [{number:'343', stuff:'asd/fe'}, {param: 'something'}])
 

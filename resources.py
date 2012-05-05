@@ -29,12 +29,11 @@ PIPELINE_JS = {
     },
     'app': {
         'source_filenames': (
-            "js/app/AppRouter.js",
+            "js/app/App.js",
             "js/core/utils/behavior.js",
         ),
         'output_filename': 'js/app.js',
-    }
-
+    },
 }
 
 PIPELINE_CSS = {

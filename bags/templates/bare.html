@@ -16,9 +16,7 @@
     <script type="text/javascript">
         document.addEvent('domready', function(){
             document.fireEvent('domupdated');
-            router = new AppRouter({
-
-            });
+            router = new App();
             window.r = router;
             router.attach();
             router.startRoute();
