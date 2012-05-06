@@ -30,7 +30,9 @@ PIPELINE_JS = {
     'app': {
         'source_filenames': (
             "js/app/App.js",
+            "js/app/AppView.js",
             "js/core/utils/behavior.js",
+            "js/templates/base.js",
         ),
         'output_filename': 'js/app.js',
     },

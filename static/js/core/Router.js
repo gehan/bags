@@ -20,12 +20,15 @@
       return this;
     },
     attach: function() {
-      return window.addEvent('statechange', this.startRoute);
+      window.addEvent('statechange', this.startRoute);
+      return this;
     },
-    startRoute: function() {
-      var data, path, uri;
+    startRoute: function(path) {
+      var data, uri;
       uri = this.parseURI();
-      path = uri.get('directory') + uri.get('file');
+      if (!(path != null)) {
+        path = uri.get('directory') + uri.get('file');
+      }
       data = uri.getData();
       return this.findRoute(path, data);
     },
@@ -50,7 +53,7 @@
         findRe = _ref[replaceWith];
         route = route.replace(findRe, replaceWith);
       }
-      return new RegExp(route + '$');
+      return new RegExp("^" + route + '$');
     },
     _extractParamPositions: function(route) {
       var params, s;
@@ -63,13 +66,16 @@
     parseURI: function() {
       var path;
       path = History.getState().hash;
-      if (path.substr(0, 1) === '/') {
-        path = path.substr(1);
+      if (path.substr(0, 1) !== '/') {
+        path = "/" + path;
       }
       return new URI(path);
     },
     findRoute: function(path, data) {
       var args, funcName, match, paramNames, regEx, _i, _len, _ref, _ref1;
+      if (path.substr(0, 1) === '/') {
+        path = path.substr(1);
+      }
       _ref = this._parsedRoutes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         _ref1 = _ref[_i], regEx = _ref1[0], funcName = _ref1[1], paramNames = _ref1[2];

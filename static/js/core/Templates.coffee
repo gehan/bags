@@ -6,6 +6,13 @@ Templates = new Class
 
     TEMPLATES: {}
     refs: {}
+    templatesUrl: '/static/js/templates/'
+
+    fetchTemplateBundle: (bundleName) ->
+        templateUrl = "#{@templatesUrl}#{bundleName}.js"
+        Asset.javascript templateUrl,
+            onLoad: ->
+                console.log 'gotTemplate'
 
     # Loads all current dust templates into memory so they can be rendered
     # This step is essential if partials are used anywhere are they are expected

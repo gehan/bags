@@ -29,7 +29,7 @@ View = new Class
 
         Object.merge @refs, @getRefs(el)
 
-        @delegateEvents el
+        @delegateEvents el, @events
         @fireEvent 'render'
         el
 
@@ -50,10 +50,21 @@ View = new Class
     _render: (data=@parseForDisplay()) ->
         el = @renderTemplate @template, data
 
+    inject: ->
+        el = $ @
+        el.inject.apply el, arguments
+        document.fireEvent 'domupdated'
+
     parseForDisplay: ->
-        @model.toJSON()
+        if @model?
+            @model.toJSON()
+        else
+            @data
 
     getElement: -> @el.getElement.apply @el, arguments
     getElements: -> @el.getElements.apply @el, arguments
+
+    destroy: ->
+
 
     toElement: -> @el

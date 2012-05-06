@@ -22,12 +22,13 @@ do ->
 
         attach: ->
             window.addEvent 'statechange', @startRoute
+            @
 
-        startRoute: ->
+        startRoute: (path) ->
             uri = @parseURI()
-            path = uri.get('directory') + uri.get('file')
+            if not path?
+                path = uri.get('directory') + uri.get('file')
             data = uri.getData()
-
             @findRoute path, data
 
         _parseRoutes: (routes=@routes) ->
@@ -40,7 +41,7 @@ do ->
             # Convert route into a regex to match path on
             for replaceWith, findRe of @_replaceRegex
                 route = route.replace findRe, replaceWith
-            new RegExp route + '$'
+            new RegExp "^" + route + '$'
 
         _extractParamPositions: (route) ->
             params = []
@@ -50,14 +51,12 @@ do ->
 
         parseURI: ->
             path = History.getState().hash
-
             # Normalize between html4/html5 browsers
-            if path.substr(0,1) == '/'
-                path = path.substr 1
-
+            path = "/#{path}" if path.substr(0,1) != '/'
             new URI path
 
         findRoute: (path, data) ->
+            path = path.substr(1) if path.substr(0,1) == '/'
             for [regEx, funcName, paramNames] in @_parsedRoutes
                 match = regEx.exec path
                 if match?

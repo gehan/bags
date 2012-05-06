@@ -9,6 +9,16 @@ var Templates;
 Templates = new Class({
   TEMPLATES: {},
   refs: {},
+  templatesUrl: '/static/js/templates/',
+  fetchTemplateBundle: function(bundleName) {
+    var templateUrl;
+    templateUrl = "" + this.templatesUrl + bundleName + ".js";
+    return Asset.javascript(templateUrl, {
+      onLoad: function() {
+        return console.log('gotTemplate');
+      }
+    });
+  },
   loadAllTemplates: function() {
     var k, v, _i, _len, _ref, _ref1, _results;
     _ref = this.TEMPLATES;

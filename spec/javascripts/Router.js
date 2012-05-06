@@ -44,14 +44,16 @@
       return _results;
     });
     it('matches *splat in route properly', function() {
-      var match, notMatch, route, routeRegEx, str, _i, _j, _len, _len1, _results;
+      var actual, expected, match, notMatch, route, routeRegEx, str, strMatch, _i, _j, _len, _len1, _results;
       route = 'page/*extra';
       routeRegEx = r._createRouteRegex(route);
-      match = ['page/internet', 'page/you-love-it', 'page/'];
+      match = [['page/internet', ['page/internet', 'internet']], ['page/you/it', ['page/you/it', 'you/it']]];
       notMatch = ['page'];
       for (_i = 0, _len = match.length; _i < _len; _i++) {
-        str = match[_i];
-        expect(routeRegEx.exec(str)).toNotBe(null);
+        strMatch = match[_i];
+        actual = flatten(routeRegEx.exec(strMatch[0]));
+        expected = flatten(strMatch[1]);
+        expect(actual).toBe(expected);
       }
       _results = [];
       for (_j = 0, _len1 = notMatch.length; _j < _len1; _j++) {

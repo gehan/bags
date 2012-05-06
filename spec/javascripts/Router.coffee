@@ -50,15 +50,16 @@ do ->
             routeRegEx = r._createRouteRegex route
 
             match = [
-                'page/internet'
-                'page/you-love-it'
-                'page/'
+                ['page/internet', ['page/internet', 'internet'] ]
+                ['page/you/it', ['page/you/it', 'you/it'], ]
             ]
             notMatch = [
                 'page'
             ]
-            for str in match
-                expect(routeRegEx.exec str).toNotBe null
+            for strMatch in match
+                actual = flatten(routeRegEx.exec strMatch[0])
+                expected = flatten strMatch[1]
+                expect(actual).toBe expected
             for str in notMatch
                 expect(routeRegEx.exec str).toBe null
 

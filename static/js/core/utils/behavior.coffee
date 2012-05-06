@@ -44,6 +44,12 @@ do ->
             setup: (element, api) ->
                 new ProfileDropdown element, Globals.user
 
+    Delegator.register 'click', 'push', (event, element, api) ->
+        event.preventDefault()
+        href = element.get 'href'
+        History.pushState null, null, href
+
+    delegator = new Delegator()
     behavior = new Behavior
         breakOnErrors: true
 
@@ -53,3 +59,4 @@ do ->
 
     document.addEvent 'domupdated', (nodes=document.body) ->
         behavior.apply nodes
+        delegator.attach nodes

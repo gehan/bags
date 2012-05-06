@@ -37,7 +37,7 @@ View = new Class({
     el.store('obj', this);
     this.el = this.el ? el.replaces(this.el) : el;
     Object.merge(this.refs, this.getRefs(el));
-    this.delegateEvents(el);
+    this.delegateEvents(el, this.events);
     this.fireEvent('render');
     return el;
   },
@@ -68,8 +68,18 @@ View = new Class({
     }
     return el = this.renderTemplate(this.template, data);
   },
+  inject: function() {
+    var el;
+    el = $(this);
+    el.inject.apply(el, arguments);
+    return document.fireEvent('domupdated');
+  },
   parseForDisplay: function() {
-    return this.model.toJSON();
+    if (this.model != null) {
+      return this.model.toJSON();
+    } else {
+      return this.data;
+    }
   },
   getElement: function() {
     return this.el.getElement.apply(this.el, arguments);
@@ -77,6 +87,7 @@ View = new Class({
   getElements: function() {
     return this.el.getElements.apply(this.el, arguments);
   },
+  destroy: function() {},
   toElement: function() {
     return this.el;
   }

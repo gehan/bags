@@ -15,24 +15,11 @@
     {% compressed_js 'app' %}
     <script type="text/javascript">
         document.addEvent('domready', function(){
-            document.fireEvent('domupdated');
-            router = new App();
-            window.r = router;
-            router.attach();
-            router.startRoute();
+            app = new AppView();
+            app.inject(document.body);
         });
     </script>
 </head>
 <body>
-    <div class="dropdown" data-behavior="Dropdown">
-        Hello there<br />I like cheese
-        <div class="dropdown-menu" data-dropdown>
-            Oh hello there everyone<br />
-            I'm a dropdown
-        </div>
-    </div>
-    <div>
-        As if mate
-    </div>
 </body>
 </html>
