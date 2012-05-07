@@ -3,9 +3,9 @@ do ->
         base: """
         <body>
             <header>
-                <a href="/page/1/unread/" data-trigger="push">Section 1</a>
-                <a href="/account/channels/1/" data-trigger="push">Section 2</a>
-                <a href="/account/channels/2/" data-trigger="push">Section 3</a>
+                <a href="/page/1/" data-trigger="push">Page 1</a>
+                <a href="/page/2/" data-trigger="push">Page 2</a>
+                <a href="/account/channels/1/" data-trigger="push">Account</a>
             </header>
             <div ref="body">
             </div>
@@ -13,9 +13,18 @@ do ->
         """
 
         page: """
+        <nav ref="leftNav">
+            {>pageLeftNav/}
+        </nav>
         <p>
             Hello there i'm a page
         </p>
+        """
+
+        pageLeftNav: """
+            <a href="/page/{pageId}/unread/" data-trigger="push">Subsection 1</a>
+            <a href="/page/{pageId}/priority/" data-trigger="push">SubSection 2</a>
+            <a href="/page/{pageId}/assigned/" data-trigger="push">SubSection 3</a>
         """
 
         account: """

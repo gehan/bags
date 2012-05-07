@@ -3,8 +3,9 @@
 (function() {
   var compiled, content, name, templates, _results;
   templates = {
-    base: "<body>\n    <header>\n        <a href=\"/page/1/unread/\" data-trigger=\"push\">Section 1</a>\n        <a href=\"/account/channels/1/\" data-trigger=\"push\">Section 2</a>\n        <a href=\"/account/channels/2/\" data-trigger=\"push\">Section 3</a>\n    </header>\n    <div ref=\"body\">\n    </div>\n</body>",
-    page: "<p>\n    Hello there i'm a page\n</p>",
+    base: "<body>\n    <header>\n        <a href=\"/page/1/\" data-trigger=\"push\">Page 1</a>\n        <a href=\"/page/2/\" data-trigger=\"push\">Page 2</a>\n        <a href=\"/account/channels/1/\" data-trigger=\"push\">Account</a>\n    </header>\n    <div ref=\"body\">\n    </div>\n</body>",
+    page: "<nav ref=\"leftNav\">\n    {>pageLeftNav/}\n</nav>\n<p>\n    Hello there i'm a page\n</p>",
+    pageLeftNav: "<a href=\"/page/{pageId}/unread/\" data-trigger=\"push\">Subsection 1</a>\n<a href=\"/page/{pageId}/priority/\" data-trigger=\"push\">SubSection 2</a>\n<a href=\"/page/{pageId}/assigned/\" data-trigger=\"push\">SubSection 3</a>",
     account: "<p>\n    Hello there i'm an account\n</p>",
     body: ""
   };

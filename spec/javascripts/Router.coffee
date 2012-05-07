@@ -20,10 +20,9 @@ do ->
                 'page/hd5eg?/asdas/gehan'
             ]
             notMatch = [
+                'page/34'
                 'page/34/23'
                 'page/34/23/art'
-                'page/34/art'
-                'page/34'
             ]
             for str in match
                 expect(routeRegEx.exec str).toNotBe null
@@ -37,8 +36,9 @@ do ->
                 'page/34/23/'
             ]
             notMatch = [
-                'page/34/23'
-                'page/34/23/art'
+                'yeah/page/34/23/' # Prepended pattern
+                'page/34/23'       # Missing last slash
+                'page/34/23/art'   # Extra at end
             ]
             for str in match
                 expect(routeRegEx.exec str).toNotBe null

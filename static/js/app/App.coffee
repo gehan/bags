@@ -1,4 +1,4 @@
-AppRouter = new Class
+Application = new Class
     Extends: Router
 
     routes:
@@ -11,20 +11,19 @@ AppRouter = new Class
     subRouter: null
 
     pageSection: (args, data) ->
-        if not instanceOf @subRouter, PageRouter
-            @subRouter.destroy() if @subRouter?
-            @subRouter = new PageRouter element: @options.view.refs.body
-
-        @subRouter.startRoute args.path
+        @subRoute PageRouter, args, data
 
     accountSection: (args, data) ->
-        if not instanceOf @subRouter, AccountRouter
+        @subRoute AccountRouter, args, data
+
+Router.implement
+    subRoute: (routerClass, args, data) ->
+        if not instanceOf @subRouter, routerClass
             @subRouter.destroy() if @subRouter?
-            @subRouter = new AccountRouter element: @options.view.refs.body
+            @subRouter = new routerClass element: @options.view.refs.body
 
         @subRouter.startRoute args.path
 
-Router.implement
     setView: (viewClass) ->
         if not instanceOf @view, viewClass
             @destroyView()
@@ -76,7 +75,10 @@ PageRouter = new Class
         ':page/:section/': 'page'
 
     page: (args, data) ->
+        pageId = args.page
+        section = args.section or 'priority'
+        console.log pageId, section
         @setView PageView
 
-        console.log 'page ', args.page, args.section
+        @view.setPage pageId
 

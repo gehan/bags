@@ -6,16 +6,26 @@ AppView = new Class({
   template: 'base',
   initialize: function() {
     this.parent.apply(this, arguments);
-    this.router = new AppRouter({
+    this.router = new Application({
       view: this
     }).attach();
-    return this.router.startRoute();
+    this.router.startRoute();
+    return this;
   }
 });
 
 PageView = new Class({
   Extends: View,
-  template: 'page'
+  template: 'page',
+  data: {
+    pageId: null
+  },
+  setPage: function(pageId) {
+    if (this.data.pageId !== pageId) {
+      this.data.pageId = pageId;
+      return this.rerender('leftNav');
+    }
+  }
 });
 
 AccountView = new Class({

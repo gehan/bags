@@ -19,7 +19,7 @@
       route = 'page/:number/:param/gehan';
       routeRegEx = r._createRouteRegex(route);
       match = ['page/34/23/gehan', 'page/hd5eg?/asdas/gehan'];
-      notMatch = ['page/34/23', 'page/34/23/art', 'page/34/art', 'page/34'];
+      notMatch = ['page/34', 'page/34/23', 'page/34/23/art'];
       for (_i = 0, _len = match.length; _i < _len; _i++) {
         str = match[_i];
         expect(routeRegEx.exec(str)).toNotBe(null);
@@ -31,7 +31,7 @@
       route = 'page/:number/:param/';
       routeRegEx = r._createRouteRegex(route);
       match = ['page/34/23/'];
-      notMatch = ['page/34/23', 'page/34/23/art'];
+      notMatch = ['yeah/page/34/23/', 'page/34/23', 'page/34/23/art'];
       for (_k = 0, _len2 = match.length; _k < _len2; _k++) {
         str = match[_k];
         expect(routeRegEx.exec(str)).toNotBe(null);

@@ -6,14 +6,24 @@ AppView = new Class
     initialize: ->
         @parent.apply @, arguments
 
-        @router = new AppRouter(view: @).attach()
+        @router = new Application(view: @).attach()
         @router.startRoute()
+        @
 
 
 PageView = new Class
     Extends: View
 
     template: 'page'
+
+    data:
+        pageId: null
+
+    setPage: (pageId) ->
+        if @data.pageId isnt pageId
+            @data.pageId = pageId
+            @rerender 'leftNav'
+
 
 AccountView = new Class
     Extends: View
