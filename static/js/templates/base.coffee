@@ -17,8 +17,10 @@ do ->
             {>pageLeftNav/}
         </nav>
         <p>
-            Hello there i'm a page
+            Hello there i'm page {pageId} section {unread}
         </p>
+        <ul ref="items">
+        </ul>
         """
 
         pageLeftNav: """
@@ -31,6 +33,10 @@ do ->
         <p>
             Hello there i'm an account
         </p>
+        """
+
+        item: """
+        <li>{id} - <em>{text}</em> - {description}</li>
         """
 
         body: """

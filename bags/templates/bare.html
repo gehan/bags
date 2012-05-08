@@ -15,8 +15,10 @@
     {% compressed_js 'app' %}
     <script type="text/javascript">
         document.addEvent('domready', function(){
-            app = new AppView();
-            app.inject(document.body);
+            var app = new Application({
+                element: document.body
+            }).attach();
+            app.startRoute();
         });
     </script>
 </head>

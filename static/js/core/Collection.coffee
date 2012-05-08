@@ -28,8 +28,7 @@ Collection = new Class
         @push model
 
     reset: (models, options={}) ->
-        while (model = @pop())
-            @_remove model, options
+        @_remove model, options while model = @pop()
         @add models, silent: true
         @fireEvent 'reset', [@] if not options.silent
 

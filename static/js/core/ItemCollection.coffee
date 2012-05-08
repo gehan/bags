@@ -3,7 +3,7 @@ ItemCollection = new Class
 
     model: ItemModel
 
-    url: '/ajax/page/{sourceId}/{section}/{page}/'
+    url: '/get-data/'
 
     fetch: (options={sourceId: None, section: None, page: None}) ->
         @parent url: @url.substitute options

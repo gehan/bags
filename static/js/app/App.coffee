@@ -6,9 +6,14 @@ Application = new Class
         'account/*path': "accountSection"
 
     options:
-        view: null
+        element: null
 
     subRouter: null
+
+    initialize: ->
+        @parent.apply @, arguments
+        @setView AppView
+        @
 
     pageSection: (args, data) ->
         @subRoute PageRouter, args, data
@@ -20,7 +25,7 @@ Router.implement
     subRoute: (routerClass, args, data) ->
         if not instanceOf @subRouter, routerClass
             @subRouter.destroy() if @subRouter?
-            @subRouter = new routerClass element: @options.view.refs.body
+            @subRouter = new routerClass element: @view.refs.body
 
         @subRouter.startRoute args.path
 
@@ -77,7 +82,6 @@ PageRouter = new Class
     page: (args, data) ->
         pageId = args.page
         section = args.section or 'priority'
-        console.log pageId, section
         @setView PageView
 
         @view.setPage pageId

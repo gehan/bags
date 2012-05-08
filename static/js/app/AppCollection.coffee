@@ -2,12 +2,8 @@ ItemCollection = new Class
     Extends: Collection
 
     model: Model
+    url: '/get-page/{pageId}/{section}/'
 
-    initialize: ->
-        @parent.apply @, arguments
-
-        console.log 'collection'
-
-        @
-
+    fetch: (options) ->
+        @parent url: @url.substitute(options)
 

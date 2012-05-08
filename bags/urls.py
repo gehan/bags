@@ -3,8 +3,10 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    url(r'^', 'bags.views.home', name='home'),
+urlpatterns = patterns('bags.views',
+    url(r'^get-page/(?P<page_id>\d+)/(?P<section>\w+)/', 'page', name='page'),
+
+    url(r'^', 'home', name='home'),
 
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
