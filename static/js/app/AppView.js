@@ -21,9 +21,7 @@ PageView = new Class({
   },
   initialize: function() {
     this.parent.apply(this, arguments);
-    this.collection = new ItemCollection({
-      element: this.refs.items
-    });
+    this.collection = new ItemCollection;
     return this;
   },
   setPage: function(pageId) {

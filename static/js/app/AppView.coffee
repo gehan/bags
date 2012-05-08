@@ -24,7 +24,6 @@ PageView = new Class
 
         # Items collection
         @collection = new ItemCollection
-            element: @refs.items
 
         @
 
