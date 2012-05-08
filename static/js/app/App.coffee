@@ -81,4 +81,5 @@ PageRouter = new Class
         @setView PageView
 
         @view.setPage pageId
+        @view.getSection section
 

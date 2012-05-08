@@ -19,10 +19,22 @@ PageView = new Class
     data:
         pageId: null
 
+    initialize: ->
+        @parent.apply @, arguments
+
+        # Items collection
+        @collection = new ItemCollection
+            element: @refs.items
+
+        @
+
     setPage: (pageId) ->
         if @data.pageId isnt pageId
             @data.pageId = pageId
             @rerender 'leftNav'
+
+    getSection: (section) ->
+        @data.section = section
 
 
 AccountView = new Class
