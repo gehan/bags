@@ -41,6 +41,7 @@ Router.implement
 
     destroy: ->
         @destroyView()
+        @parent()
 
 AccountRouter = new Class
     Extends: Router

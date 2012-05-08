@@ -9,7 +9,8 @@ View = new Class({
   events: {},
   template: null,
   initialize: function(options) {
-    var key, _i, _len, _ref;
+    var key, _i, _len, _ref,
+      _this = this;
     if (options == null) {
       options = {};
     }
@@ -21,6 +22,11 @@ View = new Class({
         this[key] = options[key];
         delete options[key];
       }
+    }
+    if (this.model != null) {
+      this.model.addEvent('remove', function() {
+        return _this.destroy();
+      });
     }
     this.setOptions(options);
     this.render();
@@ -87,7 +93,9 @@ View = new Class({
   getElements: function() {
     return this.el.getElements.apply(this.el, arguments);
   },
-  destroy: function() {},
+  destroy: function() {
+    return $(this).destroy();
+  },
   toElement: function() {
     return this.el;
   }

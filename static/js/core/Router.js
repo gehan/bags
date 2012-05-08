@@ -59,7 +59,7 @@
       var params, s;
       params = [];
       while ((s = reCombine.exec(route))) {
-        params.push(s.slice(1).pick());
+        params.push(s.slice(1).erase('').pick());
       }
       return params;
     },

@@ -30,6 +30,7 @@ PageView = new Class
 
     getSection: (section) ->
         @data.section = section
+        @_removeCollectionItems()
         @collection.fetch @data
 
     addOne: (model) ->
@@ -39,8 +40,15 @@ PageView = new Class
 
     add: (collection) ->
         # Not right here, remove existing elements properly
-        @refs.items.empty()
         @addOne model for model in collection
+
+    _removeCollectionItems: ->
+        models = @collection.clone()
+        models.invoke 'remove'
+
+    destroy: ->
+        @_removeCollectionItems()
+        @parent()
 
 AccountView = new Class
     Extends: View

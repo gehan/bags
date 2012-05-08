@@ -14,6 +14,8 @@ View = new Class
             if options[key]?
                 @[key] = options[key]
                 delete options[key]
+        if @model?
+            @model.addEvent 'remove', => @destroy()
         @setOptions options
         @render()
         @
@@ -65,6 +67,6 @@ View = new Class
     getElements: -> @el.getElements.apply @el, arguments
 
     destroy: ->
-
+        $(@).destroy()
 
     toElement: -> @el

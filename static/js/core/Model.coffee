@@ -11,15 +11,18 @@ Model = new Class
         url: "/item/"
 
     initialize: (attributes, options) ->
-        @setAttributes attributes
         @setOptions options
+        @_setInitial attributes
         @
 
-    setAttributes: (attributes={}) ->
-        for key, value of attributes
-            @set key, value, silent: true
-        for key, value of @_defaults
-            @set key, @_getDefault(key, value) if not @has key
+    _setInitial: (attributes={}) ->
+        defaults = Object.map (Object.clone(@_defaults)), (value, key) =>
+            @_getDefault key
+        Object.merge defaults, attributes
+        @setMany defaults, silent: true
+
+    setMany: (attrs, options) ->
+        @set k, v, options for k, v of attrs
 
     set: (key, value, options={silent: false}) ->
         if @_isCollection key, value
@@ -69,7 +72,7 @@ Model = new Class
         else
             new type(value)
 
-    _getDefault: (key, value) ->
+    _getDefault: (key) ->
         def = @_defaults[key]
         if typeOf(def) == 'function'
             def.call @

@@ -50,7 +50,8 @@ Router.implement({
     return this.options.element.empty();
   },
   destroy: function() {
-    return this.destroyView();
+    this.destroyView();
+    return this.parent();
   }
 });
 

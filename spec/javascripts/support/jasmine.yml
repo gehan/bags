@@ -20,6 +20,9 @@ src_files:
     - lib/behaviour/Behavior.Startup.js
     - lib/behaviour/Delegator.js
     - core/Router.js
+    - core/Model.js
+    - core/Collection.js
+    - core/SubCollection.js
 #    - /**/*.js
 
 # stylesheets

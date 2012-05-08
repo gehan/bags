@@ -46,7 +46,7 @@ do ->
         _extractParamPositions: (route) ->
             params = []
             while (s = reCombine.exec route)
-                params.push s.slice(1).pick()
+                params.push s.slice(1).erase('').pick()
             params
 
         parseURI: ->

@@ -36,6 +36,7 @@ PageView = new Class({
   },
   getSection: function(section) {
     this.data.section = section;
+    this._removeCollectionItems();
     return this.collection.fetch(this.data);
   },
   addOne: function(model) {
@@ -46,13 +47,21 @@ PageView = new Class({
   removeOne: function(model) {},
   add: function(collection) {
     var model, _i, _len, _results;
-    this.refs.items.empty();
     _results = [];
     for (_i = 0, _len = collection.length; _i < _len; _i++) {
       model = collection[_i];
       _results.push(this.addOne(model));
     }
     return _results;
+  },
+  _removeCollectionItems: function() {
+    var models;
+    models = this.collection.clone();
+    return models.invoke('remove');
+  },
+  destroy: function() {
+    this._removeCollectionItems();
+    return this.parent();
   }
 });
 
