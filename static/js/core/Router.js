@@ -85,7 +85,7 @@
       return new URI(path);
     },
     findRoute: function(path, data) {
-      var args, funcName, match, paramNames, regEx, _i, _len, _ref, _ref1;
+      var args, funcName, match, paramNames, regEx, routerClass, _i, _len, _ref, _ref1;
       if (path.substr(0, 1) === '/') {
         path = path.substr(1);
       }
@@ -94,10 +94,18 @@
         _ref1 = _ref[_i], regEx = _ref1[0], funcName = _ref1[1], paramNames = _ref1[2];
         match = regEx.exec(path);
         if (match != null) {
-          args = [match.slice(1).associate(paramNames)];
-          args.push(data);
-          if (match != null) {
-            return this[funcName].apply(this, args);
+          args = match.slice(1).associate(paramNames);
+          if (typeOf(funcName) === 'function') {
+            routerClass = funcName();
+            return this.subRoute(routerClass, args, data, {
+              el: this.subRouteEl()
+            });
+          } else {
+            args = [args];
+            args.push(data);
+            if (match != null) {
+              return this[funcName].apply(this, args);
+            }
           }
         }
       }

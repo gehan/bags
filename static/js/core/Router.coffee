@@ -71,9 +71,15 @@ do ->
             for [regEx, funcName, paramNames] in @_parsedRoutes
                 match = regEx.exec path
                 if match?
-                    args = [match.slice(1).associate paramNames]
-                    args.push data
-                    return @[funcName].apply @, args if match?
+                    args = match.slice(1).associate paramNames
+                    if typeOf(funcName) == 'function'
+                        routerClass = funcName()
+                        return @subRoute routerClass, args, data,
+                            el: @subRouteEl()
+                    else
+                        args = [args]
+                        args.push data
+                        return @[funcName].apply @, args if match?
 
         subRoute: (routerClass, args, data, options) ->
             if not instanceOf @subRouter, routerClass

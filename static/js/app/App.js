@@ -4,19 +4,16 @@ var AccountRouter, Application, PageRouter;
 Application = new Class({
   Extends: Router,
   routes: {
-    'page/*path': "pageSection",
-    'account/*path': "accountSection"
+    'page/*path': function() {
+      return PageRouter;
+    },
+    'account/*path': function() {
+      return AccountRouter;
+    }
   },
   viewClass: AppView,
-  pageSection: function(args, data) {
-    return this.subRoute(PageRouter, args, data, {
-      el: this.view.refs.body
-    });
-  },
-  accountSection: function(args, data) {
-    return this.subRoute(AccountRouter, args, data, {
-      el: this.view.refs.body
-    });
+  subRouteEl: function() {
+    return this.view.refs.body;
   }
 });
 

@@ -2,16 +2,11 @@ Application = new Class
     Extends: Router
 
     routes:
-        'page/*path': "pageSection"
-        'account/*path': "accountSection"
+        'page/*path': -> PageRouter
+        'account/*path': -> AccountRouter
 
     viewClass: AppView
-
-    pageSection: (args, data) ->
-        @subRoute PageRouter, args, data, el: @view.refs.body
-
-    accountSection: (args, data) ->
-        @subRoute AccountRouter, args, data, el: @view.refs.body
+    subRouteEl: -> @view.refs.body
 
 AccountRouter = new Class
     Extends: Router
