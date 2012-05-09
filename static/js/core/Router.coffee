@@ -64,6 +64,6 @@ do ->
                     args.push data
                     return @[funcName].apply @, args if match?
 
-        destroy: ->
+        detach: ->
             window.removeEvent 'statechange', @startRoute
 

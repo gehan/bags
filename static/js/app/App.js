@@ -51,7 +51,7 @@ Router.implement({
   },
   destroy: function() {
     this.destroyView();
-    return this.parent();
+    return this.detach();
   }
 });
 

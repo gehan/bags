@@ -8,9 +8,6 @@ do ->
         beforeEach ->
             r = new Router()
 
-        afterEach ->
-            r.destroy()
-
         it 'matches :param in route properly', ->
             route = 'page/:number/:param/gehan'
             routeRegEx = r._createRouteRegex route

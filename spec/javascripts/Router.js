@@ -11,9 +11,6 @@
     beforeEach(function() {
       return r = new Router();
     });
-    afterEach(function() {
-      return r.destroy();
-    });
     it('matches :param in route properly', function() {
       var match, notMatch, route, routeRegEx, str, _i, _j, _k, _l, _len, _len1, _len2, _len3, _results;
       route = 'page/:number/:param/gehan';

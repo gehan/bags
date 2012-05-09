@@ -89,7 +89,7 @@
         }
       }
     },
-    destroy: function() {
+    detach: function() {
       return window.removeEvent('statechange', this.startRoute);
     }
   });
