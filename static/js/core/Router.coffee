@@ -11,24 +11,35 @@ do ->
             "([^\/]+)": new RegExp reParam, 'g'
             "(.*)": new RegExp reSplat, 'g'
 
-        _parsedRoutes: []
+        # "path/:param/*catchall": "functionName"
         routes: {}
-        #    "path/:param/*catchall": "functionName"
+        _parsedRoutes: []
+        subRouter: null
+
+        # Maybe have separate class for view stuff
+        viewClass: null
+        options:
+            el: null
 
         initialize: (options) ->
             @setOptions options
             @_parseRoutes()
+            @_initView() if @viewClass
             @
 
         attach: ->
             window.addEvent 'statechange', @startRoute
             @
 
-        startRoute: (path) ->
+        detach: ->
+            window.removeEvent 'statechange', @startRoute
+
+        startRoute: (path, data) ->
             uri = @parseURI()
             if not path?
                 path = uri.get('directory') + uri.get('file')
-            data = uri.getData()
+            if not data?
+                data = uri.getData()
             @findRoute path, data
 
         _parseRoutes: (routes=@routes) ->
@@ -64,6 +75,42 @@ do ->
                     args.push data
                     return @[funcName].apply @, args if match?
 
-        detach: ->
-            window.removeEvent 'statechange', @startRoute
+        subRoute: (routerClass, args, data, options) ->
+            if not instanceOf @subRouter, routerClass
+                @subRouter.destroy() if @subRouter?
+                @subRouter = new routerClass options
+
+            # Expect only one arg, a splat for the remaining path
+            if Object.getLength(args) != 1
+                throw "Bad subroute, include one splat only"
+
+            path = Object.values(args)[0]
+            @subRouter.startRoute path
+
+
+        ##############################
+        # Maybe put in different class
+        _initView: ->
+            if not instanceOf @view, @viewClass
+                if not @options.el?
+                    throw "Cannot init view, no el specified"
+                @_destroyView()
+                @view = new @viewClass()
+                @view.inject @options.el
+
+        _destroyView: ->
+            @view.destroy() if @view?
+            @options.el.empty()
+
+        initSubView: (viewClass, el) ->
+            if not instanceOf @subView, viewClass
+                if not el?
+                    throw "Cannot init sub view, no el passed in"
+                @subView.destroy() if @subView?
+                @subView = new viewClass()
+                @subView.inject el
+
+        destroy: ->
+            @_destroyView()
+            @detach()
 

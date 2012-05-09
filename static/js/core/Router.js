@@ -12,24 +12,37 @@
       "([^\/]+)": new RegExp(reParam, 'g'),
       "(.*)": new RegExp(reSplat, 'g')
     },
-    _parsedRoutes: [],
     routes: {},
+    _parsedRoutes: [],
+    subRouter: null,
+    viewClass: null,
+    options: {
+      el: null
+    },
     initialize: function(options) {
       this.setOptions(options);
       this._parseRoutes();
+      if (this.viewClass) {
+        this._initView();
+      }
       return this;
     },
     attach: function() {
       window.addEvent('statechange', this.startRoute);
       return this;
     },
-    startRoute: function(path) {
-      var data, uri;
+    detach: function() {
+      return window.removeEvent('statechange', this.startRoute);
+    },
+    startRoute: function(path, data) {
+      var uri;
       uri = this.parseURI();
       if (!(path != null)) {
         path = uri.get('directory') + uri.get('file');
       }
-      data = uri.getData();
+      if (!(data != null)) {
+        data = uri.getData();
+      }
       return this.findRoute(path, data);
     },
     _parseRoutes: function(routes) {
@@ -89,8 +102,51 @@
         }
       }
     },
-    detach: function() {
-      return window.removeEvent('statechange', this.startRoute);
+    subRoute: function(routerClass, args, data, options) {
+      var path;
+      if (!instanceOf(this.subRouter, routerClass)) {
+        if (this.subRouter != null) {
+          this.subRouter.destroy();
+        }
+        this.subRouter = new routerClass(options);
+      }
+      if (Object.getLength(args) !== 1) {
+        throw "Bad subroute, include one splat only";
+      }
+      path = Object.values(args)[0];
+      return this.subRouter.startRoute(path);
+    },
+    _initView: function() {
+      if (!instanceOf(this.view, this.viewClass)) {
+        if (!(this.options.el != null)) {
+          throw "Cannot init view, no el specified";
+        }
+        this._destroyView();
+        this.view = new this.viewClass();
+        return this.view.inject(this.options.el);
+      }
+    },
+    _destroyView: function() {
+      if (this.view != null) {
+        this.view.destroy();
+      }
+      return this.options.el.empty();
+    },
+    initSubView: function(viewClass, el) {
+      if (!instanceOf(this.subView, viewClass)) {
+        if (!(el != null)) {
+          throw "Cannot init sub view, no el passed in";
+        }
+        if (this.subView != null) {
+          this.subView.destroy();
+        }
+        this.subView = new viewClass();
+        return this.subView.inject(el);
+      }
+    },
+    destroy: function() {
+      this._destroyView();
+      return this.detach();
     }
   });
 })();

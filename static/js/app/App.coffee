@@ -5,51 +5,20 @@ Application = new Class
         'page/*path': "pageSection"
         'account/*path': "accountSection"
 
-    options:
-        element: null
-
-    subRouter: null
-
-    initialize: ->
-        @parent.apply @, arguments
-        @setView AppView
-        @
+    viewClass: AppView
 
     pageSection: (args, data) ->
-        @subRoute PageRouter, args, data
+        @subRoute PageRouter, args, data, el: @view.refs.body
 
     accountSection: (args, data) ->
-        @subRoute AccountRouter, args, data
-
-Router.implement
-    subRoute: (routerClass, args, data) ->
-        if not instanceOf @subRouter, routerClass
-            @subRouter.destroy() if @subRouter?
-            @subRouter = new routerClass element: @view.refs.body
-
-        @subRouter.startRoute args.path
-
-    setView: (viewClass) ->
-        if not instanceOf @view, viewClass
-            @destroyView()
-            @view = new viewClass()
-            @view.inject @options.element
-
-    destroyView: ->
-        @view.destroy() if @view?
-        @options.element.empty()
-
-    destroy: ->
-        @destroyView()
-        @detach()
+        @subRoute AccountRouter, args, data, el: @view.refs.body
 
 AccountRouter = new Class
     Extends: Router
 
-    options:
-        element: null
-
     routes:
+        '': 'root'
+
         'user/': 'user'
         'user/:id/': 'user'
 
@@ -59,32 +28,32 @@ AccountRouter = new Class
         ':type/': 'account'
         ':type/:id/': 'account'
 
+    viewClass: AccountView
+
+    root: (args, data) ->
+        console.log 'root'
+
     account: (args, data) ->
-        @setView AccountView
         console.log 'account ', args.type, args.id
 
     channel: (args, data) ->
-        console.log 'channel ', args.id
+        @initSubView ChannelView, @view.refs.accountBody
 
     user: (args, data) ->
-        console.log 'user ', args.id
-
+        @initSubView UserView, @view.refs.accountBody
 
 PageRouter = new Class
     Extends: Router
-
-    options:
-        element: null
 
     routes:
         ':page/': 'page'
         ':page/:section/': 'page'
 
+    viewClass: PageView
+
     page: (args, data) ->
         pageId = args.page
         section = args.section or 'priority'
-        @setView PageView
-
         @view.setPage pageId
         @view.getSection section
 

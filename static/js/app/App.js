@@ -7,60 +7,23 @@ Application = new Class({
     'page/*path': "pageSection",
     'account/*path': "accountSection"
   },
-  options: {
-    element: null
-  },
-  subRouter: null,
-  initialize: function() {
-    this.parent.apply(this, arguments);
-    this.setView(AppView);
-    return this;
-  },
+  viewClass: AppView,
   pageSection: function(args, data) {
-    return this.subRoute(PageRouter, args, data);
+    return this.subRoute(PageRouter, args, data, {
+      el: this.view.refs.body
+    });
   },
   accountSection: function(args, data) {
-    return this.subRoute(AccountRouter, args, data);
-  }
-});
-
-Router.implement({
-  subRoute: function(routerClass, args, data) {
-    if (!instanceOf(this.subRouter, routerClass)) {
-      if (this.subRouter != null) {
-        this.subRouter.destroy();
-      }
-      this.subRouter = new routerClass({
-        element: this.view.refs.body
-      });
-    }
-    return this.subRouter.startRoute(args.path);
-  },
-  setView: function(viewClass) {
-    if (!instanceOf(this.view, viewClass)) {
-      this.destroyView();
-      this.view = new viewClass();
-      return this.view.inject(this.options.element);
-    }
-  },
-  destroyView: function() {
-    if (this.view != null) {
-      this.view.destroy();
-    }
-    return this.options.element.empty();
-  },
-  destroy: function() {
-    this.destroyView();
-    return this.detach();
+    return this.subRoute(AccountRouter, args, data, {
+      el: this.view.refs.body
+    });
   }
 });
 
 AccountRouter = new Class({
   Extends: Router,
-  options: {
-    element: null
-  },
   routes: {
+    '': 'root',
     'user/': 'user',
     'user/:id/': 'user',
     'channel/': 'channel',
@@ -68,32 +31,32 @@ AccountRouter = new Class({
     ':type/': 'account',
     ':type/:id/': 'account'
   },
+  viewClass: AccountView,
+  root: function(args, data) {
+    return console.log('root');
+  },
   account: function(args, data) {
-    this.setView(AccountView);
     return console.log('account ', args.type, args.id);
   },
   channel: function(args, data) {
-    return console.log('channel ', args.id);
+    return this.initSubView(ChannelView, this.view.refs.accountBody);
   },
   user: function(args, data) {
-    return console.log('user ', args.id);
+    return this.initSubView(UserView, this.view.refs.accountBody);
   }
 });
 
 PageRouter = new Class({
   Extends: Router,
-  options: {
-    element: null
-  },
   routes: {
     ':page/': 'page',
     ':page/:section/': 'page'
   },
+  viewClass: PageView,
   page: function(args, data) {
     var pageId, section;
     pageId = args.page;
     section = args.section || 'priority';
-    this.setView(PageView);
     this.view.setPage(pageId);
     return this.view.getSection(section);
   }

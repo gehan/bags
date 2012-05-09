@@ -3,7 +3,6 @@ AppView = new Class
 
     template: 'base'
 
-
 PageView = new Class
     Extends: View
 
@@ -65,5 +64,15 @@ ItemView = new Class
 
     textClicked: ->
         console.log 'hello there ', @model.toJSON()
+
+UserView = new Class
+    Extends: View
+
+    template: 'user'
+
+ChannelView = new Class
+    Extends: View
+
+    template: 'channel'
 
 
