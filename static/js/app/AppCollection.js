@@ -4,7 +4,7 @@ var ItemCollection;
 ItemCollection = new Class({
   Extends: Collection,
   model: Model,
-  url: '/get-page/{pageId}/{section}/',
+  url: '/page/{pageId}/{section}/',
   fetch: function(options) {
     return this.parent({
       url: this.url.substitute(options)

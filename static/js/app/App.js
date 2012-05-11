@@ -54,6 +54,7 @@ PageRouter = new Class({
     var pageId, section;
     pageId = args.page;
     section = args.section || 'priority';
+    console.log(section);
     this.view.setPage(pageId);
     return this.view.getSection(section);
   }

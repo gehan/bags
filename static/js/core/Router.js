@@ -6,44 +6,91 @@
   reSplat = "\\*(\\w+)";
   reCombine = new RegExp("" + reParam + "|" + reSplat, 'g');
   return window.Router = new Class({
-    Binds: ['startRoute'],
     Implements: [Options, Events],
-    _replaceRegex: {
-      "([^\/]+)": new RegExp(reParam, 'g'),
-      "(.*)": new RegExp(reSplat, 'g')
-    },
+    Binds: ['_startRoute', '_getHtml4AtRoot'],
     routes: {},
-    _parsedRoutes: [],
-    subRouter: null,
     viewClass: null,
     options: {
+      forceHTML4ToRoot: true,
       el: null
     },
     initialize: function(options) {
       this.setOptions(options);
       this._parseRoutes();
-      if (this.viewClass) {
+      if (this.viewClass != null) {
         this._initView();
       }
       return this;
     },
     attach: function() {
-      window.addEvent('statechange', this.startRoute);
+      if (this.options.forceHTML4ToRoot && History.emulated.pushState) {
+        window.addEvent('statechange', this._getHtml4AtRoot);
+      }
+      window.addEvent('statechange', this._startRoute);
+      this._startRoute();
       return this;
     },
     detach: function() {
-      return window.removeEvent('statechange', this.startRoute);
+      return window.removeEvent('statechange', this._startRoute);
     },
-    startRoute: function(path, data) {
+    initSubView: function(viewClass, el) {
+      if (!instanceOf(this.subView, viewClass)) {
+        if (!(el != null)) {
+          throw "Cannot init sub view, no el passed in";
+        }
+        if (this.subView != null) {
+          this.subView.destroy();
+        }
+        this.subView = new viewClass();
+        return this.subView.inject(el);
+      }
+    },
+    getCurrentUri: function() {
+      return new URI(History.getState().url);
+    },
+    _subRouter: null,
+    _parsedRoutes: [],
+    _replaceRegex: {
+      "([^\/]+)": new RegExp(reParam, 'g'),
+      "(.*)": new RegExp(reSplat, 'g')
+    },
+    _startRoute: function(path, data) {
       var uri;
-      uri = this.parseURI();
+      uri = this.getCurrentUri();
       if (!(path != null)) {
         path = uri.get('directory') + uri.get('file');
       }
       if (!(data != null)) {
         data = uri.getData();
       }
-      return this.findRoute(path, data);
+      return this._findRoute(path, data);
+    },
+    _subRoute: function(routerClass, args, data, options) {
+      var path;
+      if (!instanceOf(this._subRouter, routerClass)) {
+        if (this._subRouter != null) {
+          this._subRouter.destroy();
+        }
+        this._subRouter = new routerClass(options);
+      }
+      if (Object.getLength(args) !== 1) {
+        throw "Bad subroute, include one splat only";
+      }
+      path = Object.values(args)[0];
+      return this._subRouter._startRoute(path);
+    },
+    _getHtml4AtRoot: function() {
+      var hash, href, u, uri;
+      u = new URI();
+      if (u.get('directory') + u.get('file') !== '/') {
+        uri = this.getCurrentUri();
+        hash = uri.get('directory') + uri.get('file');
+        if (uri.get('query')) {
+          hash = "" + hash + "?" + (uri.get('query'));
+        }
+        href = "/#" + hash;
+        return location.href = href;
+      }
     },
     _parseRoutes: function(routes) {
       var funcName, paramNames, route, routeRegEx, _results;
@@ -76,15 +123,7 @@
       }
       return params;
     },
-    parseURI: function() {
-      var path;
-      path = History.getState().hash;
-      if (path.substr(0, 1) !== '/') {
-        path = "/" + path;
-      }
-      return new URI(path);
-    },
-    findRoute: function(path, data) {
+    _findRoute: function(path, data) {
       var args, funcName, match, paramNames, regEx, routerClass, _i, _len, _ref, _ref1;
       if (path.substr(0, 1) === '/') {
         path = path.substr(1);
@@ -97,7 +136,7 @@
           args = match.slice(1).associate(paramNames);
           if (typeOf(funcName) === 'function') {
             routerClass = funcName();
-            return this.subRoute(routerClass, args, data, {
+            return this._subRoute(routerClass, args, data, {
               el: this.subRouteEl()
             });
           } else {
@@ -109,20 +148,6 @@
           }
         }
       }
-    },
-    subRoute: function(routerClass, args, data, options) {
-      var path;
-      if (!instanceOf(this.subRouter, routerClass)) {
-        if (this.subRouter != null) {
-          this.subRouter.destroy();
-        }
-        this.subRouter = new routerClass(options);
-      }
-      if (Object.getLength(args) !== 1) {
-        throw "Bad subroute, include one splat only";
-      }
-      path = Object.values(args)[0];
-      return this.subRouter.startRoute(path);
     },
     _initView: function() {
       if (!instanceOf(this.view, this.viewClass)) {
@@ -139,18 +164,6 @@
         this.view.destroy();
       }
       return this.options.el.empty();
-    },
-    initSubView: function(viewClass, el) {
-      if (!instanceOf(this.subView, viewClass)) {
-        if (!(el != null)) {
-          throw "Cannot init sub view, no el passed in";
-        }
-        if (this.subView != null) {
-          this.subView.destroy();
-        }
-        this.subView = new viewClass();
-        return this.subView.inject(el);
-      }
     },
     destroy: function() {
       this._destroyView();

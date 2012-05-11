@@ -14,11 +14,14 @@
     {% compressed_js 'init' %}
     {% compressed_js 'app' %}
     <script type="text/javascript">
+        var Globals = {}
         document.addEvent('domready', function(){
+            {% if data %}
+            Globals._preload = {{ data|safe }};
+            {% endif %}
             var app = new Application({
                 el: $(document.body)
             }).attach();
-            app.startRoute();
         });
     </script>
 </head>

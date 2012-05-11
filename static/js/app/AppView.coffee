@@ -5,6 +5,7 @@ AppView = new Class
 
 PageView = new Class
     Extends: View
+    Binds: ['renderCollection', 'addOne', 'removeOne']
 
     template: 'page'
 
@@ -15,11 +16,13 @@ PageView = new Class
         @parent.apply @, arguments
 
         # Items collection
-        @collection = new ItemCollection [],
-            onAdd: (model) => @addOne model
-            onRemove: (model) => @removeOne model
-            onReset: (collection) => @add collection
+        @collection = new ItemCollection Globals._preload or [],
+            onAdd: @addOne
+            onRemove: @removeOne
+            onReset: @renderCollection
 
+        if Globals._preload
+            @renderCollection()
         @
 
     setPage: (pageId) ->
@@ -28,17 +31,20 @@ PageView = new Class
             @rerender 'leftNav'
 
     getSection: (section) ->
+        # cancel existing fetch
         @data.section = section
-        @_removeCollectionItems()
-        @collection.fetch @data
+        if Globals._preload?
+            delete Globals._preload
+        else
+            @_removeCollectionItems()
+            @collection.fetch @data
 
     addOne: (model) ->
         $(new ItemView model: model).inject @refs.items
 
     removeOne: (model) ->
 
-    add: (collection) ->
-        # Not right here, remove existing elements properly
+    renderCollection: (collection=@collection) ->
         @addOne model for model in collection
 
     _removeCollectionItems: ->

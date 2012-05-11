@@ -49,6 +49,7 @@ PageRouter = new Class
     page: (args, data) ->
         pageId = args.page
         section = args.section or 'priority'
+        console.log section
         @view.setPage pageId
         @view.getSection section
 

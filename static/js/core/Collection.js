@@ -89,7 +89,10 @@ Collection = new Class({
     if (options == null) {
       options = {};
     }
-    return new Request.JSON({
+    if (this.request != null) {
+      this.request.cancel();
+    }
+    return this.request = new Request.JSON({
       url: options.url || this.url,
       method: 'get',
       dontTrack: true,

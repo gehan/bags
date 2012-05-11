@@ -8,24 +8,21 @@ AppView = new Class({
 
 PageView = new Class({
   Extends: View,
+  Binds: ['renderCollection', 'addOne', 'removeOne'],
   template: 'page',
   data: {
     pageId: null
   },
   initialize: function() {
-    var _this = this;
     this.parent.apply(this, arguments);
-    this.collection = new ItemCollection([], {
-      onAdd: function(model) {
-        return _this.addOne(model);
-      },
-      onRemove: function(model) {
-        return _this.removeOne(model);
-      },
-      onReset: function(collection) {
-        return _this.add(collection);
-      }
+    this.collection = new ItemCollection(Globals._preload || [], {
+      onAdd: this.addOne,
+      onRemove: this.removeOne,
+      onReset: this.renderCollection
     });
+    if (Globals._preload) {
+      this.renderCollection();
+    }
     return this;
   },
   setPage: function(pageId) {
@@ -36,8 +33,12 @@ PageView = new Class({
   },
   getSection: function(section) {
     this.data.section = section;
-    this._removeCollectionItems();
-    return this.collection.fetch(this.data);
+    if (Globals._preload != null) {
+      return delete Globals._preload;
+    } else {
+      this._removeCollectionItems();
+      return this.collection.fetch(this.data);
+    }
   },
   addOne: function(model) {
     return $(new ItemView({
@@ -45,8 +46,11 @@ PageView = new Class({
     })).inject(this.refs.items);
   },
   removeOne: function(model) {},
-  add: function(collection) {
+  renderCollection: function(collection) {
     var model, _i, _len, _results;
+    if (collection == null) {
+      collection = this.collection;
+    }
     _results = [];
     for (_i = 0, _len = collection.length; _i < _len; _i++) {
       model = collection[_i];

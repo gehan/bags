@@ -4,7 +4,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('bags.views',
-    url(r'^get-page/(?P<page_id>\d+)/(?P<section>\w+)/', 'page', name='page'),
+
+    url(r'^page/(?P<page_id>\d+)/((?P<section>\w+)/)?', 'page', name='page'),
 
     url(r'^', 'home', name='home'),
 

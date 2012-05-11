@@ -41,7 +41,9 @@ Collection = new Class
         @add model, options
 
     fetch: (options={}) ->
-        new Request.JSON(
+        # Don't double up requests, cancel existing
+        @request.cancel() if @request?
+        @request = new Request.JSON(
             url: options.url or @url
             method: 'get'
             dontTrack: true

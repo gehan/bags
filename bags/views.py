@@ -7,6 +7,7 @@ def home(request):
     return render_to_response('bare.html')
 
 def page(request, page_id, section):
+    section = section or 'priority'
     data = [
         {'id': 1, 'text': 'Hello'+page_id, 'description': section+'1'},
         {'id': 2, 'text': 'Hello'+page_id, 'description': section+'2'},
@@ -14,4 +15,10 @@ def page(request, page_id, section):
         {'id': 4, 'text': 'Hello'+page_id, 'description': section+'4'},
     ]
     str_json = json.dumps(data)
-    return HttpResponse(str_json, mimetype='application/json')
+
+    # Differentiate between ajax and normal request, can bootstrap normal
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        return HttpResponse(str_json, mimetype='application/json')
+    else:
+        return render_to_response('bare.html', {'data': str_json})
+
