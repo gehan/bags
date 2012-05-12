@@ -3,10 +3,10 @@
 (function() {
   var compiled, content, name, templates, _results;
   templates = {
-    base: "<body>\n    <header>\n        <a href=\"/page/1/\" data-trigger=\"push\">Page 1</a>\n        <a href=\"/page/2/\" data-trigger=\"push\">Page 2</a>\n        <a href=\"/account/\" data-trigger=\"push\">Account 1</a>\n    </header>\n    <div ref=\"body\">\n    </div>\n</body>",
-    page: "<nav ref=\"leftNav\">\n    {>pageLeftNav/}\n</nav>\n<p>\n    Hello there i'm page {pageId} section {unread}\n</p>\n<ul ref=\"items\">\n</ul>",
+    base: "<body>\n    <header class=\"main\">\n        <a href=\"/page/1/\" data-trigger=\"push\">Page 1</a>\n        <a href=\"/page/2/\" data-trigger=\"push\">Page 2</a>\n        <a href=\"/account/\" data-trigger=\"push\">Account 1</a>\n    </header>\n    <div ref=\"body\" class=\"body\">\n    </div>\n</body>",
+    page: "<nav ref=\"leftNav\" class=\"left\">\n    {>pageLeftNav/}\n</nav>\n<div class=\"page-body\">\n    <p>\n        Hello there i'm page {pageId} section {unread}\n    </p>\n    <ul ref=\"items\">\n    </ul>\n</div>",
     pageLeftNav: "<a href=\"/page/{pageId}/unread/\" data-trigger=\"push\">Subsection 1</a>\n<a href=\"/page/{pageId}/priority/\" data-trigger=\"push\">SubSection 2</a>\n<a href=\"/page/{pageId}/assigned/\" data-trigger=\"push\">SubSection 3</a>",
-    account: "<nav>\n    <a href=\"/account/user/\" data-trigger=\"push\">User</a>\n    <a href=\"/account/channel/\" data-trigger=\"push\">Channel face</a>\n</nav>\n<p ref=\"accountBody\">\n    Hello there i'm an account\n</p>",
+    account: "<nav class=\"left\">\n    <a href=\"/account/user/\" data-trigger=\"push\">User</a>\n    <a href=\"/account/channel/\" data-trigger=\"push\">Channel face</a>\n</nav>\n<div class=\"page-body\" ref=\"body\">\n    <p>\n        Hello there i'm an account\n    </p>\n    <p ref=\"accountBody\">\n    </p>\n</div>",
     user: "<p>\n    I like user innit\n</p>",
     channel: "<p>\n    I like channel innit\n</p>",
     item: "<li>{id} - <em>{text}</em> - {description}</li>",

@@ -6,6 +6,7 @@ Model = new Class
 
     _types: {}
     _defaults: {}
+    _idField: "id"
 
     options:
         url: "/item/"
@@ -31,6 +32,8 @@ Model = new Class
         else
             # Else set normally
             @_attributes[key] = @_makeValue key, value
+            if key == @_idField
+                @id = value
         if not options.silent
             @fireEvent "change", [key, value]
             @fireEvent "change:#{key}", [value]
@@ -78,6 +81,22 @@ Model = new Class
             def.call @
         else
             def
+
+    fetch: (options={}) ->
+        @request.cancel() if @request?
+        @request = new Request.JSON(
+            url: "#{options.url or @url}#{@id}/"
+            method: 'get'
+            onSuccess: (response) => @_fetchDone response, options
+        ).send()
+
+    _fetchDone: (response, options={}) ->
+        model = @parseResponse response
+        @setMany model, silent: true
+        @fireEvent 'fetch', [true]
+
+    parseResponse: (response) ->
+        response
 
     save: ->
         console.log 'save friend'

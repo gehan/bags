@@ -26,6 +26,7 @@ AccountRouter = new Class
     viewClass: AccountView
 
     root: (args, data) ->
+        @view.render()
         console.log 'root'
 
     account: (args, data) ->

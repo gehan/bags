@@ -8,6 +8,9 @@ View = new Class
     events: {}
     template: null
 
+    options:
+        injectTo: null
+
     initialize: (options={}) ->
         @loadAllTemplates()
         for key in ['collection', 'model', 'el', 'template']
@@ -18,6 +21,8 @@ View = new Class
             @model.addEvent 'remove', => @destroy()
         @setOptions options
         @render()
+        if @options.injectTo?
+            @inject @options.injectTo
         @
 
     ###
@@ -27,13 +32,27 @@ View = new Class
     render: (data) ->
         el = @_render data
         el.store 'obj', @
-        @el = if @el then el.replaces @el else el
+
+        if not @el?
+            @el = el
+        else
+            @_replaceCurrentEl el
 
         Object.merge @refs, @getRefs(el)
-
-        @delegateEvents el, @events
+        @delegateEvents @el, @events
         @fireEvent 'render'
         el
+
+    _replaceCurrentEl: (el) ->
+        # Direct replace if single element
+        if not instanceOf el, Array
+            @el = el.replaces @el
+
+        # If different elements then replace loop,
+        # being careful to preserve the references
+        else
+            @el.each (currentEl, idx) =>
+                @el[idx] = el[idx].replaces currentEl
 
     ###
     Use to rerender a template partially, can be used to preserve
@@ -55,7 +74,17 @@ View = new Class
     inject: ->
         el = $ @
         el.inject.apply el, arguments
-        document.fireEvent 'domupdated'
+        if @options.logInjects or true
+            injectTo = arguments[0]
+            inDom = false
+            parent = injectTo
+            if parent == document.body
+                inDom = true
+            while parent = parent.getParent()
+                inDom = true if parent == document.body
+            console.debug 'inject ', el, ' into ', arguments[0], ' indom ', inDom
+
+        document.fireEvent 'domupdated', [el]
 
     parseForDisplay: ->
         if @model?

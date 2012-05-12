@@ -7,7 +7,16 @@ def home(request):
     return render_to_response('bare.html')
 
 def page(request, page_id, section):
+    if section is None and \
+            request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        str_json = json.dumps({
+            'id': page_id,
+            'name': "Page %s face" % page_id
+        })
+        return HttpResponse(str_json, mimetype='application/json')
+
     section = section or 'priority'
+
     data = [
         {'id': 1, 'text': 'Hello'+page_id, 'description': section+'1'},
         {'id': 2, 'text': 'Hello'+page_id, 'description': section+'2'},

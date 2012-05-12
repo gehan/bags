@@ -7,6 +7,7 @@ Model = new Class({
   collections: {},
   _types: {},
   _defaults: {},
+  _idField: "id",
   options: {
     url: "/item/"
   },
@@ -48,6 +49,9 @@ Model = new Class({
       this._addCollection(key, value);
     } else {
       this._attributes[key] = this._makeValue(key, value);
+      if (key === this._idField) {
+        this.id = value;
+      }
     }
     if (!options.silent) {
       this.fireEvent("change", [key, value]);
@@ -109,6 +113,36 @@ Model = new Class({
     } else {
       return def;
     }
+  },
+  fetch: function(options) {
+    var _this = this;
+    if (options == null) {
+      options = {};
+    }
+    if (this.request != null) {
+      this.request.cancel();
+    }
+    return this.request = new Request.JSON({
+      url: "" + (options.url || this.url) + this.id + "/",
+      method: 'get',
+      onSuccess: function(response) {
+        return _this._fetchDone(response, options);
+      }
+    }).send();
+  },
+  _fetchDone: function(response, options) {
+    var model;
+    if (options == null) {
+      options = {};
+    }
+    model = this.parseResponse(response);
+    this.setMany(model, {
+      silent: true
+    });
+    return this.fireEvent('fetch', [true]);
+  },
+  parseResponse: function(response) {
+    return response;
   },
   save: function() {
     return console.log('save friend');

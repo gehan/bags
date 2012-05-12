@@ -95,7 +95,6 @@ Collection = new Class({
     return this.request = new Request.JSON({
       url: options.url || this.url,
       method: 'get',
-      dontTrack: true,
       onSuccess: function(response) {
         return _this._fetchDone(response, options);
       }

@@ -30,6 +30,7 @@ AccountRouter = new Class({
   },
   viewClass: AccountView,
   root: function(args, data) {
+    this.view.render();
     return console.log('root');
   },
   account: function(args, data) {

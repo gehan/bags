@@ -2,25 +2,27 @@ do ->
     templates =
         base: """
         <body>
-            <header>
+            <header class="main">
                 <a href="/page/1/" data-trigger="push">Page 1</a>
                 <a href="/page/2/" data-trigger="push">Page 2</a>
                 <a href="/account/" data-trigger="push">Account 1</a>
             </header>
-            <div ref="body">
+            <div ref="body" class="body">
             </div>
         </body>
         """
 
         page: """
-        <nav ref="leftNav">
+        <nav ref="leftNav" class="left">
             {>pageLeftNav/}
         </nav>
-        <p>
-            Hello there i'm page {pageId} section {unread}
-        </p>
-        <ul ref="items">
-        </ul>
+        <div class="page-body">
+            <p>
+                Hello there i'm page {pageId} section {unread}
+            </p>
+            <ul ref="items">
+            </ul>
+        </div>
         """
 
         pageLeftNav: """
@@ -30,13 +32,17 @@ do ->
         """
 
         account: """
-        <nav>
+        <nav class="left">
             <a href="/account/user/" data-trigger="push">User</a>
             <a href="/account/channel/" data-trigger="push">Channel face</a>
         </nav>
-        <p ref="accountBody">
-            Hello there i'm an account
-        </p>
+        <div class="page-body" ref="body">
+            <p>
+                Hello there i'm an account
+            </p>
+            <p ref="accountBody">
+            </p>
+        </div>
         """
 
         user: """

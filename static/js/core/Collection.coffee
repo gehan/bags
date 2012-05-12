@@ -46,7 +46,6 @@ Collection = new Class
         @request = new Request.JSON(
             url: options.url or @url
             method: 'get'
-            dontTrack: true
             onSuccess: (response) => @_fetchDone response, options
         ).send()
 

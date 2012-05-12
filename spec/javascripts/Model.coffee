@@ -95,3 +95,22 @@ do ->
 
             Model.implement _types: null
             Model.implement _types: {}
+
+        it 'sets id attribute when passed in', ->
+            m = new Model id: 12
+
+            expect(m.get 'id').toBe(12)
+            expect(m.id).toBe(12)
+
+        it 'sets custtom id attribute when passed in', ->
+            Model.implement
+                _idField: "_id"
+
+            m = new Model _id: 12
+
+            expect(m.get '_id').toBe(12)
+            expect(m.id).toBe(12)
+
+            Model.implement
+                _idField: "id"
+

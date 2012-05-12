@@ -3,6 +3,8 @@ PIPELINE_JS = {
         'source_filenames': (
             "js/lib/mootools-core-1.4.5.js",
             "js/lib/mootools-more-1.4.0.1.js",
+            "js/lib/Element.Fragment.js",
+            "js/lib/Element.Fragment.Overrides.js",
             "js/lib/history.js",
             "js/lib/history.html4.js",
             "js/lib/history.adapter.mootools.js",
@@ -31,6 +33,7 @@ PIPELINE_JS = {
         'source_filenames': (
             "js/app/AppView.js",
             "js/app/App.js",
+            "js/app/AppModel.js",
             "js/app/AppCollection.js",
             "js/core/utils/behavior.js",
             "js/templates/base.js",

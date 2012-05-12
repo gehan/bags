@@ -26,9 +26,16 @@ PageView = new Class
         @
 
     setPage: (pageId) ->
+        if not @pageModel?
+            @pageModel = new PageModel {},
+                onFetch: =>
+                    @data.page = @pageModel.toJSON()
+                    @rerender 'leftNav'
+
         if @data.pageId isnt pageId
             @data.pageId = pageId
-            @rerender 'leftNav'
+            @pageModel.set 'id', pageId
+            @pageModel.fetch()
 
     getSection: (section) ->
         # cancel existing fetch
@@ -39,26 +46,37 @@ PageView = new Class
             @_removeCollectionItems()
             @collection.fetch @data
 
-    addOne: (model) ->
-        $(new ItemView model: model).inject @refs.items
+    addOne: (model, injectTo=@refs.items) ->
+        (new ItemView model: model).inject injectTo
 
     removeOne: (model) ->
 
     renderCollection: (collection=@collection) ->
-        @addOne model for model in collection
+        @lastModels.invoke 'remove' if @lastModels?
+        fragment = document.createDocumentFragment()
+        @addOne model, fragment for model in collection
+        console.log fragment
+        @refs.items.appendChild fragment
 
     _removeCollectionItems: ->
-        models = @collection.clone()
-        models.invoke 'remove'
+        @lastModels = @collection.clone()
+        #models.invoke 'remove'
 
     destroy: ->
+        # Stop model/collection fetches?
+        #
         @_removeCollectionItems()
         @parent()
 
 AccountView = new Class
     Extends: View
 
+    events:
+        "click:p": "log"
+
     template: 'account'
+
+    log: -> console.log 'tits'
 
 ItemView = new Class
     Extends: View

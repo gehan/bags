@@ -97,7 +97,7 @@
         _types: {}
       });
     });
-    return it('inits type within arrays correctly', function() {
+    it('inits type within arrays correctly', function() {
       Model.implement({
         _types: {
           aDate: 'Date'
@@ -113,6 +113,26 @@
       });
       return Model.implement({
         _types: {}
+      });
+    });
+    it('sets id attribute when passed in', function() {
+      m = new Model({
+        id: 12
+      });
+      expect(m.get('id')).toBe(12);
+      return expect(m.id).toBe(12);
+    });
+    return it('sets custtom id attribute when passed in', function() {
+      Model.implement({
+        _idField: "_id"
+      });
+      m = new Model({
+        _id: 12
+      });
+      expect(m.get('_id')).toBe(12);
+      expect(m.id).toBe(12);
+      return Model.implement({
+        _idField: "id"
       });
     });
   });

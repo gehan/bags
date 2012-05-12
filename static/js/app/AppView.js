@@ -26,9 +26,19 @@ PageView = new Class({
     return this;
   },
   setPage: function(pageId) {
+    var _this = this;
+    if (!(this.pageModel != null)) {
+      this.pageModel = new PageModel({}, {
+        onFetch: function() {
+          _this.data.page = _this.pageModel.toJSON();
+          return _this.rerender('leftNav');
+        }
+      });
+    }
     if (this.data.pageId !== pageId) {
       this.data.pageId = pageId;
-      return this.rerender('leftNav');
+      this.pageModel.set('id', pageId);
+      return this.pageModel.fetch();
     }
   },
   getSection: function(section) {
@@ -40,28 +50,33 @@ PageView = new Class({
       return this.collection.fetch(this.data);
     }
   },
-  addOne: function(model) {
-    return $(new ItemView({
+  addOne: function(model, injectTo) {
+    if (injectTo == null) {
+      injectTo = this.refs.items;
+    }
+    return (new ItemView({
       model: model
-    })).inject(this.refs.items);
+    })).inject(injectTo);
   },
   removeOne: function(model) {},
   renderCollection: function(collection) {
-    var model, _i, _len, _results;
+    var fragment, model, _i, _len;
     if (collection == null) {
       collection = this.collection;
     }
-    _results = [];
+    if (this.lastModels != null) {
+      this.lastModels.invoke('remove');
+    }
+    fragment = document.createDocumentFragment();
     for (_i = 0, _len = collection.length; _i < _len; _i++) {
       model = collection[_i];
-      _results.push(this.addOne(model));
+      this.addOne(model, fragment);
     }
-    return _results;
+    console.log(fragment);
+    return this.refs.items.appendChild(fragment);
   },
   _removeCollectionItems: function() {
-    var models;
-    models = this.collection.clone();
-    return models.invoke('remove');
+    return this.lastModels = this.collection.clone();
   },
   destroy: function() {
     this._removeCollectionItems();
@@ -71,7 +86,13 @@ PageView = new Class({
 
 AccountView = new Class({
   Extends: View,
-  template: 'account'
+  events: {
+    "click:p": "log"
+  },
+  template: 'account',
+  log: function() {
+    return console.log('tits');
+  }
 });
 
 ItemView = new Class({

@@ -8,6 +8,9 @@ View = new Class({
   el: null,
   events: {},
   template: null,
+  options: {
+    injectTo: null
+  },
   initialize: function(options) {
     var key, _i, _len, _ref,
       _this = this;
@@ -30,6 +33,9 @@ View = new Class({
     }
     this.setOptions(options);
     this.render();
+    if (this.options.injectTo != null) {
+      this.inject(this.options.injectTo);
+    }
     return this;
   },
   /*
@@ -41,11 +47,25 @@ View = new Class({
     var el;
     el = this._render(data);
     el.store('obj', this);
-    this.el = this.el ? el.replaces(this.el) : el;
+    if (!(this.el != null)) {
+      this.el = el;
+    } else {
+      this._replaceCurrentEl(el);
+    }
     Object.merge(this.refs, this.getRefs(el));
-    this.delegateEvents(el, this.events);
+    this.delegateEvents(this.el, this.events);
     this.fireEvent('render');
     return el;
+  },
+  _replaceCurrentEl: function(el) {
+    var _this = this;
+    if (!instanceOf(el, Array)) {
+      return this.el = el.replaces(this.el);
+    } else {
+      return this.el.each(function(currentEl, idx) {
+        return _this.el[idx] = el[idx].replaces(currentEl);
+      });
+    }
   },
   /*
       Use to rerender a template partially, can be used to preserve
@@ -75,10 +95,24 @@ View = new Class({
     return el = this.renderTemplate(this.template, data);
   },
   inject: function() {
-    var el;
+    var el, inDom, injectTo, parent;
     el = $(this);
     el.inject.apply(el, arguments);
-    return document.fireEvent('domupdated');
+    if (this.options.logInjects || true) {
+      injectTo = arguments[0];
+      inDom = false;
+      parent = injectTo;
+      if (parent === document.body) {
+        inDom = true;
+      }
+      while (parent = parent.getParent()) {
+        if (parent === document.body) {
+          inDom = true;
+        }
+      }
+      console.debug('inject ', el, ' into ', arguments[0], ' indom ', inDom);
+    }
+    return document.fireEvent('domupdated', [el]);
   },
   parseForDisplay: function() {
     if (this.model != null) {

@@ -31,9 +31,17 @@ do ->
         # Routing can be passed off to a sub router by using a
         # route with one splat, which contains the path to be
         # sub-routed, and a function returning the class object.
-        # A function is used to get around import order.
+        #
+        # If you are using a view class then you can also pass
+        # a container element to this sub router.
+        #
+        # Functions ared used to get around import order and
+        # referencing problems
         # e.g.
-        #   "route/this/*path": -> SubRouterClass
+        #   routes:
+        #       "route/this/*path": -> SubRouterClass
+        #
+        #   subRouteEl: -> @view.refs.body
         #
         routes: {}
 
@@ -99,7 +107,8 @@ do ->
                 if not el?
                     throw "Cannot init sub view, no el passed in"
                 @subView.destroy() if @subView?
-                @subView = new viewClass()
+                @subView = new viewClass
+                el.empty()
                 @subView.inject el
 
         # Helper method to pull out the current URI as a MooTools object,
@@ -108,6 +117,7 @@ do ->
             new URI History.getState().url
 
 
+        #################
         # Private methods
 
         _subRouter: null
@@ -188,8 +198,10 @@ do ->
                 if not @options.el?
                     throw "Cannot init view, no el specified"
                 @_destroyView()
-                @view = new @viewClass()
-                @view.inject @options.el
+                className = $H(window).keyOf(@viewClass)
+                console.debug 'init view ', className
+                @view = new @viewClass
+                    injectTo: @options.el
 
         _destroyView: ->
             @view.destroy() if @view?

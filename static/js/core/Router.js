@@ -41,7 +41,8 @@
         if (this.subView != null) {
           this.subView.destroy();
         }
-        this.subView = new viewClass();
+        this.subView = new viewClass;
+        el.empty();
         return this.subView.inject(el);
       }
     },
@@ -150,13 +151,17 @@
       }
     },
     _initView: function() {
+      var className;
       if (!instanceOf(this.view, this.viewClass)) {
         if (!(this.options.el != null)) {
           throw "Cannot init view, no el specified";
         }
         this._destroyView();
-        this.view = new this.viewClass();
-        return this.view.inject(this.options.el);
+        className = $H(window).keyOf(this.viewClass);
+        console.debug('init view ', className);
+        return this.view = new this.viewClass({
+          injectTo: this.options.el
+        });
       }
     },
     _destroyView: function() {
