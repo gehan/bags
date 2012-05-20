@@ -16,19 +16,12 @@ define ['core/Router', 'app/views/App'], (Router, AppView) ->
             console.log 'app root'
 
         pageRouter: (args, data) ->
-            curl(
-                ['app/routers/PageRouter'],
-                (PageRouter) =>
-                    @_subRoute PageRouter, args, data,
-                            el: @subRouteEl()
-            )
+            curl ['app/routers/Page'], (PageRouter) =>
+                @_subRoute PageRouter, args, data,
+                    el: @subRouteEl()
 
         accountRouter: (args, data) ->
-            curl(
-                ['app/routers/AccountRouter'],
-                (AccountRouter) =>
-                    @_subRoute AccountRouter, args, data,
-                            el: @subRouteEl()
-            )
-
+            curl ['app/routers/Account'], (AccountRouter) =>
+                @_subRoute AccountRouter, args, data,
+                    el: @subRouteEl()
 

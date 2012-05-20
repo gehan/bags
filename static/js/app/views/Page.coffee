@@ -1,4 +1,4 @@
-define ['templates/Page', 'core/View', 'app/AppCollection', 'app/AppModel', 'app/views/ItemView'], (tpl, View, ItemCollection, PageModel, ItemView) ->
+define ['templates/Page', 'core/View', 'app/Collection', 'app/Model', 'app/views/Item'], (tpl, View, ItemCollection, PageModel, ItemView) ->
 
     new Class
         Extends: View

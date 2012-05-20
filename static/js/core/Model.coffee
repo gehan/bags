@@ -57,7 +57,7 @@ define ['core/Collection'], (Collection) ->
 
         _addCollection: (key, value, options={}) ->
             collectionClass = @_getType key
-            collection = new collectionClass @, value
+            collection = new collectionClass value, parentModel: @
             @collections[key] = collection
             @fireEvent 'addCollection', [key, collection]
 

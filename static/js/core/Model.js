@@ -82,7 +82,9 @@ define(['core/Collection'], function(Collection) {
         options = {};
       }
       collectionClass = this._getType(key);
-      collection = new collectionClass(this, value);
+      collection = new collectionClass(value, {
+        parentModel: this
+      });
       this.collections[key] = collection;
       return this.fireEvent('addCollection', [key, collection]);
     },

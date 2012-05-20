@@ -20,7 +20,7 @@ define(['core/Router', 'app/views/App'], function(Router, AppView) {
     },
     pageRouter: function(args, data) {
       var _this = this;
-      return curl(['app/routers/PageRouter'], function(PageRouter) {
+      return curl(['app/routers/Page'], function(PageRouter) {
         return _this._subRoute(PageRouter, args, data, {
           el: _this.subRouteEl()
         });
@@ -28,7 +28,7 @@ define(['core/Router', 'app/views/App'], function(Router, AppView) {
     },
     accountRouter: function(args, data) {
       var _this = this;
-      return curl(['app/routers/AccountRouter'], function(AccountRouter) {
+      return curl(['app/routers/Account'], function(AccountRouter) {
         return _this._subRoute(AccountRouter, args, data, {
           el: _this.subRouteEl()
         });
