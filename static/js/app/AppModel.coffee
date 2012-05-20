@@ -1,4 +1,7 @@
-PageModel = new Class
-    Extends: Model
+define ['core/Model'], (Model) ->
 
-    url: '/page/'
+    new Class
+        Extends: Model
+
+        url: '/page/'
+

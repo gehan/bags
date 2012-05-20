@@ -1,9 +1,11 @@
-ItemCollection = new Class
-    Extends: Collection
+define ['core/Collection', 'core/Model'], (Collection, Model) ->
 
-    model: Model
-    url: '/page/{pageId}/{section}/'
+    new Class
+        Extends: Collection
 
-    fetch: (options) ->
-        @parent url: @url.substitute(options)
+        model: Model
+        url: '/page/{pageId}/{section}/'
+
+        fetch: (options) ->
+            @parent url: @url.substitute(options)
 

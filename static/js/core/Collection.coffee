@@ -1,68 +1,70 @@
-Collection = new Class
-    Extends: Array
-    Implements: [Options, Events]
+define  ->
 
-    _models: []
-    model: null
-    options: {}
-    url: null
+    new Class
+        Extends: Array
+        Implements: [Options, Events]
 
-    initialize: (models=[], options) ->
-        @setOptions options
-        for model in models
-            @add model, silent: true
-        @
+        _models: []
+        model: null
+        options: {}
+        url: null
 
-    add: (model, options={}) ->
-        if not @model? then throw new Error "Model not defined for collection"
-        if typeOf(model) == 'array'
-            @add(m, options) for m in model
-        else if instanceOf model, @model
-            @_add model
-            @fireEvent 'add', [model] if not options.silent
-        else
-            @create model, options
+        initialize: (models=[], options) ->
+            @setOptions options
+            for model in models
+                @add model, silent: true
+            @
 
-    _add: (model) ->
-        model.addEvent 'remove', (m) => @_remove(m, silent: true)
-        @push model
+        add: (model, options={}) ->
+            if not @model? then throw new Error "Model not defined for collection"
+            if typeOf(model) == 'array'
+                @add(m, options) for m in model
+            else if instanceOf model, @model
+                @_add model
+                @fireEvent 'add', [model] if not options.silent
+            else
+                @create model, options
 
-    reset: (models, options={}) ->
-        @_remove model, options while model = @pop()
-        @add models, silent: true
-        @fireEvent 'reset', [@] if not options.silent
+        _add: (model) ->
+            model.addEvent 'remove', (m) => @_remove(m, silent: true)
+            @push model
 
-    _remove: (model, options) ->
-        @erase model
-        @fireEvent 'remove', [model] if not options.silent
+        reset: (models, options={}) ->
+            @_remove model, options while model = @pop()
+            @add models, silent: true
+            @fireEvent 'reset', [@] if not options.silent
 
-    create: (attributes, options={}) ->
-        model = new @model attributes
-        @add model, options
+        _remove: (model, options) ->
+            @erase model
+            @fireEvent 'remove', [model] if not options.silent
 
-    fetch: (options={}) ->
-        # Don't double up requests, cancel existing
-        @request.cancel() if @request?
-        @request = new Request.JSON(
-            url: options.url or @url
-            method: 'get'
-            onSuccess: (response) => @_fetchDone response, options
-        ).send()
+        create: (attributes, options={}) ->
+            model = new @model attributes
+            @add model, options
 
-    _fetchDone: (response, options={}) ->
-        models = @parseResponse response
-        if options.add
-            @add models, options
-        else
-            @reset models, options
-        @fireEvent 'fetch', [true]
+        fetch: (options={}) ->
+            # Don't double up requests, cancel existing
+            @request.cancel() if @request?
+            @request = new Request.JSON(
+                url: options.url or @url
+                method: 'get'
+                onSuccess: (response) => @_fetchDone response, options
+            ).send()
 
-    sort: (comparator=@comparator) ->
-        @parent comparator
-        @fireEvent 'sort', @
+        _fetchDone: (response, options={}) ->
+            models = @parseResponse response
+            if options.add
+                @add models, options
+            else
+                @reset models, options
+            @fireEvent 'fetch', [true]
 
-    comparator: (a, b) ->
-        return a - b
+        sort: (comparator=@comparator) ->
+            @parent comparator
+            @fireEvent 'sort', @
 
-    parseResponse: (response) ->
-        return response
+        comparator: (a, b) ->
+            return a - b
+
+        parseResponse: (response) ->
+            return response

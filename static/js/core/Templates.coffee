@@ -2,99 +2,99 @@
 Class to allow convenient rendering of mustache templates
 Ideally used as a mixin to add this ability to classes but can be used as a standalone
 ###
-Templates = new Class
+define  ->
 
-    TEMPLATES: {}
-    refs: {}
-    templatesUrl: '/static/js/templates/'
+    new Class
+        TEMPLATES: {}
+        refs: {}
+        templatesUrl: '/static/js/templates/'
 
-    fetchTemplateBundle: (bundleName) ->
-        templateUrl = "#{@templatesUrl}#{bundleName}.js"
-        Asset.javascript templateUrl,
-            onLoad: ->
-                console.log 'gotTemplate'
+        fetchTemplateBundle: (bundleName) ->
+            templateUrl = "#{@templatesUrl}#{bundleName}.js"
+            Asset.javascript templateUrl,
+                onLoad: ->
+                    console.log 'gotTemplate'
 
-    # Loads all current dust templates into memory so they can be rendered
-    # This step is essential if partials are used anywhere are they are expected
-    # to be in the dust cache already when called
-    loadAllTemplates: ->
-        @_loadTemplate(k) for k,v of @TEMPLATES
-        @_loadTemplate(k) for k in $$('script[type=text/html]').get('template')
+        # Loads all current dust templates into memory so they can be rendered
+        # This step is essential if partials are used anywhere are they are expected
+        # to be in the dust cache already when called
+        loadAllTemplates: ->
+            @_loadTemplate(k) for k,v of @TEMPLATES
+            @_loadTemplate(k) for k in $$('script[type=text/html]').get('template')
 
-    # Render dust template
-    renderTemplate: (templateName, data={}, events=null) ->
-        rendered = @_renderDustTemplate templateName, data
-        els = Elements.from rendered
-        @delegateEvents els, events if events?
+        # Render dust template
+        renderTemplate: (templateName, data={}, events=null) ->
+            rendered = @_renderDustTemplate templateName, data
+            els = Elements.from rendered
+            @delegateEvents els, events if events?
 
-        if els.length == 1
-            els[0]
-        else
-            els
+            if els.length == 1
+                els[0]
+            else
+                els
 
-    # To make saving references to elements with the template easier if you add the property
-    # ref to the element then this will pull those references back into an object, e.g.
-    # <a href="/somewhere" ref="link">Link</a>
-    # refs = link: <reference to A Element>
-    getRefs: (els, ref=null) ->
-        refs = {}
-        for el in Array.from els
-            elRefName = el.get 'ref'
-            return el if ref and elRefName == ref
-            refs[elRefName] = el if elRefName
+        # To make saving references to elements with the template easier if you add the property
+        # ref to the element then this will pull those references back into an object, e.g.
+        # <a href="/somewhere" ref="link">Link</a>
+        # refs = link: <reference to A Element>
+        getRefs: (els, ref=null) ->
+            refs = {}
+            for el in Array.from els
+                elRefName = el.get 'ref'
+                return el if ref and elRefName == ref
+                refs[elRefName] = el if elRefName
 
-            for refEl in el.getElements "*[ref]"
-                refName = refEl.get 'ref'
-                return el if ref and refName == ref
+                for refEl in el.getElements "*[ref]"
+                    refName = refEl.get 'ref'
+                    return el if ref and refName == ref
 
-                refs[refName] = refEl
+                    refs[refName] = refEl
 
-        return refs
+            return refs
 
-    getRef: (el, ref) -> @getRefs el, ref
+        getRef: (el, ref) -> @getRefs el, ref
 
-    _renderDustTemplate: (templateName, data={}) ->
-        @_loadTemplate templateName
-        data = Object.clone data
-        data.let = data or 0
-        rendered = ""
-        dust.render(templateName, data, (err, out) ->
-            rendered = out
-        )
-        return rendered
+        _renderDustTemplate: (templateName, data={}) ->
+            @_loadTemplate templateName
+            data = Object.clone data
+            data.let = data or 0
+            rendered = ""
+            dust.render(templateName, data, (err, out) ->
+                rendered = out
+            )
+            return rendered
 
-    _loadTemplate: (templateName) ->
-        if not dust.cache[templateName]?
-            compiled = dust.compile @getTemplate(templateName), templateName
-            dust.loadSource compiled
+        _loadTemplate: (templateName) ->
+            if not dust.cache[templateName]?
+                compiled = dust.compile @getTemplate(templateName), templateName
+                dust.loadSource compiled
 
-    # Tries to find template in the following order of precedence:
-    # 1 - Within the current class in TEMPLATES, e.g. when using as mixin
-    # 2 - Within a JST script tag on the page
-    # The latter is inserted by using django-mustachejs tags. Compiles and returns
-    # if not already cached
-    # Templates should be stored as follows if using a JST script tag
-    # <script type="text/html" template="template-name">
-    # <div>{{somestuff}}</div>
-    # </script>
-    getTemplate: (templateName) ->
-        template = @TEMPLATES[templateName] if @TEMPLATES?
-        return template if template?
-        template = document.getElement "script[template=#{templateName}]"
-        return template.get('html') if template?
-        throw "Cannot find template #{templateName}"
+        # Tries to find template in the following order of precedence:
+        # 1 - Within the current class in TEMPLATES, e.g. when using as mixin
+        # 2 - Within a JST script tag on the page
+        # The latter is inserted by using django-mustachejs tags. Compiles and returns
+        # if not already cached
+        # Templates should be stored as follows if using a JST script tag
+        # <script type="text/html" template="template-name">
+        # <div>{{somestuff}}</div>
+        # </script>
+        getTemplate: (templateName) ->
+            template = @TEMPLATES[templateName] if @TEMPLATES?
+            return template if template?
+            template = document.getElement "script[template=#{templateName}]"
+            return template.get('html') if template?
+            throw "Cannot find template #{templateName}"
 
-    # Delegate events from this class
-    delegateEvents: (el, events) ->
-        for eventKey, fnName of events
-            boundFn = (fnName, event, target) ->
-                event.preventDefault()
-                @[fnName] event, target
-            boundFn = boundFn.bind @, fnName
-            @_addDelegatedEvent el, eventKey, boundFn
+        # Delegate events from this class
+        delegateEvents: (el, events) ->
+            for eventKey, fnName of events
+                boundFn = (fnName, event, target) ->
+                    event.preventDefault()
+                    @[fnName] event, target
+                boundFn = boundFn.bind @, fnName
+                @_addDelegatedEvent el, eventKey, boundFn
 
-    _addDelegatedEvent: (el, eventKey, fn) ->
-        eventKey = eventKey.split ":"
-        mtEvent = "#{eventKey[0]}:relay(#{eventKey[1]})"
-        el.addEvent mtEvent, fn
-
+        _addDelegatedEvent: (el, eventKey, fn) ->
+            eventKey = eventKey.split ":"
+            mtEvent = "#{eventKey[0]}:relay(#{eventKey[1]})"
+            el.addEvent mtEvent, fn

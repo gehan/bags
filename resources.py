@@ -3,6 +3,7 @@ PIPELINE_JS = {
         'source_filenames': (
             "js/lib/mootools-core-1.4.5.js",
             "js/lib/mootools-more-1.4.0.1.js",
+            "js/lib/curl.js",
             "js/lib/Element.Fragment.js",
             "js/lib/Element.Fragment.Overrides.js",
             "js/lib/history.js",
@@ -17,28 +18,6 @@ PIPELINE_JS = {
             "js/lib/dust-full-0.3.0.min.js",
         ),
         'output_filename': 'js/base_libs.js',
-    },
-    'init': {
-        'source_filenames': (
-            "js/core/Model.js",
-            "js/core/Collection.js",
-            "js/core/Templates.js",
-            "js/core/View.js",
-            "js/core/Router.js",
-            "js/core/dropdowns/InlineDropdown.js",
-        ),
-        'output_filename': 'js/init.js',
-    },
-    'app': {
-        'source_filenames': (
-            "js/app/AppView.js",
-            "js/app/App.js",
-            "js/app/AppModel.js",
-            "js/app/AppCollection.js",
-            "js/core/utils/behavior.js",
-            "js/templates/base.js",
-        ),
-        'output_filename': 'js/app.js',
     },
 }
 

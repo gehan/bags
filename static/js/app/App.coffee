@@ -1,56 +1,34 @@
-Application = new Class
-    Extends: Router
+define ['core/Router', 'app/views/App'], (Router, AppView) ->
 
-    routes:
-        'page/*path': -> PageRouter
-        'account/*path': -> AccountRouter
+    new Class
+        Extends: Router
 
-    viewClass: AppView
-    subRouteEl: -> @view.refs.body
+        routes:
+            '': 'root'
+            'page/*path': 'pageRouter'
+            'account/*path': 'accountRouter'
 
-AccountRouter = new Class
-    Extends: Router
+        viewClass: AppView
+        subRouteEl: -> @view.refs.body
 
-    routes:
-        '': 'root'
+        root: ->
+            @reset() if not @initialRoute
+            console.log 'app root'
 
-        'user/': 'user'
-        'user/:id/': 'user'
+        pageRouter: (args, data) ->
+            curl(
+                ['app/routers/PageRouter'],
+                (PageRouter) =>
+                    @_subRoute PageRouter, args, data,
+                            el: @subRouteEl()
+            )
 
-        'channel/': 'channel'
-        'channel/:id/': 'channel'
+        accountRouter: (args, data) ->
+            curl(
+                ['app/routers/AccountRouter'],
+                (AccountRouter) =>
+                    @_subRoute AccountRouter, args, data,
+                            el: @subRouteEl()
+            )
 
-        ':type/': 'account'
-        ':type/:id/': 'account'
-
-    viewClass: AccountView
-
-    root: (args, data) ->
-        @view.render()
-        console.log 'root'
-
-    account: (args, data) ->
-        console.log 'account ', args.type, args.id
-
-    channel: (args, data) ->
-        @initSubView ChannelView, @view.refs.accountBody
-
-    user: (args, data) ->
-        @initSubView UserView, @view.refs.accountBody
-
-PageRouter = new Class
-    Extends: Router
-
-    routes:
-        ':page/': 'page'
-        ':page/:section/': 'page'
-
-    viewClass: PageView
-
-    page: (args, data) ->
-        pageId = args.page
-        section = args.section or 'priority'
-        console.log section
-        @view.setPage pageId
-        @view.getSection section
 

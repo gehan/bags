@@ -9,16 +9,29 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>bags.js</title>
+    <script type="text/javascript">
+    var curl = {
+        baseUrl: '/static/js',
+        paths: {
+            history: 'lib/history'
+        }
+    };
+    </script>
     {% compressed_css 'base' %}
     {% compressed_js 'base_libs' %}
-    {% compressed_js 'init' %}
     {% compressed_js 'app' %}
     <script type="text/javascript">
-        var Globals = {}
-        document.addEvent('domready', function(){
-            {% if data %}
-            Globals._preload = {{ data|safe }};
-            {% endif %}
+        var Globals = {};
+        dust.compileAndLoad = function(templates) {
+            Object.each(templates, function(content, name) {
+                compiled = dust.compile(content, name);
+                dust.loadSource(compiled);
+            });
+        };
+        {% if data %}
+        Globals._preload = {{ data|safe }};
+        {% endif %}
+        curl(['js!core/utils/behavior', 'app/App', 'domReady!'], function(behavior, Application) {
             var app = new Application({
                 el: $(document.body)
             }).attach();

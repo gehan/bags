@@ -1,4 +1,5 @@
-do ->
+curl ['core/dropdowns/InlineDropdown'], (InlineDropdown) ->
+
     Behavior.addGlobalFilters
         ###
         Provide a dropdown, the element with data-behavior attribute is the handle
@@ -37,19 +38,18 @@ do ->
 
                 return dropdown
 
-        ###
-        Provides the user profile dropdown, for logging out etc
-        ###
-        ProfileDropdown:
+        Test:
             setup: (element, api) ->
-                new ProfileDropdown element, Globals.user
+                console.log 'Behavior applied to ', element
 
     Delegator.register 'click', 'push', (event, element, api) ->
         event.preventDefault()
         href = element.get 'href'
         History.pushState null, null, href
 
-    delegator = new Delegator()
+    Delegator.register 'click', 'internet', (event, element, api) ->
+        console.log 'oh yeah ', element
+
     behavior = new Behavior
         breakOnErrors: true
 
@@ -57,6 +57,10 @@ do ->
         resize: ->
             behavior.fireEvent 'resize'
 
-    document.addEvent 'domupdated', (nodes=document.body) ->
-        behavior.apply nodes
-        delegator.attach nodes
+    document.addEvent 'domupdated', (container=document.body) ->
+        console.log 'apply behavior to ', container
+        behavior.apply container
+
+    document.addEvent 'domready', ->
+        new Delegator().attach document.body
+

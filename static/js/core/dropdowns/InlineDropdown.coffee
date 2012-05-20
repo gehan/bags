@@ -1,45 +1,47 @@
-InlineDropdown = new Class
-    Implements: [Options, Events]
-    Binds: ['_clickHandler', '_windowClickHandler']
+define ->
 
-    options:
-        dropdownSelector: '[data-dropdown]'
-        allowClicks: false
+    new Class
+        Implements: [Options, Events]
+        Binds: ['_clickHandler', '_windowClickHandler']
 
-    initialize: (@handle, options) ->
-        @setOptions options
-        @el = @handle.getElement '[data-dropdown]'
-        @attachEvents()
-        @
+        options:
+            dropdownSelector: '[data-dropdown]'
+            allowClicks: false
 
-    attachEvents: ->
-        @handle.addEvent 'click', @_clickHandler
+        initialize: (@handle, options) ->
+            @setOptions options
+            @el = @handle.getElement '[data-dropdown]'
+            @attachEvents()
+            @
 
-    isVisible: ->
-        @el? and @el.isVisible()
+        attachEvents: ->
+            @handle.addEvent 'click', @_clickHandler
 
-    show: ->
-        @el.show()
-        @handle.addClass 'active'
-        document.addEvent 'mouseup', @_windowClickHandler
+        isVisible: ->
+            @el? and @el.isVisible()
 
-    hide: ->
-        @el.hide()
-        @handle.removeClass 'active'
-        document.removeEvent 'mouseup', @_windowClickHandler
+        show: ->
+            @el.show()
+            @handle.addClass 'active'
+            document.addEvent 'mouseup', @_windowClickHandler
 
-    _clickHandler: (e) ->
-        if @options.allowClicks and @el.contains(e.target) and not e.target.get('data-dropdown-closeonclick')?
-            return
-        if not @isVisible()
-            @show()
-        else
+        hide: ->
+            @el.hide()
+            @handle.removeClass 'active'
+            document.removeEvent 'mouseup', @_windowClickHandler
+
+        _clickHandler: (e) ->
+            if @options.allowClicks and @el.contains(e.target) and not e.target.get('data-dropdown-closeonclick')?
+                return
+            if not @isVisible()
+                @show()
+            else
+                @hide()
+
+        _windowClickHandler: (e) ->
+            # This event somehow fires even when the box isnt visible and causes problems without this line
+            if not @isVisible()
+                return
+            if @el.contains(e.target) or @handle.contains(e.target) or @handle == e.target
+                return
             @hide()
-
-    _windowClickHandler: (e) ->
-        # This event somehow fires even when the box isnt visible and causes problems without this line
-        if not @isVisible()
-            return
-        if @el.contains(e.target) or @handle.contains(e.target) or @handle == e.target
-            return
-        @hide()

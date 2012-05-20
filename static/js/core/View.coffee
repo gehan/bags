@@ -1,101 +1,112 @@
-View = new Class
-    Implements: [Options, Events, Templates]
+define ['core/Templates'], (Templates) ->
 
-    model: null
-    collection: null
+    new Class
+        Implements: [Options, Events, Templates]
 
-    el: null
-    events: {}
-    template: null
+        model: null
+        collection: null
 
-    options:
-        injectTo: null
+        el: null
+        events: {}
+        template: null
 
-    initialize: (options={}) ->
-        @loadAllTemplates()
-        for key in ['collection', 'model', 'el', 'template']
-            if options[key]?
-                @[key] = options[key]
-                delete options[key]
-        if @model?
-            @model.addEvent 'remove', => @destroy()
-        @setOptions options
-        @render()
-        if @options.injectTo?
-            @inject @options.injectTo
-        @
+        options:
+            injectTo: null
 
-    ###
-    Renders the element, if already rendered then
-    replaces the current element
-    ###
-    render: (data) ->
-        el = @_render data
-        el.store 'obj', @
+        initialize: (options={}) ->
+            @loadAllTemplates()
+            for key in ['collection', 'model', 'el', 'template']
+                if options[key]?
+                    @[key] = options[key]
+                    delete options[key]
+            if @model?
+                @model.addEvent 'remove', => @destroy()
+            @setOptions options
+            @render()
+            if @options.injectTo?
+                @inject @options.injectTo
+            @
 
-        if not @el?
-            @el = el
-        else
-            @_replaceCurrentEl el
+        ###
+        Renders the element, if already rendered then
+        replaces the current element
+        ###
+        render: (data) ->
+            el = @_render data
+            el.store 'obj', @
 
-        Object.merge @refs, @getRefs(el)
-        @delegateEvents @el, @events
-        @fireEvent 'render'
-        el
+            if not @el?
+                @el = el
+            else
+                @_replaceCurrentEl el
 
-    _replaceCurrentEl: (el) ->
-        # Direct replace if single element
-        if not instanceOf el, Array
-            @el = el.replaces @el
+            Object.merge @refs, @getRefs(el)
+            @delegateEvents @el, @events
+            @fireEvent 'render'
 
-        # If different elements then replace loop,
-        # being careful to preserve the references
-        else
-            @el.each (currentEl, idx) =>
-                @el[idx] = el[idx].replaces currentEl
+            # See if these elements were inserted into dom
+            container = Array.from(el)[0].getParent()
+            @_checkDomUpdate container
 
-    ###
-    Use to rerender a template partially, can be used to preserve
-    visual state in template
-    ###
-    rerender: (refs, data) ->
-        el = @_render data
-        Array.from(refs).each (ref) =>
-            replaceThis = @refs[ref]
-            if not replaceThis
-                throw "Cannot find ref #{ref} in template #{template}"
-            newEl = @getRefs(el)[ref]
-            Object.merge @refs, @getRefs(newEl)
-            @refs[ref].replaces replaceThis
+            console.log 'render ', el
+            el
 
-    _render: (data=@parseForDisplay()) ->
-        el = @renderTemplate @template, data
+        _replaceCurrentEl: (el) ->
+            # Direct replace if single element
+            if not instanceOf el, Array
+                @el = el.replaces @el
 
-    inject: ->
-        el = $ @
-        el.inject.apply el, arguments
-        if @options.logInjects or true
-            injectTo = arguments[0]
+            # If different elements then replace loop,
+            # being careful to preserve the references
+            else
+                @el.each (currentEl, idx) =>
+                    @el[idx] = el[idx].replaces currentEl
+
+        ###
+        Use to rerender a template partially, can be used to preserve
+        visual state in template
+        ###
+        rerender: (refs, data) ->
+            el = @_render data
+            Array.from(refs).each (ref) =>
+                replaceThis = @refs[ref]
+                if not replaceThis
+                    throw "Cannot find ref #{ref} in template #{template}"
+                newEl = @getRefs(el)[ref]
+                Object.merge @refs, @getRefs(newEl)
+                @refs[ref].replaces replaceThis
+
+                # See if these elements were inserted into dom
+                @_checkDomUpdate newEl.getParent()
+
+        _render: (data=@parseForDisplay()) ->
+            el = @renderTemplate @template, data
+
+        inject: (container, el=$(@)) ->
+            el.inject container
+            console.log 'inject', el, 'into', container
+            @_checkDomUpdate container
+
+        _checkDomUpdate: (container) ->
             inDom = false
-            parent = injectTo
+            parent = container
             if parent == document.body
                 inDom = true
-            while parent = parent.getParent()
+            while parent = $(parent).getParent()
                 inDom = true if parent == document.body
-            console.debug 'inject ', el, ' into ', arguments[0], ' indom ', inDom
+            if inDom
+                document.fireEvent 'domupdated', [container]
 
-        document.fireEvent 'domupdated', [el]
+        parseForDisplay: ->
+            if @model?
+                @model.toJSON()
+            else
+                @data
 
-    parseForDisplay: ->
-        if @model?
-            @model.toJSON()
-        else
-            @data
+        getElement: -> @el.getElement.apply @el, arguments
+        getElements: -> @el.getElements.apply @el, arguments
 
-    getElement: -> @el.getElement.apply @el, arguments
-    getElements: -> @el.getElements.apply @el, arguments
+        destroy: ->
+            $(@).destroy()
 
-    destroy: ->
-        $(@).destroy()
-
-    toElement: -> @el
+        toElement: -> @el

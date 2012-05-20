@@ -1,9 +1,10 @@
-do ->
+define ->
+
     reParam = "\\:(\\w+)"
     reSplat = "\\*(\\w+)"
     reCombine = new RegExp "#{reParam}|#{reSplat}", 'g'
 
-    window.Router = new Class
+    new Class
         Implements: [Options, Events]
         Binds: ['_startRoute', '_getHtml4AtRoot']
 
@@ -76,6 +77,7 @@ do ->
             @setOptions options
             @_parseRoutes()
             @_initView() if @viewClass?
+            @initialRoute = true
             @
 
         # If this is the main app router then you'll need to attach this
@@ -133,8 +135,10 @@ do ->
             if not data?
                 data = uri.getData()
             @_findRoute path, data
+            @initialRoute = false
 
         _subRoute: (routerClass, args, data, options) ->
+            console.log 'subroute'
             if not instanceOf @_subRouter, routerClass
                 @_subRouter.destroy() if @_subRouter?
                 @_subRouter = new routerClass options
@@ -199,9 +203,22 @@ do ->
                     throw "Cannot init view, no el specified"
                 @_destroyView()
                 className = $H(window).keyOf(@viewClass)
-                console.debug 'init view ', className
+                console.log 'init view ', className
                 @view = new @viewClass
                     injectTo: @options.el
+
+        reset: ->
+            console.log 'reset router'
+
+            if @_subRouter?
+                @_subRouter.destroy()
+                delete @_subRouter
+
+            if @subView?
+                @subView.destroy()
+                delete @subView
+
+            @view.render()
 
         _destroyView: ->
             @view.destroy() if @view?
