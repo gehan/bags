@@ -109,7 +109,8 @@ define(function() {
       throw "Cannot find template " + templateName;
     },
     delegateEvents: function(el, events, preventDefault) {
-      var boundFn, eventKey, fnName, _results;
+      var boundFn, els, eventKey, fnName, node, _results;
+      els = Array.from(el);
       _results = [];
       for (eventKey in events) {
         fnName = events[eventKey];
@@ -120,7 +121,15 @@ define(function() {
           return this[fnName](event, target);
         };
         boundFn = boundFn.bind(this, fnName);
-        _results.push(this._addDelegatedEvent(el, eventKey, boundFn));
+        _results.push((function() {
+          var _i, _len, _results1;
+          _results1 = [];
+          for (_i = 0, _len = els.length; _i < _len; _i++) {
+            node = els[_i];
+            _results1.push(this._addDelegatedEvent(node, eventKey, boundFn));
+          }
+          return _results1;
+        }).call(this));
       }
       return _results;
     },

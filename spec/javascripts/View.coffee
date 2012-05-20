@@ -129,5 +129,3 @@ do ->
             expect($(v).innerHTML).toBe("""<li ref="hello">interface</li>""" +
                 """<li ref="yes">interface</li><li ref="no">No</li>""")
 
-
-

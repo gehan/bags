@@ -71,7 +71,8 @@ define(['core/Template'], function(Template) {
     },
     /*
             Use to rerender a template partially, can be used to preserve
-            visual state in template
+            visual state in template. Doesn't alter events as assumed
+            to be run on a child node.
     */
 
     rerender: function(refs, data) {

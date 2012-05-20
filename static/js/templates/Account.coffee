@@ -16,7 +16,10 @@ define ->
 
         user: """
         <p>
-            I like user innit
+            <strong>I like user innit</strong>
+        </p>
+        <p>
+            <strong>I also like the internets</strong>
         </p>
         """
 

@@ -80,12 +80,14 @@ define  ->
 
         # Delegate events from this class
         delegateEvents: (el, events, preventDefault) ->
+            els = Array.from el
             for eventKey, fnName of events
                 boundFn = (fnName, event, target) ->
                     event.preventDefault() if preventDefault
                     @[fnName] event, target
                 boundFn = boundFn.bind @, fnName
-                @_addDelegatedEvent el, eventKey, boundFn
+                for node in els
+                    @_addDelegatedEvent node, eventKey, boundFn
 
         _addDelegatedEvent: (el, eventKey, fn) ->
             eventKey = eventKey.split ":"
