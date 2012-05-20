@@ -83,7 +83,6 @@ define ['core/Template'], (Template) ->
 
         inject: (container, el=$(@)) ->
             el.inject container
-            console.log 'inject', el, 'into', container
             @_checkDomUpdate container
 
         _checkDomUpdate: (container) ->

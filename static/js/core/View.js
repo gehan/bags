@@ -102,7 +102,6 @@ define(['core/Template'], function(Template) {
         el = $(this);
       }
       el.inject(container);
-      console.log('inject', el, 'into', container);
       return this._checkDomUpdate(container);
     },
     _checkDomUpdate: function(container) {
