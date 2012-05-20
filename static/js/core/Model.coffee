@@ -1,6 +1,6 @@
-define ->
+define ['core/Collection'], (Collection) ->
 
-    new Class
+    Model = new Class
         Implements: [Events, Options]
 
         _attributes: {}
@@ -46,18 +46,27 @@ define ->
         has: (key) ->
             @_attributes[key]?
 
+        _getType: (name) ->
+            type = @_types[name]
+            if typeOf(type) == "function"
+                type()
+            else if typeOf(type) ==  "string"
+                window[type]
+            else
+                type
+
         _addCollection: (key, value, options={}) ->
-            collectionClass = window[@_types[key]]
+            collectionClass = @_getType key
             collection = new collectionClass @, value
             @collections[key] = collection
             @fireEvent 'addCollection', [key, collection]
 
         _isCollection: (key, value) ->
-            type = window[@_types[key]]
-            type? and typeOf(value) == 'array' and instanceOf new type(), SubCollection
+            type = @_getType key
+            type? and typeOf(value) == 'array' and instanceOf new type(), Collection
 
         _makeValue: (key, value) ->
-            type = window[@_types[key]]
+            type = @_getType key
             if typeOf(value) == 'array'
                 (@_makeValue(key, item) for item in value)
             else if not type

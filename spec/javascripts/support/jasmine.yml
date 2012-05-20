@@ -13,16 +13,17 @@
 src_files:
     - lib/mootools-core-1.4.5.js
     - lib/mootools-more-1.4.0.1.js
+    - lib/curl.js
     - lib/behaviour/Element.Data.js
     - lib/behaviour/Event.Mock.js
     - lib/behaviour/BehaviorAPI.js
     - lib/behaviour/Behavior.js
     - lib/behaviour/Behavior.Startup.js
     - lib/behaviour/Delegator.js
-    - core/Router.js
-    - core/Model.js
-    - core/Collection.js
-    - core/SubCollection.js
+#    - core/Router.js
+#    - core/Model.js
+#    - core/Collection.js
+#    - core/SubCollection.js
 #    - /**/*.js
 
 # stylesheets

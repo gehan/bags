@@ -1,11 +1,19 @@
 do ->
+    r = null
+    Router = null
+    done = false
+
+    curl ['core/Router'], (_Router) ->
+        Router = _Router
+        done = true
+
     flatten = (obj) ->
         JSON.encode obj
 
     describe "Router test", ->
-        r = null
 
         beforeEach ->
+            waitsFor -> done
             r = new Router()
 
         it 'matches :param in route properly', ->

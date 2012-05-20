@@ -1,8 +1,10 @@
-SubCollection = new Class
-    Extends: Collection
+define ['core/Collection', 'core/Model'], (Collection, Model) ->
 
-    model: Model
+    new Class
+        Extends: Collection
 
-    initialize: (@parentModel, models=[], options) ->
-        @parent models, options
-        @
+        model: Model
+
+        initialize: (@parentModel, models=[], options) ->
+            @parent models, options
+            @
