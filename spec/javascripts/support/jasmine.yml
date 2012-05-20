@@ -20,10 +20,7 @@ src_files:
     - lib/behaviour/Behavior.js
     - lib/behaviour/Behavior.Startup.js
     - lib/behaviour/Delegator.js
-#    - core/Router.js
-#    - core/Model.js
-#    - core/Collection.js
-#    - core/SubCollection.js
+    - lib/dust-full-0.3.0.min.js
 #    - /**/*.js
 
 # stylesheets

@@ -1,8 +1,7 @@
 do ->
-    m = null
     Model = null
-    done = false
 
+    done = false
     curl ['core/Model'], (_Model) ->
         Model = _Model
         done = true
@@ -11,6 +10,8 @@ do ->
         JSON.encode obj
 
     describe "Model test", ->
+        m = null
+
         beforeEach ->
             waitsFor -> done
             m = new Model()
@@ -58,7 +59,6 @@ do ->
             changeFired = false
             m = new Model {override: 'arse'},
                 onChange: ->
-                    console.log arguments
                     changeFired = true
 
             expect(m.get 'type').toBe 'text'
@@ -83,7 +83,6 @@ do ->
             expect(instanceOf m.get('aDate'), Date).toBe true
             expect(m.get('aDate').format '%Y/%m/%d %H:%M').toBe '2012/01/01 02:02'
 
-            console.log(m.get('aModel'))
             expect(instanceOf m.get('aModel'), Model).toBe true
             expect(m.get('aModel').get 'feck').toBe 'arse'
 

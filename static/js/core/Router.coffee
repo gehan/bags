@@ -138,7 +138,6 @@ define ->
             @initialRoute = false
 
         _subRoute: (routerClass, args, data, options) ->
-            console.log 'subroute'
             if not instanceOf @_subRouter, routerClass
                 @_subRouter.destroy() if @_subRouter?
                 @_subRouter = new routerClass options
@@ -203,13 +202,10 @@ define ->
                     throw "Cannot init view, no el specified"
                 @_destroyView()
                 className = $H(window).keyOf(@viewClass)
-                console.log 'init view ', className
                 @view = new @viewClass
                     injectTo: @options.el
 
         reset: ->
-            console.log 'reset router'
-
             if @_subRouter?
                 @_subRouter.destroy()
                 delete @_subRouter

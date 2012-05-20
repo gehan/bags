@@ -1,7 +1,7 @@
-define ['core/Templates'], (Templates) ->
+define ['core/Template'], (Template) ->
 
     new Class
-        Implements: [Options, Events, Templates]
+        Implements: [Options, Events, Template]
 
         model: null
         collection: null
@@ -33,7 +33,7 @@ define ['core/Templates'], (Templates) ->
         ###
         render: (data) ->
             el = @_render data
-            el.store 'obj', @
+            el.store 'view', @
 
             if not @el?
                 @el = el
@@ -48,7 +48,6 @@ define ['core/Templates'], (Templates) ->
             container = Array.from(el)[0].getParent()
             @_checkDomUpdate container
 
-            console.log 'render ', el
             el
 
         _replaceCurrentEl: (el) ->
@@ -71,7 +70,7 @@ define ['core/Templates'], (Templates) ->
             Array.from(refs).each (ref) =>
                 replaceThis = @refs[ref]
                 if not replaceThis
-                    throw "Cannot find ref #{ref} in template #{template}"
+                    throw "Cannot find ref #{ref} in template #{@template}"
                 newEl = @getRefs(el)[ref]
                 Object.merge @refs, @getRefs(newEl)
                 @refs[ref].replaces replaceThis

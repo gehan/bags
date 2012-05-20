@@ -7,19 +7,12 @@ define  ->
     new Class
         TEMPLATES: {}
         refs: {}
-        templatesUrl: '/static/js/templates/'
-
-        fetchTemplateBundle: (bundleName) ->
-            templateUrl = "#{@templatesUrl}#{bundleName}.js"
-            Asset.javascript templateUrl,
-                onLoad: ->
-                    console.log 'gotTemplate'
 
         # Loads all current dust templates into memory so they can be rendered
         # This step is essential if partials are used anywhere are they are expected
         # to be in the dust cache already when called
         loadAllTemplates: ->
-            @_loadTemplate(k) for k,v of @TEMPLATES
+            @_loadTemplate(k) for k, v of @TEMPLATES
             @_loadTemplate(k) for k in $$('script[type=text/html]').get('template')
 
         # Render dust template
@@ -46,7 +39,7 @@ define  ->
 
                 for refEl in el.getElements "*[ref]"
                     refName = refEl.get 'ref'
-                    return el if ref and refName == ref
+                    return refEl if ref and refName == ref
 
                     refs[refName] = refEl
 
@@ -86,10 +79,10 @@ define  ->
             throw "Cannot find template #{templateName}"
 
         # Delegate events from this class
-        delegateEvents: (el, events) ->
+        delegateEvents: (el, events, preventDefault) ->
             for eventKey, fnName of events
                 boundFn = (fnName, event, target) ->
-                    event.preventDefault()
+                    event.preventDefault() if preventDefault
                     @[fnName] event, target
                 boundFn = boundFn.bind @, fnName
                 @_addDelegatedEvent el, eventKey, boundFn

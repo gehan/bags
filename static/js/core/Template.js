@@ -8,16 +8,6 @@ define(function() {
   return new Class({
     TEMPLATES: {},
     refs: {},
-    templatesUrl: '/static/js/templates/',
-    fetchTemplateBundle: function(bundleName) {
-      var templateUrl;
-      templateUrl = "" + this.templatesUrl + bundleName + ".js";
-      return Asset.javascript(templateUrl, {
-        onLoad: function() {
-          return console.log('gotTemplate');
-        }
-      });
-    },
     loadAllTemplates: function() {
       var k, v, _i, _len, _ref, _ref1, _results;
       _ref = this.TEMPLATES;
@@ -73,7 +63,7 @@ define(function() {
           refEl = _ref1[_j];
           refName = refEl.get('ref');
           if (ref && refName === ref) {
-            return el;
+            return refEl;
           }
           refs[refName] = refEl;
         }
@@ -118,13 +108,15 @@ define(function() {
       }
       throw "Cannot find template " + templateName;
     },
-    delegateEvents: function(el, events) {
+    delegateEvents: function(el, events, preventDefault) {
       var boundFn, eventKey, fnName, _results;
       _results = [];
       for (eventKey in events) {
         fnName = events[eventKey];
         boundFn = function(fnName, event, target) {
-          event.preventDefault();
+          if (preventDefault) {
+            event.preventDefault();
+          }
           return this[fnName](event, target);
         };
         boundFn = boundFn.bind(this, fnName);

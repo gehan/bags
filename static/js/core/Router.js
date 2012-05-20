@@ -70,7 +70,6 @@ define(function() {
     },
     _subRoute: function(routerClass, args, data, options) {
       var path;
-      console.log('subroute');
       if (!instanceOf(this._subRouter, routerClass)) {
         if (this._subRouter != null) {
           this._subRouter.destroy();
@@ -161,14 +160,12 @@ define(function() {
         }
         this._destroyView();
         className = $H(window).keyOf(this.viewClass);
-        console.log('init view ', className);
         return this.view = new this.viewClass({
           injectTo: this.options.el
         });
       }
     },
     reset: function() {
-      console.log('reset router');
       if (this._subRouter != null) {
         this._subRouter.destroy();
         delete this._subRouter;
