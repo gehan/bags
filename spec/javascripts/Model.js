@@ -219,7 +219,6 @@
       };
       mdl = new Mdl(vals);
       subModel = mdl.get('subModel');
-      console.log(mdl.toJSON());
       return expect(subModel.get('_parent')).toBe(mdl);
     });
     return it('instantiates a collection if set as type, adds to collections', function() {

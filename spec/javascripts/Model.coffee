@@ -180,8 +180,6 @@ do ->
             mdl = new Mdl vals
             subModel = mdl.get 'subModel'
 
-            console.log mdl.toJSON()
-
             expect(subModel.get '_parent').toBe mdl
 
         it 'instantiates a collection if set as type, adds to collections', ->
