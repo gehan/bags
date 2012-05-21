@@ -26,6 +26,9 @@ define ['core/Router', 'app/views/Account'], (Router, AccountViews) ->
             console.log 'account ', args.type, args.id
 
         channel: (args, data) ->
+            # Update nav
+
+            # Create view
             @initSubView AccountViews.Channel, @view.refs.accountBody
 
         user: (args, data) ->

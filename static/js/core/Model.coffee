@@ -10,8 +10,7 @@ define ['core/Collection'], (Collection) ->
         _defaults: {}
         _idField: "id"
 
-        options:
-            url: "/item/"
+        url: "/item/"
 
         initialize: (attributes, options) ->
             @setOptions options
@@ -21,8 +20,15 @@ define ['core/Collection'], (Collection) ->
         _setInitial: (attributes={}) ->
             defaults = Object.map (Object.clone(@_defaults)), (value, key) =>
                 @_getDefault key
-            Object.merge defaults, attributes
-            @setMany defaults, silent: true
+
+            # Merge defaults into attributes like this to
+            # keep references intact
+            attrKeys = Object.keys attributes
+            defaults = Object.filter defaults, (value, key) ->
+                key not in attrKeys
+
+            Object.merge attributes, defaults
+            @setMany attributes, silent: true
 
         setMany: (attrs, options) ->
             @set k, v, options for k, v of attrs
@@ -30,7 +36,7 @@ define ['core/Collection'], (Collection) ->
         set: (key, value, options={silent: false}) ->
             if @_isCollection key, value
                 # Check for collections
-                @_addCollection key, value
+                @_attributes[key] = @_addCollection key, value
             else
                 # Else set normally
                 @_attributes[key] = @_makeValue key, value
@@ -60,6 +66,7 @@ define ['core/Collection'], (Collection) ->
             collection = new collectionClass value, parentModel: @
             @collections[key] = collection
             @fireEvent 'addCollection', [key, collection]
+            collection
 
         _isCollection: (key, value) ->
             type = @_getType key
@@ -115,23 +122,26 @@ define ['core/Collection'], (Collection) ->
         toJSON: ->
             attrs = {}
             for key, value of @_attributes
-                jsonFn = "json#{key.capitalize()}"
-                if @[jsonFn]?
-                    attrs[key] = @[jsonFn](value)
-                else if key == '_parent'
-                else if typeOf(value) == 'array'
-                    attrs[key] = []
-                    for v in value
-                        if typeOf(v) == 'object' and typeOf(v.toJSON) == 'function'
-                            jsonV = v.toJSON()
-                        else
-                            jsonV = v
-                        attrs[key].push jsonV
-                else if typeOf(value) == 'object' and typeOf(value.toJSON) == 'function'
-                    attrs[key] = value.toJSON()
-                else
-                    attrs[key] = value
+                attrs[key] = @_jsonKeyValue key, value
+            delete attrs._parent
             return attrs
+
+        _jsonKeyValue: (key, value) ->
+            jsonFn = "json#{key.capitalize()}"
+            if @[jsonFn]?
+                @[jsonFn](value)
+            else if key == '_parent'
+                # Skip parent model reference
+            else if typeOf(value) == 'array'
+                (@_jsonValue v for v in value)
+            else
+                @_jsonValue value
+
+        _jsonValue: (value) ->
+            if typeOf(value) == 'object' and typeOf(value.toJSON) == 'function'
+                value.toJSON()
+            else
+                value
 
         remove: ->
             @fireEvent 'remove', [@]

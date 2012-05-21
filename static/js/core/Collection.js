@@ -125,6 +125,9 @@ define(function() {
     },
     parseResponse: function(response) {
       return response;
+    },
+    toJSON: function() {
+      return this.invoke('toJSON');
     }
   });
 });

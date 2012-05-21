@@ -68,3 +68,6 @@ define  ->
 
         parseResponse: (response) ->
             return response
+
+        toJSON: ->
+            @invoke 'toJSON'

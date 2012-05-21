@@ -103,9 +103,9 @@ define ['core/Template'], (Template) ->
                 @data
 
         getElement: -> @el.getElement.apply @el, arguments
+
         getElements: -> @el.getElements.apply @el, arguments
 
-        destroy: ->
-            $(@).destroy()
+        destroy: -> $(@).destroy()
 
         toElement: -> @el
