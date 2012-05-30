@@ -16,7 +16,9 @@ new Class
         console.log 'apps root'
 
     pageRouter: (args, data) ->
+        console.log 'loading page'
         curl ['app/routers/Page'], (PageRouter) =>
+            console.log 'loaded page'
             @_subRoute PageRouter, args, data,
                 el: @subRouteEl()
 
