@@ -1,0 +1,57 @@
+<!DOCTYPE html>  <html> <head>   <title>Page.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="Account.html">                 Account.coffee               </a>                                           <a class="source" href="Page.html">                 Page.coffee               </a>                                           <a class="source" href="Account.html">                 Account.coffee               </a>                                           <a class="source" href="App.html">                 App.coffee               </a>                                           <a class="source" href="Item.html">                 Item.coffee               </a>                                           <a class="source" href="Page.html">                 Page.coffee               </a>                                           <a class="source" href="InlineDropdown.html">                 InlineDropdown.coffee               </a>                                           <a class="source" href="behavior.html">                 behavior.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               Page.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span> <span class="p">[</span><span class="s">&#39;templates/Page&#39;</span><span class="p">,</span> <span class="s">&#39;core/View&#39;</span><span class="p">,</span> <span class="s">&#39;app/Collection&#39;</span><span class="p">,</span> <span class="s">&#39;app/Model&#39;</span><span class="p">,</span> <span class="s">&#39;app/views/Item&#39;</span><span class="p">],</span> <span class="o">\</span>
+<span class="nf">(tpl, View, ItemCollection, PageModel, ItemView) -&gt;</span> <span class="o">\</span>
+
+<span class="k">new</span> <span class="nx">Class</span>
+    <span class="nv">Extends: </span><span class="nx">View</span>
+    <span class="nv">Binds: </span><span class="p">[</span><span class="s">&#39;renderCollection&#39;</span><span class="p">,</span> <span class="s">&#39;addOne&#39;</span><span class="p">,</span> <span class="s">&#39;removeOne&#39;</span><span class="p">]</span>
+
+    <span class="nv">template: </span><span class="s">&#39;page&#39;</span>
+
+    <span class="nv">data:</span>
+        <span class="nv">pageId: </span><span class="kc">null</span>
+
+    <span class="nv">initialize: </span><span class="o">-&gt;</span>
+        <span class="nx">@parent</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">arguments</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Items collection</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="vi">@collection = </span><span class="k">new</span> <span class="nx">ItemCollection</span> <span class="nx">Globals</span><span class="p">.</span><span class="nx">_preload</span> <span class="o">or</span> <span class="p">[],</span>
+            <span class="nv">onAdd: </span><span class="nx">@addOne</span>
+            <span class="nv">onRemove: </span><span class="nx">@removeOne</span>
+            <span class="nv">onReset: </span><span class="nx">@renderCollection</span>
+
+        <span class="k">if</span> <span class="nx">Globals</span><span class="p">.</span><span class="nx">_preload</span>
+            <span class="nx">@renderCollection</span><span class="p">()</span>
+        <span class="nx">@</span>
+
+    <span class="nv">setPage: </span><span class="nf">(pageId) -&gt;</span>
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">@pageModel</span><span class="o">?</span>
+            <span class="vi">@pageModel = </span><span class="k">new</span> <span class="nx">PageModel</span> <span class="p">{},</span>
+                <span class="nv">onFetch: </span><span class="o">=&gt;</span>
+                    <span class="vi">@data.page = </span><span class="nx">@pageModel</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span>
+                    <span class="nx">@rerender</span> <span class="p">[</span><span class="s">&#39;leftNav&#39;</span><span class="p">,</span> <span class="s">&#39;page-top&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nx">@data</span><span class="p">.</span><span class="nx">pageId</span> <span class="o">isnt</span> <span class="nx">pageId</span>
+            <span class="vi">@data.pageId = </span><span class="nx">pageId</span>
+            <span class="nx">@pageModel</span><span class="p">.</span><span class="nx">set</span> <span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="nx">pageId</span>
+            <span class="nx">@pageModel</span><span class="p">.</span><span class="nx">fetch</span><span class="p">()</span>
+
+    <span class="nv">getSection: </span><span class="nf">(section) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>cancel existing fetch</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="vi">@data.section = </span><span class="nx">section</span>
+        <span class="k">if</span> <span class="nx">Globals</span><span class="p">.</span><span class="nx">_preload</span><span class="o">?</span>
+            <span class="k">delete</span> <span class="nx">Globals</span><span class="p">.</span><span class="nx">_preload</span>
+        <span class="k">else</span>
+            <span class="nx">@_removeCollectionItems</span><span class="p">()</span>
+            <span class="nx">@collection</span><span class="p">.</span><span class="nx">fetch</span> <span class="nx">@data</span>
+
+    <span class="nv">addOne: </span><span class="nf">(model, injectTo=@refs.items) -&gt;</span>
+        <span class="p">(</span><span class="k">new</span> <span class="nx">ItemView</span> <span class="nv">model: </span><span class="nx">model</span><span class="p">).</span><span class="nx">inject</span> <span class="nx">injectTo</span>
+
+    <span class="nv">removeOne: </span><span class="nf">(model) -&gt;</span>
+
+    <span class="nv">renderCollection: </span><span class="nf">(collection=@collection) -&gt;</span>
+        <span class="nx">@lastModels</span><span class="p">.</span><span class="nx">invoke</span> <span class="s">&#39;remove&#39;</span> <span class="k">if</span> <span class="nx">@lastModels</span><span class="o">?</span>
+        <span class="nv">fragment = </span><span class="nb">document</span><span class="p">.</span><span class="nx">createDocumentFragment</span><span class="p">()</span>
+        <span class="nx">@addOne</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">fragment</span> <span class="k">for</span> <span class="nx">model</span> <span class="k">in</span> <span class="nx">collection</span>
+        <span class="nx">@inject</span> <span class="nx">@refs</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">fragment</span>
+
+    <span class="nv">_removeCollectionItems: </span><span class="o">-&gt;</span>
+        <span class="vi">@lastModels = </span><span class="nx">@collection</span><span class="p">.</span><span class="nx">clone</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>models.invoke 'remove'</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">destroy: </span><span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Stop model/collection fetches?</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">@_removeCollectionItems</span><span class="p">()</span>
+        <span class="nx">@parent</span><span class="p">()</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

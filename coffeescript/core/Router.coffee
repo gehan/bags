@@ -1,3 +1,8 @@
+# Router
+# ======
+#
+# Bags.Router badass AMD module
+
 reParam = "\\:(\\w+)"
 reSplat = "\\*(\\w+)"
 reCombine = new RegExp "#{reParam}|#{reSplat}", 'g'
@@ -8,26 +13,40 @@ new Class
     Implements: [Options, Events]
     Binds: ['_startRoute', '_getHtml4AtRoot']
 
-    # Router configuration.
+    # Configuring routes
+    # ====================
+
+    # Set routes object as:
     #
-    # Set object as:
-    #   "path/to/match/": "functionName"
+    #     "path/to/match/": "functionName"
     #
     # Path is set without first slash.
     # Function is called as functionName(args, data)
     # Any querystring parameters are passed through as data.
     #
+    # Arguments
+    # ---------
+    #
     # Args are specified in 2 ways:
     #
-    # /path/:parameter/
-    # Parameters start with : and match up to the next /
-    # e.g. /path/hello/ matches the above
-    #      args = {paramter: 'hello'}
+    # + **/path/:parameter/**
     #
-    # /path/*splat
-    # Splats match all characters after the *
-    # e.g. /path/you-love/all/of-it matches the above
-    #      args = {splat: 'you-love/all/of-it'
+    #   Parameters start with : and match up to the next /
+    #
+    #   e.g. /path/hello/ matches the above
+    #
+    #           args = {paramter: 'hello'}
+    #
+    # + **/path/*splat**
+    #
+    #   Splats match all characters after the *
+    #
+    #   e.g. /path/you-love/all/of-it matches the above
+    #
+    #           args = {splat: 'you-love/all/of-it'
+    #
+    # Subrouting
+    # ----------
     #
     # Routing can be passed off to a sub router by using a
     # route with one splat, which contains the path to be
@@ -38,16 +57,24 @@ new Class
     #
     # Functions ared used to get around import order and
     # referencing problems
-    # e.g.
-    #   routes:
-    #       "route/this/*path": -> SubRouterClass
     #
-    #   subRouteEl: -> @view.refs.body
+    # e.g.
+    #
+    #     routes:
+    #         "route/this/*path": -> SubRouterClass
+    #
+    #     subRouteEl: -> @view.refs.body
     #
     routes: {}
 
-    # Associated view class.
-    #
+    # If you are using a subrouter then you can specify the container
+    # element for its view class. Since on initialisation the element
+    # won't exist this will be a function which returns the element.
+    subRouteEl: ->
+
+    # Associated view class
+    # ---------------------
+
     # A view can be associated and instatiated when this router
     # is instantiated. For the top-level router this would only
     # happen once, but for subrouters this could happen whenever
@@ -58,27 +85,41 @@ new Class
     # When settings a view class a container element for this view
     # must be passed in as an option:
     #
-    # options:
-    #    el: Element
+    #     options:
+    #         el: Element
     viewClass: null
 
+    # Router options
+    # --------------
     options:
         # Using history.js allows for us to have paths like
         # /path/1/#/path/2/, but polluted urls looks bad and would
         # mess with data preloading, so this is set to ensure all
-        # hashed are from the root, e.g.
+        # hashed are from the root,
         #
-        # path/1/#/path/2/ -> #/path/2/
+        # e.g.
+        #
+        #     path/1/#/path/2/ -> #/path/2/
         #
         forceHTML4ToRoot: true
+
+        # If you set a viewClass then this will be its container element
         el: null
 
+    # Router methods
+    # ==============
+
+    # Starts router and parses routes. The first route done has the @initalRoute flag
+    # set.
     initialize: (options) ->
         @setOptions options
         @_parseRoutes()
         @_initView() if @viewClass?
         @initialRoute = true
         @
+
+    # Browser location handling
+    # -------------------------
 
     # If this is the main app router then you'll need to attach this
     # to the window so that it can operate.
@@ -96,14 +137,19 @@ new Class
     detach: ->
         window.removeEvent 'statechange', @_startRoute
 
+    # Subviews
+    # --------
+
     # Commonly changing path can mean delegating a certain part of the
     # screen to a sub view, e.g. main body.
     #
     # To make these easy within a router, and to handle destroying any
     # current subviews you can call these helper function with the
     # viewClass and container element
+    #
     # e.g.
-    #   @iniSubView PageView, @view.refs.body
+    #
+    #     @iniSubView PageView, @view.refs.body
     initSubView: (viewClass, el) ->
         if not instanceOf @subView, viewClass
             if not el?
@@ -113,14 +159,55 @@ new Class
             el.empty()
             @subView.inject el
 
+    # Subrouting
+    # ----------
+
+    # If you wish to manually subroute then call this function, e.g. if you
+    # are going to load the subrouter asynchronously.
+    _subRoute: (routerClass, args, data, options) ->
+        if not instanceOf @_subRouter, routerClass
+            @_subRouter.destroy() if @_subRouter?
+            @_subRouter = new routerClass options
+
+        # Expect only one arg, a splat for the remaining path.
+        if Object.getLength(args) != 1
+            throw "Bad subroute, include one splat only"
+
+        path = Object.values(args)[0]
+        @_subRouter._startRoute path
+
+
+    # Others
+    # ------
+
+    # This will reset the view to it's initial state, killing any
+    # subrouter and subview.
+    #
+    # This will also re-render the current view.
+    reset: ->
+        if @_subRouter?
+            @_subRouter.destroy()
+            delete @_subRouter
+
+        if @subView?
+            @subView.destroy()
+            delete @subView
+
+        @view.render()
+
     # Helper method to pull out the current URI as a MooTools object,
     # taking into account the hash and html5 state
     getCurrentUri: ->
         new URI History.getState().url
 
 
-    #################
+    # Destroys the current view and detaches from the window object
+    destroy: ->
+        @_destroyView()
+        @detach()
+
     # Private methods
+    # ===============
 
     _subRouter: null
     _parsedRoutes: []
@@ -136,18 +223,6 @@ new Class
             data = uri.getData()
         @_findRoute path, data
         @initialRoute = false
-
-    _subRoute: (routerClass, args, data, options) ->
-        if not instanceOf @_subRouter, routerClass
-            @_subRouter.destroy() if @_subRouter?
-            @_subRouter = new routerClass options
-
-        # Expect only one arg, a splat for the remaining path
-        if Object.getLength(args) != 1
-            throw "Bad subroute, include one splat only"
-
-        path = Object.values(args)[0]
-        @_subRouter._startRoute path
 
     _getHtml4AtRoot: ->
         # For html4 browsers ensure this is a hash off the
@@ -194,8 +269,6 @@ new Class
                     args.push data
                     return @[funcName].apply @, args if match?
 
-    ##############################
-    # Maybe put in different class
     _initView: ->
         if not instanceOf @view, @viewClass
             if not @options.el?
@@ -205,22 +278,8 @@ new Class
             @view = new @viewClass
                 injectTo: @options.el
 
-    reset: ->
-        if @_subRouter?
-            @_subRouter.destroy()
-            delete @_subRouter
-
-        if @subView?
-            @subView.destroy()
-            delete @subView
-
-        @view.render()
-
     _destroyView: ->
         @view.destroy() if @view?
         @options.el.empty()
 
-    destroy: ->
-        @_destroyView()
-        @detach()
 
