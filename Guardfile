@@ -4,3 +4,4 @@ guard 'coffeescript', :input => 'spec/coffeescripts', :output => 'spec/javascrip
 guard 'compass' do
   watch(/^sass\/(.*)\.s[ac]ss/)
 end
+

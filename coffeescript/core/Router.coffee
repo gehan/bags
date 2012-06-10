@@ -1,7 +1,4 @@
-# Router
-# ======
-#
-# Bags.Router badass AMD module
+# Bags.Router AMD module
 
 reParam = "\\:(\\w+)"
 reSplat = "\\*(\\w+)"
@@ -21,7 +18,7 @@ new Class
     #     "path/to/match/": "functionName"
     #
     # Path is set without first slash.
-    # Function is called as functionName(args, data)
+    # Function is called as `functionName(args, data)`
     # Any querystring parameters are passed through as data.
     #
     # Arguments
@@ -35,7 +32,7 @@ new Class
     #
     #   e.g. /path/hello/ matches the above
     #
-    #           args = {paramter: 'hello'}
+    #           args = {parameter: 'hello'}
     #
     # + **/path/*splat**
     #
@@ -79,14 +76,16 @@ new Class
     # is instantiated. For the top-level router this would only
     # happen once, but for subrouters this could happen whenever
     # the path goes out and then back into their focus. When this
-    # happens then destroy() is called on the router, which also
-    # calls destroy() on the view.
+    # happens then `destroy()` is called on the router, which also
+    # calls `destroy()` on the view.
     #
     # When settings a view class a container element for this view
     # must be passed in as an option:
     #
     #     options:
     #         el: Element
+    #
+    # The view is then available as `@view`
     viewClass: null
 
     # Router options
@@ -103,18 +102,18 @@ new Class
         #
         forceHTML4ToRoot: true
 
-        # If you set a viewClass then this will be its container element
+        # If you set a `viewClass` then this will be its container element
         el: null
 
     # Router methods
     # ==============
 
-    # Starts router and parses routes. The first route done has the @initalRoute flag
-    # set.
+    # Starts router and parses routes.
     initialize: (options) ->
         @setOptions options
         @_parseRoutes()
         @_initView() if @viewClass?
+        # The first route done has the `@initalRoute` flag set.
         @initialRoute = true
         @
 
@@ -145,11 +144,14 @@ new Class
     #
     # To make these easy within a router, and to handle destroying any
     # current subviews you can call these helper function with the
-    # viewClass and container element
+    # `viewClass` and container element
     #
     # e.g.
     #
-    #     @iniSubView PageView, @view.refs.body
+    #     @initSubView PageView, @view.refs.body
+    #
+    #
+    # The subview is then available as `@subView`
     initSubView: (viewClass, el) ->
         if not instanceOf @subView, viewClass
             if not el?
@@ -215,46 +217,50 @@ new Class
         "([^\/]+)": new RegExp reParam, 'g'
         "(.*)": new RegExp reSplat, 'g'
 
-    _startRoute: (path, data) ->
-        uri = @getCurrentUri()
-        if not path?
-            path = uri.get('directory') + uri.get('file')
-        if not data?
-            data = uri.getData()
-        @_findRoute path, data
-        @initialRoute = false
-
-    _getHtml4AtRoot: ->
-        # For html4 browsers ensure this is a hash off the
-        # root of the site. Lame but that's old tech
-        u = new URI()
-        if u.get('directory') + u.get('file') != '/'
-            uri = @getCurrentUri()
-            hash = uri.get('directory') + uri.get('file')
-            if uri.get 'query'
-                hash = "#{hash}?#{uri.get('query')}"
-            href = "/##{hash}"
-            location.href = href
-
+    # Creates a regex for each route to match a path on and pushes it on to
+    # the `@_parsedRoutes` cache. The parameter names are stored along with
+    # the regex and route function name.
     _parseRoutes: (routes=@routes) ->
         for route, funcName of routes
             routeRegEx = @_createRouteRegex route
             paramNames = @_extractParamPositions route
             @_parsedRoutes.push [routeRegEx, funcName, paramNames]
 
+    # Convert route into a regex to match path on
     _createRouteRegex: (route) ->
-        # Convert route into a regex to match path on
         for replaceWith, findRe of @_replaceRegex
             route = route.replace findRe, replaceWith
         new RegExp "^" + route + '$'
 
+    # Extracts the parameter names from a route
     _extractParamPositions: (route) ->
         params = []
         while (s = reCombine.exec route)
             params.push s.slice(1).erase('').pick()
         params
 
-    _findRoute: (path, data) ->
+    # Starts routing, either accepts an existing
+    # path, i.e. for subrouting, or gets the path from
+    # the current url.
+    _startRoute: (path, data) ->
+        uri = @getCurrentUri()
+        if not path?
+            path = uri.get('directory') + uri.get('file')
+        if not data?
+            data = uri.getData()
+        @_route path, data
+        # `@initialRoute` set to false after first route
+        @initialRoute = false
+
+    # The main routing method, given a path it tries to finding
+    # a matching route. When a match is found:
+    #
+    # + If the matching route is a function it is assumed to return a
+    #   subrouter. The function is evaluated and passed to `@_subroute`
+    #
+    # + Else assumed to a be a functino within this class, which is run
+    #   and passed `(named_paramaters, get_data)`
+    _route: (path, data) ->
         path = path.substr(1) if path.substr(0,1) == '/'
         for [regEx, funcName, paramNames] in @_parsedRoutes
             match = regEx.exec path
@@ -269,17 +275,30 @@ new Class
                     args.push data
                     return @[funcName].apply @, args if match?
 
+    # For html4 browsers ensure this is a hash off the
+    # root of the site. Lame but that's old tech
+    _getHtml4AtRoot: ->
+        u = new URI()
+        if u.get('directory') + u.get('file') != '/'
+            uri = @getCurrentUri()
+            hash = uri.get('directory') + uri.get('file')
+            if uri.get 'query'
+                hash = "#{hash}?#{uri.get('query')}"
+            href = "/##{hash}"
+            location.href = href
+
+    # Initialises the view for this router if not already created. Destroys
+    # the current view if it's different, and injects this view to
+    # `@options.el`
     _initView: ->
         if not instanceOf @view, @viewClass
             if not @options.el?
                 throw "Cannot init view, no el specified"
             @_destroyView()
-            className = $H(window).keyOf(@viewClass)
             @view = new @viewClass
                 injectTo: @options.el
 
     _destroyView: ->
         @view.destroy() if @view?
         @options.el.empty()
-
 

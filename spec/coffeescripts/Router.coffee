@@ -104,7 +104,7 @@ describe "Router test", ->
 
         r._parseRoutes routes
 
-        r._findRoute 'page/343/asd/fe', param: 'something'
+        r._route 'page/343/asd/fe', param: 'something'
 
         expect(flatten found).toBe(flatten [{number:'343', stuff:'asd/fe'}, {param: 'something'}])
 

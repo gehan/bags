@@ -1,7 +1,10 @@
+(function() {
 
-define(['core/Model'], function(Model) {
-  return new Class({
-    Extends: Model,
-    url: '/page/'
+  define(['core/Model'], function(Model) {
+    return new Class({
+      Extends: Model,
+      url: '/page/'
+    });
   });
-});
+
+}).call(this);

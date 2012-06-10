@@ -110,7 +110,7 @@
         return found = Array.from(arguments);
       };
       r._parseRoutes(routes);
-      r._findRoute('page/343/asd/fe', {
+      r._route('page/343/asd/fe', {
         param: 'something'
       });
       return expect(flatten(found)).toBe(flatten([

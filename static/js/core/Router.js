@@ -12,6 +12,7 @@
       Implements: [Options, Events],
       Binds: ['_startRoute', '_getHtml4AtRoot'],
       routes: {},
+      subRouteEl: function() {},
       viewClass: null,
       options: {
         forceHTML4ToRoot: true,
@@ -50,27 +51,6 @@
           return this.subView.inject(el);
         }
       },
-      getCurrentUri: function() {
-        return new URI(History.getState().url);
-      },
-      _subRouter: null,
-      _parsedRoutes: [],
-      _replaceRegex: {
-        "([^\/]+)": new RegExp(reParam, 'g'),
-        "(.*)": new RegExp(reSplat, 'g')
-      },
-      _startRoute: function(path, data) {
-        var uri;
-        uri = this.getCurrentUri();
-        if (!(path != null)) {
-          path = uri.get('directory') + uri.get('file');
-        }
-        if (!(data != null)) {
-          data = uri.getData();
-        }
-        this._findRoute(path, data);
-        return this.initialRoute = false;
-      },
       _subRoute: function(routerClass, args, data, options) {
         var path;
         if (!instanceOf(this._subRouter, routerClass)) {
@@ -85,18 +65,29 @@
         path = Object.values(args)[0];
         return this._subRouter._startRoute(path);
       },
-      _getHtml4AtRoot: function() {
-        var hash, href, u, uri;
-        u = new URI();
-        if (u.get('directory') + u.get('file') !== '/') {
-          uri = this.getCurrentUri();
-          hash = uri.get('directory') + uri.get('file');
-          if (uri.get('query')) {
-            hash = "" + hash + "?" + (uri.get('query'));
-          }
-          href = "/#" + hash;
-          return location.href = href;
+      reset: function() {
+        if (this._subRouter != null) {
+          this._subRouter.destroy();
+          delete this._subRouter;
         }
+        if (this.subView != null) {
+          this.subView.destroy();
+          delete this.subView;
+        }
+        return this.view.render();
+      },
+      getCurrentUri: function() {
+        return new URI(History.getState().url);
+      },
+      destroy: function() {
+        this._destroyView();
+        return this.detach();
+      },
+      _subRouter: null,
+      _parsedRoutes: [],
+      _replaceRegex: {
+        "([^\/]+)": new RegExp(reParam, 'g'),
+        "(.*)": new RegExp(reSplat, 'g')
       },
       _parseRoutes: function(routes) {
         var funcName, paramNames, route, routeRegEx, _results;
@@ -129,7 +120,19 @@
         }
         return params;
       },
-      _findRoute: function(path, data) {
+      _startRoute: function(path, data) {
+        var uri;
+        uri = this.getCurrentUri();
+        if (!(path != null)) {
+          path = uri.get('directory') + uri.get('file');
+        }
+        if (!(data != null)) {
+          data = uri.getData();
+        }
+        this._route(path, data);
+        return this.initialRoute = false;
+      },
+      _route: function(path, data) {
         var args, funcName, match, paramNames, regEx, routerClass, _i, _len, _ref, _ref1;
         if (path.substr(0, 1) === '/') {
           path = path.substr(1);
@@ -155,39 +158,35 @@
           }
         }
       },
+      _getHtml4AtRoot: function() {
+        var hash, href, u, uri;
+        u = new URI();
+        if (u.get('directory') + u.get('file') !== '/') {
+          uri = this.getCurrentUri();
+          hash = uri.get('directory') + uri.get('file');
+          if (uri.get('query')) {
+            hash = "" + hash + "?" + (uri.get('query'));
+          }
+          href = "/#" + hash;
+          return location.href = href;
+        }
+      },
       _initView: function() {
-        var className;
         if (!instanceOf(this.view, this.viewClass)) {
           if (!(this.options.el != null)) {
             throw "Cannot init view, no el specified";
           }
           this._destroyView();
-          className = $H(window).keyOf(this.viewClass);
           return this.view = new this.viewClass({
             injectTo: this.options.el
           });
         }
-      },
-      reset: function() {
-        if (this._subRouter != null) {
-          this._subRouter.destroy();
-          delete this._subRouter;
-        }
-        if (this.subView != null) {
-          this.subView.destroy();
-          delete this.subView;
-        }
-        return this.view.render();
       },
       _destroyView: function() {
         if (this.view != null) {
           this.view.destroy();
         }
         return this.options.el.empty();
-      },
-      destroy: function() {
-        this._destroyView();
-        return this.detach();
       }
     });
   });
