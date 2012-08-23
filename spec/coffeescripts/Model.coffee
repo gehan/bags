@@ -25,6 +25,13 @@ describe "Model test", ->
         expect(m.has 'test').toBe true
         expect(m.get 'test').toBe 'internet'
 
+    it 'sets attributes silently', ->
+        fired = false
+        m.addEvent 'change', -> fired = true
+        m.set 'more', 'fecker', silent: true
+
+        expect(fired).toBe false
+
     it 'sets multiple attributes', ->
         m.set
             test: 'internet2'
@@ -32,6 +39,16 @@ describe "Model test", ->
 
         expect(m.get 'test').toBe 'internet2'
         expect(m.get 'more').toBe 'fecker'
+
+    it 'sets multiple attributes silently', ->
+        fired = false
+        m.addEvent 'change', -> fired = true
+        m.set
+            test: 'internet2'
+            more: 'fecker'
+        , silent: true
+
+        expect(fired).toBe false
 
     it 'gets/sets attributes', ->
         obj = {k:'val'}
@@ -228,7 +245,7 @@ describe "Model test", ->
 
         setNextResponse
             status: 200
-            responseText: JSON.stringify
+            responseText: flatten
                 success: true
                 data:
                     id: 2
@@ -257,3 +274,79 @@ describe "Model test", ->
         expect(req.method).toBe 'POST'
         expect(req.params).toBe "_method=update&" + Object.toQueryString(attrs)
 
+    it 'save accepts values, doesnt update until server response', ->
+        m.set 'action', 'face'
+
+        setNextResponse
+            status: 200
+            responseText: flatten
+                success: true
+
+        # Track change event after request has completed
+        saveCompleted = false
+        changeCalledBeforeSave = false
+        m.addEvent 'saveComplete', ->
+            saveCompleted = true
+        m.addEvent 'change', ->
+            if not saveCompleted
+                changeCalledBeforeSave = true
+
+        m.save 'action', 'deleted'
+
+        req = mostRecentAjaxRequest()
+        expect(req.params).toBe Object.toQueryString(action: 'deleted')
+        expect(changeCalledBeforeSave).toBe false
+
+
+    it 'save accepts values, updates immediately if requested', ->
+        changeCalled = false
+        m.addEvent 'change', (key, value) ->
+            changeCalled = key == 'internet' and value == 'face'
+
+        setNextResponse
+            status: 200
+            responseText: flatten
+                success: true
+
+        m.save 'internet', 'face', dontWait: true
+
+        expect(changeCalled).toBe true
+
+    it 'save accepts value obj', ->
+        m.set 'action', 'face'
+        m.save action: 'deleted', feck: 'arse'
+
+        req = mostRecentAjaxRequest()
+        expect(req.params).toBe Object.toQueryString(action: 'deleted', feck: 'arse')
+
+    it 'save works with types', ->
+        Mdl = new Class
+            Implements: Model
+            types:
+                aDate: Date
+
+        m = new Mdl
+        changeCalled = false
+        m.addEvent 'change', ->
+            changeCalled = true
+        dte = new Date('2012-01-01')
+
+        m.save {aDate: dte}
+
+        req = mostRecentAjaxRequest()
+        expect(req.params).toBe Object.toQueryString(aDate: dte.toJSON())
+        expect(changeCalled).toBe false
+
+    it 'save accepts callback for success', ->
+        success = jasmine.createSpy 'success callback'
+        setNextResponse status: 200, responseText: flatten(success: true)
+        m.save null, null, success: success
+        expect(success).toHaveBeenCalled()
+        calledWith = flatten(success.mostRecentCall.args)
+        expect(calledWith).toBe flatten([success: true])
+
+    it 'save accepts callback for failure', ->
+        fail = jasmine.createSpy 'fail callback'
+        setNextResponse status: 500
+        m.save null, null, failure: fail
+        expect(fail).toHaveBeenCalled()

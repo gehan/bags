@@ -1,3 +1,5 @@
+# Provides a model
+
 define ['bags/Collection'], (Collection) -> \
 
 Model = new Class
@@ -17,19 +19,6 @@ Model = new Class
         @setOptions options
         @_setInitial attributes
         @
-
-    _setInitial: (attributes={}) ->
-        defaults = Object.map (Object.clone(@defaults)), (value, key) =>
-            @_getDefault key
-
-        # Merge defaults into attributes like this to
-        # keep references intact
-        attrKeys = Object.keys attributes
-        defaults = Object.filter defaults, (value, key) ->
-            key not in attrKeys
-
-        Object.merge attributes, defaults
-        @set attributes, silent: true
 
     set: (key, value, options={silent: false}) ->
         if typeOf(key) == 'object'
@@ -56,6 +45,87 @@ Model = new Class
 
     has: (key) ->
         @_attributes[key]?
+
+    fetch: (options={}) ->
+        return if @isNew()
+        @request.cancel() if @request?
+        @request = new Request.JSON(
+            url: @_getUrl()
+            method: 'get'
+            onSuccess: (response) => @_fetchDone response, options
+        ).send()
+
+    save: (key, value, options={dontWait: false, silent: false}) ->
+        # Save current state, update with any extra values
+        toUpdate = Object.clone this
+        toUpdate.set key, value, silent: true
+        data = toUpdate.toJSON()
+
+        if typeOf(key, 'object')
+            options = Object.merge(options, value)
+
+        # Update values immediately if saving optimistically
+        setAttrFn = @set.bind this, key, value, options
+        setAttrFn() if options.dontWait
+
+        new Request.JSON
+            url: @_getUrl()
+            data: data
+            method: if @isNew() then "POST" else "UPDATE"
+            onRequest: @_saveStart
+            onComplete: @_saveComplete
+            onSuccess: (response) =>
+                if @_isSaveSuccess response
+                    setAttrFn() if not options.dontWait
+                    @_saveSuccess response
+                    options.success response if options.success?
+                else
+                    reason = @parseFailResponse response
+                    @_saveFailure reason
+            onFailure: (xhr) =>
+                @_saveFailure xhr
+                options.failure xhr if options.failure?
+        .send()
+
+    parseResponse: (response) ->
+        response.data
+
+    parseFailResponse: (response) ->
+        response.error
+
+    isNew: -> not @id?
+
+    remove: ->
+        @fireEvent 'remove', [@]
+
+    toJSON: ->
+        attrs = {}
+        for key, value of @_attributes
+            attrs[key] = @_jsonKeyValue key, value
+        delete attrs._parent
+        return attrs
+
+    # Private methods
+    # ===============
+
+    _getUrl: ->
+        if @isNew()
+            @url
+        else
+            "#{@url}/#{@id}"
+
+    _setInitial: (attributes={}) ->
+        defaults = Object.map (Object.clone(@defaults)), (value, key) =>
+            @_getDefault key
+
+        # Merge defaults into attributes like this to
+        # keep references intact
+        attrKeys = Object.keys attributes
+        defaults = Object.filter defaults, (value, key) ->
+            key not in attrKeys
+
+        Object.merge attributes, defaults
+        @set attributes, silent: true
 
     _getType: (name) ->
         type = @types[name]
@@ -106,37 +176,10 @@ Model = new Class
         else
             def
 
-    fetch: (options={}) ->
-        @request.cancel() if @request?
-        @request = new Request.JSON(
-            url: "#{options.url or @url}#{@id}/"
-            method: 'get'
-            onSuccess: (response) => @_fetchDone response, options
-        ).send()
-
     _fetchDone: (response, options={}) ->
         model = @parseResponse response
         @set model, silent: true
         @fireEvent 'fetch', [true]
-
-    parseResponse: (response) ->
-        response.data
-
-    parseFailResponse: (response) ->
-        response.error
-
-    isNew: -> not @id?
-
-    save: ->
-        new Request.JSON
-            url: @url
-            data: @toJSON()
-            method: if @isNew() then "POST" else "UPDATE"
-            onRequest: @_saveStart
-            onComplete: @_saveComplete
-            onSuccess: @_saveSuccess
-            onFailure: @_saveFailure
-        .send()
 
     _saveStart: ->
         @fireEvent 'saveStart'
@@ -145,26 +188,15 @@ Model = new Class
         @fireEvent 'saveComplete'
 
     _saveSuccess: (response) ->
-        if @_isSaveSuccess response
-            model = @parseResponse response
-            @set model, silent: true
-            @fireEvent 'saveSuccess'
-        else
-            reason = @parseFailResponse response
-            @_saveFailure reason
+        model = @parseResponse(response) or {}
+        @set model, silent: true
+        @fireEvent 'saveSuccess'
 
     _saveFailure: (reason) ->
         @fireEvent 'saveFailure'
 
     _isSaveSuccess: (response) ->
         response.success is true
-
-    toJSON: ->
-        attrs = {}
-        for key, value of @_attributes
-            attrs[key] = @_jsonKeyValue key, value
-        delete attrs._parent
-        return attrs
 
     _jsonKeyValue: (key, value) ->
         jsonFn = "json#{key.capitalize()}"
@@ -178,10 +210,7 @@ Model = new Class
             @_jsonValue value
 
     _jsonValue: (value) ->
-        if typeOf(value) == 'object' and typeOf(value.toJSON) == 'function'
+        if value and typeOf(value.toJSON) == 'function'
             value.toJSON()
         else
             value
-
-    remove: ->
-        @fireEvent 'remove', [@]

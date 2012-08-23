@@ -33,6 +33,17 @@
       expect(m.has('test')).toBe(true);
       return expect(m.get('test')).toBe('internet');
     });
+    it('sets attributes silently', function() {
+      var fired;
+      fired = false;
+      m.addEvent('change', function() {
+        return fired = true;
+      });
+      m.set('more', 'fecker', {
+        silent: true
+      });
+      return expect(fired).toBe(false);
+    });
     it('sets multiple attributes', function() {
       m.set({
         test: 'internet2',
@@ -40,6 +51,20 @@
       });
       expect(m.get('test')).toBe('internet2');
       return expect(m.get('more')).toBe('fecker');
+    });
+    it('sets multiple attributes silently', function() {
+      var fired;
+      fired = false;
+      m.addEvent('change', function() {
+        return fired = true;
+      });
+      m.set({
+        test: 'internet2',
+        more: 'fecker'
+      }, {
+        silent: true
+      });
+      return expect(fired).toBe(false);
     });
     it('gets/sets attributes', function() {
       var obj;
@@ -277,7 +302,7 @@
       expect(m.isNew()).toBe(true);
       setNextResponse({
         status: 200,
-        responseText: JSON.stringify({
+        responseText: flatten({
           success: true,
           data: {
             id: 2
@@ -291,7 +316,7 @@
       expect(req.params).toBe(Object.toQueryString(attrs));
       return expect(m.id).toBe(2);
     });
-    return it('sends update query to url on save', function() {
+    it('sends update query to url on save', function() {
       var attrs, req;
       attrs = {
         id: 2,
@@ -304,6 +329,116 @@
       req = mostRecentAjaxRequest();
       expect(req.method).toBe('POST');
       return expect(req.params).toBe("_method=update&" + Object.toQueryString(attrs));
+    });
+    it('save accepts values, doesnt update until server response', function() {
+      var changeCalledBeforeSave, req, saveCompleted;
+      m.set('action', 'face');
+      setNextResponse({
+        status: 200,
+        responseText: flatten({
+          success: true
+        })
+      });
+      saveCompleted = false;
+      changeCalledBeforeSave = false;
+      m.addEvent('saveComplete', function() {
+        return saveCompleted = true;
+      });
+      m.addEvent('change', function() {
+        if (!saveCompleted) {
+          return changeCalledBeforeSave = true;
+        }
+      });
+      m.save('action', 'deleted');
+      req = mostRecentAjaxRequest();
+      expect(req.params).toBe(Object.toQueryString({
+        action: 'deleted'
+      }));
+      return expect(changeCalledBeforeSave).toBe(false);
+    });
+    it('save accepts values, updates immediately if requested', function() {
+      var changeCalled;
+      changeCalled = false;
+      m.addEvent('change', function(key, value) {
+        return changeCalled = key === 'internet' && value === 'face';
+      });
+      setNextResponse({
+        status: 200,
+        responseText: flatten({
+          success: true
+        })
+      });
+      m.save('internet', 'face', {
+        dontWait: true
+      });
+      return expect(changeCalled).toBe(true);
+    });
+    it('save accepts value obj', function() {
+      var req;
+      m.set('action', 'face');
+      m.save({
+        action: 'deleted',
+        feck: 'arse'
+      });
+      req = mostRecentAjaxRequest();
+      return expect(req.params).toBe(Object.toQueryString({
+        action: 'deleted',
+        feck: 'arse'
+      }));
+    });
+    it('save works with types', function() {
+      var Mdl, changeCalled, dte, req;
+      Mdl = new Class({
+        Implements: Model,
+        types: {
+          aDate: Date
+        }
+      });
+      m = new Mdl;
+      changeCalled = false;
+      m.addEvent('change', function() {
+        return changeCalled = true;
+      });
+      dte = new Date('2012-01-01');
+      m.save({
+        aDate: dte
+      });
+      req = mostRecentAjaxRequest();
+      expect(req.params).toBe(Object.toQueryString({
+        aDate: dte.toJSON()
+      }));
+      return expect(changeCalled).toBe(false);
+    });
+    it('save accepts callback for success', function() {
+      var calledWith, success;
+      success = jasmine.createSpy('success callback');
+      setNextResponse({
+        status: 200,
+        responseText: flatten({
+          success: true
+        })
+      });
+      m.save(null, null, {
+        success: success
+      });
+      expect(success).toHaveBeenCalled();
+      calledWith = flatten(success.mostRecentCall.args);
+      return expect(calledWith).toBe(flatten([
+        {
+          success: true
+        }
+      ]));
+    });
+    return it('save accepts callback for failure', function() {
+      var fail;
+      fail = jasmine.createSpy('fail callback');
+      setNextResponse({
+        status: 500
+      });
+      m.save(null, null, {
+        failure: fail
+      });
+      return expect(fail).toHaveBeenCalled();
     });
   });
 

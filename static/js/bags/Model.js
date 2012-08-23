@@ -17,24 +17,6 @@
         this._setInitial(attributes);
         return this;
       },
-      _setInitial: function(attributes) {
-        var attrKeys, defaults,
-          _this = this;
-        if (attributes == null) {
-          attributes = {};
-        }
-        defaults = Object.map(Object.clone(this.defaults), function(value, key) {
-          return _this._getDefault(key);
-        });
-        attrKeys = Object.keys(attributes);
-        defaults = Object.filter(defaults, function(value, key) {
-          return __indexOf.call(attrKeys, key) < 0;
-        });
-        Object.merge(attributes, defaults);
-        return this.set(attributes, {
-          silent: true
-        });
-      },
       set: function(key, value, options) {
         var attrs, k, opts, v;
         if (options == null) {
@@ -68,6 +50,123 @@
       },
       has: function(key) {
         return this._attributes[key] != null;
+      },
+      fetch: function(options) {
+        var _this = this;
+        if (options == null) {
+          options = {};
+        }
+        if (this.isNew()) {
+          return;
+        }
+        if (this.request != null) {
+          this.request.cancel();
+        }
+        return this.request = new Request.JSON({
+          url: this._getUrl(),
+          method: 'get',
+          onSuccess: function(response) {
+            return _this._fetchDone(response, options);
+          }
+        }).send();
+      },
+      save: function(key, value, options) {
+        var data, setAttrFn, toUpdate,
+          _this = this;
+        if (options == null) {
+          options = {
+            dontWait: false,
+            silent: false
+          };
+        }
+        toUpdate = Object.clone(this);
+        toUpdate.set(key, value, {
+          silent: true
+        });
+        data = toUpdate.toJSON();
+        if (typeOf(key, 'object')) {
+          options = Object.merge(options, value);
+        }
+        setAttrFn = this.set.bind(this, key, value, options);
+        if (options.dontWait) {
+          setAttrFn();
+        }
+        return new Request.JSON({
+          url: this._getUrl(),
+          data: data,
+          method: this.isNew() ? "POST" : "UPDATE",
+          onRequest: this._saveStart,
+          onComplete: this._saveComplete,
+          onSuccess: function(response) {
+            var reason;
+            if (_this._isSaveSuccess(response)) {
+              if (!options.dontWait) {
+                setAttrFn();
+              }
+              _this._saveSuccess(response);
+              if (options.success != null) {
+                return options.success(response);
+              }
+            } else {
+              reason = _this.parseFailResponse(response);
+              return _this._saveFailure(reason);
+            }
+          },
+          onFailure: function(xhr) {
+            _this._saveFailure(xhr);
+            if (options.failure != null) {
+              return options.failure(xhr);
+            }
+          }
+        }).send();
+      },
+      parseResponse: function(response) {
+        return response.data;
+      },
+      parseFailResponse: function(response) {
+        return response.error;
+      },
+      isNew: function() {
+        return !(this.id != null);
+      },
+      remove: function() {
+        return this.fireEvent('remove', [this]);
+      },
+      toJSON: function() {
+        var attrs, key, value, _ref;
+        attrs = {};
+        _ref = this._attributes;
+        for (key in _ref) {
+          value = _ref[key];
+          attrs[key] = this._jsonKeyValue(key, value);
+        }
+        delete attrs._parent;
+        return attrs;
+      },
+      _getUrl: function() {
+        if (this.isNew()) {
+          return this.url;
+        } else {
+          return "" + this.url + "/" + this.id;
+        }
+      },
+      _setInitial: function(attributes) {
+        var attrKeys, defaults,
+          _this = this;
+        if (attributes == null) {
+          attributes = {};
+        }
+        defaults = Object.map(Object.clone(this.defaults), function(value, key) {
+          return _this._getDefault(key);
+        });
+        attrKeys = Object.keys(attributes);
+        defaults = Object.filter(defaults, function(value, key) {
+          return __indexOf.call(attrKeys, key) < 0;
+        });
+        Object.merge(attributes, defaults);
+        return this.set(attributes, {
+          silent: true
+        });
       },
       _getType: function(name) {
         var type;
@@ -133,22 +232,6 @@
           return def;
         }
       },
-      fetch: function(options) {
-        var _this = this;
-        if (options == null) {
-          options = {};
-        }
-        if (this.request != null) {
-          this.request.cancel();
-        }
-        return this.request = new Request.JSON({
-          url: "" + (options.url || this.url) + this.id + "/",
-          method: 'get',
-          onSuccess: function(response) {
-            return _this._fetchDone(response, options);
-          }
-        }).send();
-      },
       _fetchDone: function(response, options) {
         var model;
         if (options == null) {
@@ -160,26 +243,6 @@
         });
         return this.fireEvent('fetch', [true]);
       },
-      parseResponse: function(response) {
-        return response.data;
-      },
-      parseFailResponse: function(response) {
-        return response.error;
-      },
-      isNew: function() {
-        return !(this.id != null);
-      },
-      save: function() {
-        return new Request.JSON({
-          url: this.url,
-          data: this.toJSON(),
-          method: this.isNew() ? "POST" : "UPDATE",
-          onRequest: this._saveStart,
-          onComplete: this._saveComplete,
-          onSuccess: this._saveSuccess,
-          onFailure: this._saveFailure
-        }).send();
-      },
       _saveStart: function() {
         return this.fireEvent('saveStart');
       },
@@ -187,34 +250,18 @@
         return this.fireEvent('saveComplete');
       },
       _saveSuccess: function(response) {
-        var model, reason;
-        if (this._isSaveSuccess(response)) {
-          model = this.parseResponse(response);
-          this.set(model, {
-            silent: true
-          });
-          return this.fireEvent('saveSuccess');
-        } else {
-          reason = this.parseFailResponse(response);
-          return this._saveFailure(reason);
-        }
+        var model;
+        model = this.parseResponse(response) || {};
+        this.set(model, {
+          silent: true
+        });
+        return this.fireEvent('saveSuccess');
       },
       _saveFailure: function(reason) {
         return this.fireEvent('saveFailure');
       },
       _isSaveSuccess: function(response) {
         return response.success === true;
-      },
-      toJSON: function() {
-        var attrs, key, value, _ref;
-        attrs = {};
-        _ref = this._attributes;
-        for (key in _ref) {
-          value = _ref[key];
-          attrs[key] = this._jsonKeyValue(key, value);
-        }
-        delete attrs._parent;
-        return attrs;
       },
       _jsonKeyValue: function(key, value) {
         var jsonFn, v, _i, _len, _results;
@@ -235,14 +282,11 @@
         }
       },
       _jsonValue: function(value) {
-        if (typeOf(value) === 'object' && typeOf(value.toJSON) === 'function') {
+        if (value && typeOf(value.toJSON) === 'function') {
           return value.toJSON();
         } else {
           return value;
         }
-      },
-      remove: function() {
-        return this.fireEvent('remove', [this]);
       }
     });
   });
