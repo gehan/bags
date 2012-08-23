@@ -63,25 +63,25 @@ Model = new Class
         # Save current state, update with any extra values
         toUpdate = Object.clone this
         toUpdate.set key, value, silent: true if key?
-        data = toUpdate.toJSON()
+        data = json: JSON.encode toUpdate.toJSON()
 
         if typeOf(key, 'object')
             options = Object.merge(options, value)
 
         # Update values immediately if saving optimistically
-        setAttrFn = @set.bind this, key, value, options
-        setAttrFn() if options.dontWait
+        setAttrFn = @set.bind this, key, value, options if key?
+        setAttrFn() if options.dontWait and setAttrFn?
 
         @request.cancel() if @request?
         @request = new Request.JSON
             url: @_getUrl()
             data: data
-            method: if @isNew() then "post" else "update"
+            method: if @isNew() then "post" else "put"
             onRequest: @_saveStart
             onComplete: @_saveComplete
             onSuccess: (response) =>
                 if @_isSuccess response
-                    setAttrFn() if not options.dontWait
+                    setAttrFn() if not options.dontWait and setAttrFn?
                     @_saveSuccess response
                     options.success response if options.success?
                 else
@@ -141,7 +141,7 @@ Model = new Class
         if @isNew()
             @url
         else
-            "#{@url}/#{@id}"
+            "#{@url}#{@id}/"
 
     _setInitial: (attributes={}) ->
         defaults = Object.map (Object.clone(@defaults)), (value, key) =>
