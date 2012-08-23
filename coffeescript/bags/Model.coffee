@@ -52,7 +52,11 @@ Model = new Class
         @request = new Request.JSON(
             url: @_getUrl()
             method: 'get'
-            onSuccess: (response) => @_fetchDone response, options
+            onSuccess: (response) =>
+                @_fetchDone response, options
+                options.success(response) if options.success?
+            onFailure: (xhr) =>
+                options.failure(xhr) if options.failure?
         ).send()
 
     save: (key, value, options={dontWait: false, silent: false}) ->
@@ -72,20 +76,21 @@ Model = new Class
         @request = new Request.JSON
             url: @_getUrl()
             data: data
-            method: if @isNew() then "POST" else "UPDATE"
+            method: if @isNew() then "post" else "update"
             onRequest: @_saveStart
             onComplete: @_saveComplete
             onSuccess: (response) =>
-                if @_isSaveSuccess response
+                if @_isSuccess response
                     setAttrFn() if not options.dontWait
                     @_saveSuccess response
                     options.success response if options.success?
                 else
                     reason = @parseFailResponse response
                     @_saveFailure reason
+                    options.failure reason, xhr if options.failure?
             onFailure: (xhr) =>
                 @_saveFailure xhr
-                options.failure xhr if options.failure?
+                options.failure null, xhr if options.failure?
         .send()
 
     parseResponse: (response) ->
@@ -95,6 +100,29 @@ Model = new Class
         response.error
 
     isNew: -> not @id?
+
+    destroy: (options={dontWait: false}) ->
+        if @isNew()
+            @fireEvent 'destroy'
+            return
+
+        if options.dontWait
+            @fireEvent 'destroy'
+
+        @request.cancel() if @request?
+        @request = new Request.JSON(
+            url: @_getUrl()
+            method: 'delete'
+            onSuccess: (response) =>
+                if @_isSuccess response
+                    @fireEvent 'destroy' if not options.dontWait
+                    options.success(response) if options.success?
+                else
+                    reason = @parseFailResponse response
+                    options.failure reason, xhr if options.failure?
+            onFailure: (xhr) =>
+                options.failure(null, xhr) if options.failure?
+        ).send()
 
     remove: ->
         @fireEvent 'remove', [@]
@@ -196,7 +224,7 @@ Model = new Class
     _saveFailure: (reason) ->
         @fireEvent 'saveFailure'
 
-    _isSaveSuccess: (response) ->
+    _isSuccess: (response) ->
         response.success is true
 
     _jsonKeyValue: (key, value) ->

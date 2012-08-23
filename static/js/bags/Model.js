@@ -66,7 +66,15 @@
           url: this._getUrl(),
           method: 'get',
           onSuccess: function(response) {
-            return _this._fetchDone(response, options);
+            _this._fetchDone(response, options);
+            if (options.success != null) {
+              return options.success(response);
+            }
+          },
+          onFailure: function(xhr) {
+            if (options.failure != null) {
+              return options.failure(xhr);
+            }
           }
         }).send();
       },
@@ -99,12 +107,12 @@
         return this.request = new Request.JSON({
           url: this._getUrl(),
           data: data,
-          method: this.isNew() ? "POST" : "UPDATE",
+          method: this.isNew() ? "post" : "update",
           onRequest: this._saveStart,
           onComplete: this._saveComplete,
           onSuccess: function(response) {
             var reason;
-            if (_this._isSaveSuccess(response)) {
+            if (_this._isSuccess(response)) {
               if (!options.dontWait) {
                 setAttrFn();
               }
@@ -114,13 +122,16 @@
               }
             } else {
               reason = _this.parseFailResponse(response);
-              return _this._saveFailure(reason);
+              _this._saveFailure(reason);
+              if (options.failure != null) {
+                return options.failure(reason, xhr);
+              }
             }
           },
           onFailure: function(xhr) {
             _this._saveFailure(xhr);
             if (options.failure != null) {
-              return options.failure(xhr);
+              return options.failure(null, xhr);
             }
           }
         }).send();
@@ -133,6 +144,49 @@
       },
       isNew: function() {
         return !(this.id != null);
+      },
+      destroy: function(options) {
+        var _this = this;
+        if (options == null) {
+          options = {
+            dontWait: false
+          };
+        }
+        if (this.isNew()) {
+          this.fireEvent('destroy');
+          return;
+        }
+        if (options.dontWait) {
+          this.fireEvent('destroy');
+        }
+        if (this.request != null) {
+          this.request.cancel();
+        }
+        return this.request = new Request.JSON({
+          url: this._getUrl(),
+          method: 'delete',
+          onSuccess: function(response) {
+            var reason;
+            if (_this._isSuccess(response)) {
+              if (!options.dontWait) {
+                _this.fireEvent('destroy');
+              }
+              if (options.success != null) {
+                return options.success(response);
+              }
+            } else {
+              reason = _this.parseFailResponse(response);
+              if (options.failure != null) {
+                return options.failure(reason, xhr);
+              }
+            }
+          },
+          onFailure: function(xhr) {
+            if (options.failure != null) {
+              return options.failure(null, xhr);
+            }
+          }
+        }).send();
       },
       remove: function() {
         return this.fireEvent('remove', [this]);
@@ -265,7 +319,7 @@
       _saveFailure: function(reason) {
         return this.fireEvent('saveFailure');
       },
-      _isSaveSuccess: function(response) {
+      _isSuccess: function(response) {
         return response.success === true;
       },
       _jsonKeyValue: function(key, value) {

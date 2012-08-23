@@ -429,7 +429,7 @@
         }
       ]));
     });
-    return it('save accepts callback for failure', function() {
+    it('save accepts callback for failure', function() {
       var fail;
       fail = jasmine.createSpy('fail callback');
       setNextResponse({
@@ -439,6 +439,33 @@
         failure: fail
       });
       return expect(fail).toHaveBeenCalled();
+    });
+    return it('destroy send delete request to server', function() {
+      var calledWith, destroy, req, success;
+      m.id = 1;
+      success = jasmine.createSpy('success callback');
+      destroy = jasmine.createSpy('destroy event');
+      setNextResponse({
+        status: 200,
+        responseText: flatten({
+          success: true
+        })
+      });
+      m.addEvent('destroy', destroy);
+      m.destroy({
+        success: success
+      });
+      expect(success).toHaveBeenCalled();
+      expect(destroy).toHaveBeenCalled();
+      calledWith = flatten(success.mostRecentCall.args);
+      expect(calledWith).toBe(flatten([
+        {
+          success: true
+        }
+      ]));
+      req = mostRecentAjaxRequest();
+      expect(req.method).toBe('POST');
+      return expect(req.params).toBe("_method=delete");
     });
   });
 
