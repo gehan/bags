@@ -1,4 +1,4 @@
-define ['core/Router', 'app/views/App'], (Router, AppView) -> \
+define ['bags/Router', 'app/views/App'], (Router, AppView) -> \
 
 new Class
     Extends: Router

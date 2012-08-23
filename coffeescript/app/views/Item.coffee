@@ -1,4 +1,4 @@
-define ['core/View'], (View) -> \
+define ['bags/View'], (View) -> \
 
 new Class
     Extends: View

@@ -1,7 +1,7 @@
 Template = null
 
 done = false
-curl ['core/Template'], (_Template) ->
+curl ['bags/Template'], (_Template) ->
     Template = _Template
     done = true
 
@@ -23,7 +23,7 @@ describe "Template test", ->
 
     it ('find templates in TEMPLATES collection'), ->
         t.TEMPLATES.test = "internet1"
-        tpl = t.getTemplate 'test'
+        tpl = t._getTemplate 'test'
 
         expect(tpl).toBe 'internet1'
 
@@ -37,7 +37,7 @@ describe "Template test", ->
 
         document.body.adopt tag
 
-        tpl = t.getTemplate 'test2'
+        tpl = t._getTemplate 'test2'
         expect(tpl).toBe 'oh yeah hello'
 
     it ('renders a dust template'), ->

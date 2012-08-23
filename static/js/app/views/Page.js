@@ -1,6 +1,6 @@
 (function() {
 
-  define(['templates/Page', 'core/View', 'app/Collection', 'app/Model', 'app/views/Item'], function(tpl, View, ItemCollection, PageModel, ItemView) {
+  define(['templates/Page', 'bags/View', 'app/Collection', 'app/Model', 'app/views/Item'], function(tpl, View, ItemCollection, PageModel, ItemView) {
     return new Class({
       Extends: View,
       Binds: ['renderCollection', 'addOne', 'removeOne'],

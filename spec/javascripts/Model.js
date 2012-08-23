@@ -7,7 +7,7 @@
 
   done = false;
 
-  curl(['core/Model', 'core/Collection'], function(_Model, _Collection) {
+  curl(['bags/Model', 'bags/Collection'], function(_Model, _Collection) {
     Model = _Model;
     Collection = _Collection;
     return done = true;

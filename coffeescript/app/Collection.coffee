@@ -1,4 +1,4 @@
-define ['core/Collection', 'core/Model'], (Collection, Model) -> \
+define ['bags/Collection', 'bags/Model'], (Collection, Model) -> \
 
 new Class
     Extends: Collection

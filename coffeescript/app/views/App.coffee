@@ -1,4 +1,4 @@
-define ['templates/app','core/View'], (tpl, View) -> \
+define ['templates/app','bags/View'], (tpl, View) -> \
 
 new Class
     Extends: View

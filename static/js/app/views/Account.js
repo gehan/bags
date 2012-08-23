@@ -1,6 +1,6 @@
 (function() {
 
-  define(['templates/Account', 'core/View'], function(tpl, View) {
+  define(['templates/Account', 'bags/View'], function(tpl, View) {
     return {
       Root: new Class({
         Extends: View,

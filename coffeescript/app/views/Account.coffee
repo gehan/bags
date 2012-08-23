@@ -1,4 +1,4 @@
-define ['templates/Account', 'core/View'], (tpl, View) -> {
+define ['templates/Account', 'bags/View'], (tpl, View) -> {
 
 Root: new Class
     Extends: View

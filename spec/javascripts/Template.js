@@ -5,7 +5,7 @@
 
   done = false;
 
-  curl(['core/Template'], function(_Template) {
+  curl(['bags/Template'], function(_Template) {
     Template = _Template;
     return done = true;
   });
@@ -28,7 +28,7 @@
     it('find templates in TEMPLATES collection', function() {
       var tpl;
       t.TEMPLATES.test = "internet1";
-      tpl = t.getTemplate('test');
+      tpl = t._getTemplate('test');
       return expect(tpl).toBe('internet1');
     });
     it('find templates in script tags', function() {
@@ -40,7 +40,7 @@
       });
       tag.set('html', 'oh yeah hello');
       document.body.adopt(tag);
-      tpl = t.getTemplate('test2');
+      tpl = t._getTemplate('test2');
       return expect(tpl).toBe('oh yeah hello');
     });
     it('renders a dust template', function() {

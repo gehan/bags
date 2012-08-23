@@ -2,7 +2,7 @@ Router = null
 View = null
 
 done = false
-curl ['core/Router', 'core/View'], (_Router, _View) ->
+curl ['bags/Router', 'bags/View'], (_Router, _View) ->
     Router = _Router
     View = _View
     done = true

@@ -1,6 +1,6 @@
 (function() {
 
-  define(['core/Model'], function(Model) {
+  define(['bags/Model'], function(Model) {
     return new Class({
       Extends: Model,
       url: '/page/'

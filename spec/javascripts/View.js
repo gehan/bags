@@ -5,7 +5,7 @@
 
   done = false;
 
-  curl(['core/View'], function(_View) {
+  curl(['bags/View'], function(_View) {
     View = _View;
     return done = true;
   });

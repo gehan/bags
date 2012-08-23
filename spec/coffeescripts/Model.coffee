@@ -2,7 +2,7 @@ Model = null
 Collection = null
 
 done = false
-curl ['core/Model', 'core/Collection'], (_Model, _Collection) ->
+curl ['bags/Model', 'bags/Collection'], (_Model, _Collection) ->
     Model = _Model
     Collection = _Collection
     done = true

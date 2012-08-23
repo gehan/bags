@@ -1,4 +1,4 @@
-define ['core/Model'], (Model) -> \
+define ['bags/Model'], (Model) -> \
 
 new Class
     Extends: Model

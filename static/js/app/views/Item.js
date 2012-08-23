@@ -1,6 +1,6 @@
 (function() {
 
-  define(['core/View'], function(View) {
+  define(['bags/View'], function(View) {
     return new Class({
       Extends: View,
       template: 'item',

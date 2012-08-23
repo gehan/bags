@@ -1,6 +1,6 @@
 (function() {
 
-  define(['core/Router', 'app/views/Account'], function(Router, AccountViews) {
+  define(['bags/Router', 'app/views/Account'], function(Router, AccountViews) {
     return new Class({
       Extends: Router,
       routes: {

@@ -1,4 +1,4 @@
-define ['templates/Page', 'core/View', 'app/Collection', 'app/Model', 'app/views/Item'], \
+define ['templates/Page', 'bags/View', 'app/Collection', 'app/Model', 'app/views/Item'], \
 (tpl, View, ItemCollection, PageModel, ItemView) -> \
 
 new Class

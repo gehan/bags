@@ -7,7 +7,7 @@
 
   done = false;
 
-  curl(['core/Router', 'core/View'], function(_Router, _View) {
+  curl(['bags/Router', 'bags/View'], function(_Router, _View) {
     Router = _Router;
     View = _View;
     done = true;

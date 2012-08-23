@@ -1,6 +1,6 @@
 (function() {
 
-  define(['templates/app', 'core/View'], function(tpl, View) {
+  define(['templates/app', 'bags/View'], function(tpl, View) {
     return new Class({
       Extends: View,
       template: 'base'

@@ -1,6 +1,6 @@
 (function() {
 
-  define(['core/Collection', 'core/Model'], function(Collection, Model) {
+  define(['bags/Collection', 'bags/Model'], function(Collection, Model) {
     return new Class({
       Extends: Collection,
       model: Model,

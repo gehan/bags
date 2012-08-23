@@ -1,7 +1,7 @@
 View = null
 
 done = false
-curl ['core/View'], (_View) ->
+curl ['bags/View'], (_View) ->
     View = _View
     done = true
 
