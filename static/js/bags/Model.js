@@ -80,9 +80,11 @@
           };
         }
         toUpdate = Object.clone(this);
-        toUpdate.set(key, value, {
-          silent: true
-        });
+        if (key != null) {
+          toUpdate.set(key, value, {
+            silent: true
+          });
+        }
         data = toUpdate.toJSON();
         if (typeOf(key, 'object')) {
           options = Object.merge(options, value);
@@ -91,7 +93,10 @@
         if (options.dontWait) {
           setAttrFn();
         }
-        return new Request.JSON({
+        if (this.request != null) {
+          this.request.cancel();
+        }
+        return this.request = new Request.JSON({
           url: this._getUrl(),
           data: data,
           method: this.isNew() ? "POST" : "UPDATE",

@@ -58,7 +58,7 @@ Model = new Class
     save: (key, value, options={dontWait: false, silent: false}) ->
         # Save current state, update with any extra values
         toUpdate = Object.clone this
-        toUpdate.set key, value, silent: true
+        toUpdate.set key, value, silent: true if key?
         data = toUpdate.toJSON()
 
         if typeOf(key, 'object')
@@ -68,7 +68,8 @@ Model = new Class
         setAttrFn = @set.bind this, key, value, options
         setAttrFn() if options.dontWait
 
-        new Request.JSON
+        @request.cancel() if @request?
+        @request = new Request.JSON
             url: @_getUrl()
             data: data
             method: if @isNew() then "POST" else "UPDATE"
