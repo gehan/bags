@@ -1,9 +1,9 @@
 beforeEach(function() {
-  this.addMatchers({
-    toBePlaying: function(expectedSong) {
-      var player = this.actual;
-      return player.currentlyPlayingSong === expectedSong && 
-             player.isPlaying;
+    // Replace MooTools XHR with fake request
+    if (typeof Browser.Request !== 'undefined') {
+        Browser.Request = FakeXMLHttpRequest;
     }
-  });
+
+    clearAjaxRequests();
+
 });

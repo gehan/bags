@@ -2,3 +2,4 @@ local_settings.py
 *.pyc
 *.swp
 .sass-cache/*
+*.DS_Store

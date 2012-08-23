@@ -34,7 +34,7 @@
       return expect(m.get('test')).toBe('internet');
     });
     it('sets multiple attributes', function() {
-      m.setMany({
+      m.set({
         test: 'internet2',
         more: 'fecker'
       });
@@ -61,7 +61,7 @@
       m.addEvent('change:aKey', function(value) {
         return changedAKey = value;
       });
-      m.setMany({
+      m.set({
         aKey: 'internet',
         bKey: 'test'
       });
@@ -72,7 +72,7 @@
     it('sets defaults silently when initializing model', function() {
       var changeFired;
       Model.implement({
-        _defaults: {
+        defaults: {
           type: 'text',
           internet: 2,
           override: 'feck'
@@ -91,15 +91,15 @@
       expect(m.get('override')).toBe('arse');
       expect(changeFired).toBe(false);
       Model.implement({
-        _defaults: null
+        defaults: null
       });
       return Model.implement({
-        _defaults: {}
+        defaults: {}
       });
     });
     it('inits types correctly', function() {
       Model.implement({
-        _types: {
+        types: {
           aDate: 'Date',
           aModel: function() {
             return Model;
@@ -117,15 +117,15 @@
       expect(instanceOf(m.get('aModel'), Model)).toBe(true);
       expect(m.get('aModel').get('feck')).toBe('arse');
       Model.implement({
-        _types: null
+        types: null
       });
       return Model.implement({
-        _types: {}
+        types: {}
       });
     });
     it('inits type within arrays correctly', function() {
       Model.implement({
-        _types: {
+        types: {
           aDate: 'Date'
         }
       });
@@ -135,10 +135,10 @@
       expect(m.get('aDate')[0].format('%Y/%m/%d %H:%M')).toBe('2012/01/01 02:02');
       expect(m.get('aDate')[1].format('%Y/%m/%d %H:%M')).toBe('2012/01/01 02:03');
       Model.implement({
-        _types: null
+        types: null
       });
       return Model.implement({
-        _types: {}
+        types: {}
       });
     });
     it('sets id attribute when passed in', function() {
@@ -211,7 +211,7 @@
       var Mdl, mdl, subModel, vals;
       Mdl = new Class({
         Extends: Model,
-        _types: {
+        types: {
           subModel: Model
         }
       });
@@ -225,7 +225,7 @@
       subModel = mdl.get('subModel');
       return expect(subModel.get('_parent')).toBe(mdl);
     });
-    return it('instantiates a collection if set as type, adds to collections', function() {
+    it('instantiates a collection if set as type, adds to collections', function() {
       var Cll, Mdl, addedCollection, addedKey, mdl, vals, values;
       Cll = new Class({
         Extends: Collection,
@@ -233,7 +233,7 @@
       });
       Mdl = new Class({
         Extends: Model,
-        _types: {
+        types: {
           subCollection: Cll
         }
       });
@@ -262,6 +262,48 @@
       expect(flatten(mdl.get('subCollection').toJSON())).toBe(flatten(values));
       expect(addedKey).toBe('subCollection');
       return expect(addedCollection).toBe(mdl.get('subCollection'));
+    });
+    it('sends post query to url on save', function() {
+      var attrs, req, saved;
+      attrs = {
+        value1: 'key1',
+        value2: 'key2'
+      };
+      saved = false;
+      m.addEvent('saveSuccess', function() {
+        return saved = true;
+      });
+      m.set(attrs);
+      expect(m.isNew()).toBe(true);
+      setNextResponse({
+        status: 200,
+        responseText: JSON.stringify({
+          success: true,
+          data: {
+            id: 2
+          }
+        })
+      });
+      m.save();
+      req = mostRecentAjaxRequest();
+      expect(req.method).toBe('POST');
+      expect(saved).toBe(true);
+      expect(req.params).toBe(Object.toQueryString(attrs));
+      return expect(m.id).toBe(2);
+    });
+    return it('sends update query to url on save', function() {
+      var attrs, req;
+      attrs = {
+        id: 2,
+        value1: 'key1',
+        value2: 'key2'
+      };
+      m.set(attrs);
+      expect(m.isNew()).toBe(false);
+      m.save();
+      req = mostRecentAjaxRequest();
+      expect(req.method).toBe('POST');
+      return expect(req.params).toBe("_method=update&" + Object.toQueryString(attrs));
     });
   });
 

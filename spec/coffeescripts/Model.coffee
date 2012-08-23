@@ -26,7 +26,7 @@ describe "Model test", ->
         expect(m.get 'test').toBe 'internet'
 
     it 'sets multiple attributes', ->
-        m.setMany
+        m.set
             test: 'internet2'
             more: 'fecker'
 
@@ -47,7 +47,7 @@ describe "Model test", ->
         m.addEvent 'change:aKey', (value) ->
             changedAKey = value
 
-        m.setMany
+        m.set
             aKey: 'internet'
             bKey: 'test'
 
@@ -57,7 +57,7 @@ describe "Model test", ->
 
     it 'sets defaults silently when initializing model', ->
         Model.implement
-            _defaults:
+            defaults:
                 type: 'text'
                 internet: 2
                 override: 'feck'
@@ -73,12 +73,12 @@ describe "Model test", ->
 
         expect(changeFired).toBe false
 
-        Model.implement _defaults: null
-        Model.implement _defaults: {}
+        Model.implement defaults: null
+        Model.implement defaults: {}
 
     it 'inits types correctly', ->
         Model.implement
-            _types:
+            types:
                 aDate: 'Date'
                 aModel: -> Model
 
@@ -92,12 +92,12 @@ describe "Model test", ->
         expect(instanceOf m.get('aModel'), Model).toBe true
         expect(m.get('aModel').get 'feck').toBe 'arse'
 
-        Model.implement _types: null
-        Model.implement _types: {}
+        Model.implement types: null
+        Model.implement types: {}
 
     it 'inits type within arrays correctly', ->
         Model.implement
-            _types:
+            types:
                 aDate: 'Date'
 
         m = new Model
@@ -106,8 +106,8 @@ describe "Model test", ->
         expect(m.get('aDate')[0].format '%Y/%m/%d %H:%M').toBe '2012/01/01 02:02'
         expect(m.get('aDate')[1].format '%Y/%m/%d %H:%M').toBe '2012/01/01 02:03'
 
-        Model.implement _types: null
-        Model.implement _types: {}
+        Model.implement types: null
+        Model.implement types: {}
 
     it 'sets id attribute when passed in', ->
         m = new Model id: 12
@@ -169,7 +169,7 @@ describe "Model test", ->
     it 'gives child model reference to itself', ->
         Mdl = new Class
             Extends: Model
-            _types:
+            types:
                 subModel: Model
 
         vals =
@@ -188,7 +188,7 @@ describe "Model test", ->
 
         Mdl = new Class
             Extends: Model
-            _types:
+            types:
                 subCollection: Cll
 
         values = [
@@ -212,4 +212,48 @@ describe "Model test", ->
 
         expect(addedKey).toBe 'subCollection'
         expect(addedCollection).toBe mdl.get('subCollection')
+
+    it 'sends post query to url on save', ->
+        attrs =
+            value1: 'key1'
+            value2: 'key2'
+
+        saved = false
+        m.addEvent 'saveSuccess', ->
+            saved = true
+
+        m.set attrs
+
+        expect(m.isNew()).toBe true
+
+        setNextResponse
+            status: 200
+            responseText: JSON.stringify
+                success: true
+                data:
+                    id: 2
+
+        m.save()
+
+        req = mostRecentAjaxRequest()
+        expect(req.method).toBe 'POST'
+        expect(saved).toBe true
+        expect(req.params).toBe Object.toQueryString(attrs)
+        expect(m.id).toBe 2
+
+    it 'sends update query to url on save', ->
+        attrs =
+            id: 2
+            value1: 'key1'
+            value2: 'key2'
+
+        m.set attrs
+
+        expect(m.isNew()).toBe false
+
+        m.save()
+
+        req = mostRecentAjaxRequest()
+        expect(req.method).toBe 'POST'
+        expect(req.params).toBe "_method=update&" + Object.toQueryString(attrs)
 
