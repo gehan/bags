@@ -87,18 +87,22 @@
             silent: false
           };
         }
-        toUpdate = Object.clone(this);
+        toUpdate = new Model(this.toJSON());
         if (key != null) {
           toUpdate.set(key, value, {
             silent: true
           });
         }
-        data = toUpdate.toJSON();
+        data = {
+          model: JSON.encode(toUpdate.toJSON())
+        };
         if (typeOf(key, 'object')) {
           options = Object.merge(options, value);
         }
-        setAttrFn = this.set.bind(this, key, value, options);
-        if (options.dontWait) {
+        if (key != null) {
+          setAttrFn = this.set.bind(this, key, value, options);
+        }
+        if (options.dontWait && (setAttrFn != null)) {
           setAttrFn();
         }
         if (this.request != null) {
@@ -107,13 +111,13 @@
         return this.request = new Request.JSON({
           url: this._getUrl(),
           data: data,
-          method: this.isNew() ? "post" : "update",
+          method: this.isNew() ? "post" : "put",
           onRequest: this._saveStart,
           onComplete: this._saveComplete,
           onSuccess: function(response) {
             var reason;
             if (_this._isSuccess(response)) {
-              if (!options.dontWait) {
+              if (!options.dontWait && (setAttrFn != null)) {
                 setAttrFn();
               }
               _this._saveSuccess(response);
@@ -206,7 +210,7 @@
         if (this.isNew()) {
           return this.url;
         } else {
-          return "" + this.url + "/" + this.id;
+          return "" + this.url + this.id + "/";
         }
       },
       _setInitial: function(attributes) {

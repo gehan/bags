@@ -61,9 +61,9 @@ Model = new Class
 
     save: (key, value, options={dontWait: false, silent: false}) ->
         # Save current state, update with any extra values
-        toUpdate = Object.clone this
+        toUpdate = new Model @toJSON()
         toUpdate.set key, value, silent: true if key?
-        data = json: JSON.encode toUpdate.toJSON()
+        data = model: JSON.encode toUpdate.toJSON()
 
         if typeOf(key, 'object')
             options = Object.merge(options, value)

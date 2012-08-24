@@ -289,7 +289,7 @@
       return expect(addedCollection).toBe(mdl.get('subCollection'));
     });
     it('sends post query to url on save', function() {
-      var attrs, req, saved;
+      var attrs, req, requestData, saved;
       attrs = {
         value1: 'key1',
         value2: 'key2'
@@ -313,11 +313,15 @@
       req = mostRecentAjaxRequest();
       expect(req.method).toBe('POST');
       expect(saved).toBe(true);
-      expect(req.params).toBe(Object.toQueryString(attrs));
+      requestData = {
+        model: JSON.encode(attrs)
+      };
+      console.log(requestData);
+      expect(req.params).toBe(Object.toQueryString(requestData));
       return expect(m.id).toBe(2);
     });
     it('sends update query to url on save', function() {
-      var attrs, req;
+      var attrs, req, requestData;
       attrs = {
         id: 2,
         value1: 'key1',
@@ -328,10 +332,14 @@
       m.save();
       req = mostRecentAjaxRequest();
       expect(req.method).toBe('POST');
-      return expect(req.params).toBe("_method=update&" + Object.toQueryString(attrs));
+      requestData = {
+        _method: "put",
+        model: JSON.encode(attrs)
+      };
+      return expect(req.params).toBe(Object.toQueryString(requestData));
     });
     it('save accepts values, doesnt update until server response', function() {
-      var changeCalledBeforeSave, req, saveCompleted;
+      var changeCalledBeforeSave, req, requestData, saveCompleted;
       m.set('action', 'face');
       setNextResponse({
         status: 200,
@@ -351,9 +359,12 @@
       });
       m.save('action', 'deleted');
       req = mostRecentAjaxRequest();
-      expect(req.params).toBe(Object.toQueryString({
-        action: 'deleted'
-      }));
+      requestData = {
+        model: JSON.encode({
+          action: 'deleted'
+        })
+      };
+      expect(req.params).toBe(Object.toQueryString(requestData));
       return expect(changeCalledBeforeSave).toBe(false);
     });
     it('save accepts values, updates immediately if requested', function() {
@@ -374,20 +385,23 @@
       return expect(changeCalled).toBe(true);
     });
     it('save accepts value obj', function() {
-      var req;
+      var req, requestData;
       m.set('action', 'face');
       m.save({
         action: 'deleted',
         feck: 'arse'
       });
       req = mostRecentAjaxRequest();
-      return expect(req.params).toBe(Object.toQueryString({
-        action: 'deleted',
-        feck: 'arse'
-      }));
+      requestData = {
+        model: JSON.encode({
+          action: 'deleted',
+          feck: 'arse'
+        })
+      };
+      return expect(req.params).toBe(Object.toQueryString(requestData));
     });
     it('save works with types', function() {
-      var Mdl, changeCalled, dte, req;
+      var Mdl, changeCalled, dte, req, requestData;
       Mdl = new Class({
         Implements: Model,
         types: {
@@ -404,9 +418,12 @@
         aDate: dte
       });
       req = mostRecentAjaxRequest();
-      expect(req.params).toBe(Object.toQueryString({
-        aDate: dte.toJSON()
-      }));
+      requestData = {
+        model: JSON.encode({
+          aDate: dte.toJSON()
+        })
+      };
+      expect(req.params).toBe(Object.toQueryString(requestData));
       return expect(changeCalled).toBe(false);
     });
     it('save accepts callback for success', function() {

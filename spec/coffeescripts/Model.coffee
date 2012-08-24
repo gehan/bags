@@ -255,7 +255,10 @@ describe "Model test", ->
         req = mostRecentAjaxRequest()
         expect(req.method).toBe 'POST'
         expect(saved).toBe true
-        expect(req.params).toBe Object.toQueryString(attrs)
+        requestData =
+            model: JSON.encode attrs
+        console.log requestData
+        expect(req.params).toBe Object.toQueryString(requestData)
         expect(m.id).toBe 2
 
     it 'sends update query to url on save', ->
@@ -272,7 +275,10 @@ describe "Model test", ->
 
         req = mostRecentAjaxRequest()
         expect(req.method).toBe 'POST'
-        expect(req.params).toBe "_method=update&" + Object.toQueryString(attrs)
+        requestData =
+            _method: "put"
+            model: JSON.encode attrs
+        expect(req.params).toBe Object.toQueryString(requestData)
 
     it 'save accepts values, doesnt update until server response', ->
         m.set 'action', 'face'
@@ -294,7 +300,9 @@ describe "Model test", ->
         m.save 'action', 'deleted'
 
         req = mostRecentAjaxRequest()
-        expect(req.params).toBe Object.toQueryString(action: 'deleted')
+        requestData =
+            model: JSON.encode(action: 'deleted')
+        expect(req.params).toBe Object.toQueryString(requestData)
         expect(changeCalledBeforeSave).toBe false
 
 
@@ -317,7 +325,9 @@ describe "Model test", ->
         m.save action: 'deleted', feck: 'arse'
 
         req = mostRecentAjaxRequest()
-        expect(req.params).toBe Object.toQueryString(action: 'deleted', feck: 'arse')
+        requestData =
+            model: JSON.encode(action: 'deleted', feck: 'arse')
+        expect(req.params).toBe Object.toQueryString(requestData)
 
     it 'save works with types', ->
         Mdl = new Class
@@ -334,7 +344,9 @@ describe "Model test", ->
         m.save {aDate: dte}
 
         req = mostRecentAjaxRequest()
-        expect(req.params).toBe Object.toQueryString(aDate: dte.toJSON())
+        requestData =
+            model: JSON.encode(aDate: dte.toJSON())
+        expect(req.params).toBe Object.toQueryString(requestData)
         expect(changeCalled).toBe false
 
     it 'save accepts callback for success', ->

@@ -80,8 +80,8 @@ function FakeXMLHttpRequest() {
     send: function(data) {
       xhr.params = data;
       xhr.readyState = 2;
-	  var response = ajaxResponses.pop();
-	  response && this.response(response);
+      var response = ajaxResponses.pop();
+      response && this.response(response);
     },
 
     getResponseHeader: function(name) {
