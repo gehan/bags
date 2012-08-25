@@ -1,6 +1,6 @@
 # Provides a model
 
-define ['bags/Collection'], (Collection) -> \
+define ['bags/Collection', 'bags/Persist'], (Collection, Persist) -> \
 
 Model = new Class
     Implements: [Events, Options]

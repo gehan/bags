@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(['bags/Collection'], function(Collection) {
+  define(['bags/Collection', 'bags/Persist'], function(Collection, Persist) {
     var Model;
     return Model = new Class({
       Implements: [Events, Options],
