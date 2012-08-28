@@ -5,8 +5,7 @@
     var Model;
     return Model = new Class({
       Implements: [Events, Options],
-      Binds: ["_saveSuccess", "_saveFailure"],
-      _attributes: {},
+      Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"],
       collections: {},
       types: {},
       defaults: {},
@@ -120,6 +119,8 @@
           url: this._getUrl(),
           data: data,
           method: this.isNew() ? "post" : "put",
+          onRequest: this._saveStart,
+          onComplete: this._saveComplete,
           onSuccess: function(response) {
             var reason;
             if (_this._isSuccess(response)) {
@@ -212,6 +213,7 @@
         delete attrs._parent;
         return attrs;
       },
+      _attributes: {},
       _getUrl: function() {
         var url;
         url = this.url;

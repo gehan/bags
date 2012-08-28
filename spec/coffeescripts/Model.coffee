@@ -15,7 +15,8 @@ describe "Model test", ->
 
     beforeEach ->
         waitsFor -> done
-        m = new Model()
+        m = new Model {},
+            url: '/items'
 
     it 'gets/sets attributes', ->
         expect(m.has 'test').toBe false
@@ -332,6 +333,7 @@ describe "Model test", ->
     it 'save works with types', ->
         Mdl = new Class
             Implements: Model
+            url: '/items'
             types:
                 aDate: Date
 

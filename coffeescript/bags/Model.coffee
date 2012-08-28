@@ -4,9 +4,8 @@ define ['bags/Collection', 'bags/Persist'], (Collection, Persist) -> \
 
 Model = new Class
     Implements: [Events, Options]
-    Binds: ["_saveSuccess", "_saveFailure"]
+    Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"]
 
-    _attributes: {}
     collections: {}
 
     types: {}
@@ -77,7 +76,10 @@ Model = new Class
             url: @_getUrl()
             data: data
             method: if @isNew() then "post" else "put"
+            onRequest: @_saveStart
+            onComplete: @_saveComplete
             onSuccess: (response) =>
+
                 if @_isSuccess response
                     setAttrFn() if not options.dontWait and setAttrFn?
                     @_saveSuccess response
@@ -134,6 +136,7 @@ Model = new Class
 
     # Private methods
     # ===============
+    _attributes: {}
 
     _getUrl: ->
         url = @url

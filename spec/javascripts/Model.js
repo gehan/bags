@@ -24,7 +24,9 @@
       waitsFor(function() {
         return done;
       });
-      return m = new Model();
+      return m = new Model({}, {
+        url: '/items'
+      });
     });
     it('gets/sets attributes', function() {
       expect(m.has('test')).toBe(false);
@@ -404,6 +406,7 @@
       var Mdl, changeCalled, dte, req, requestData;
       Mdl = new Class({
         Implements: Model,
+        url: '/items',
         types: {
           aDate: Date
         }
