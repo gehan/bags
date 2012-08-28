@@ -6,11 +6,11 @@ Model = new Class
     Implements: [Events, Options]
     Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"]
 
-    collections: {}
-
-    types: {}
+    fields: {}
     defaults: {}
-    _idField: "id"
+    idField: "id"
+
+    collections: {}
 
     initialize: (attributes, options={}) ->
         @url = options.url if options.url?
@@ -18,6 +18,12 @@ Model = new Class
         @setOptions options
         @_setInitial attributes
         @
+
+    has: (key) ->
+        @_attributes[key]?
+
+    get: (key) ->
+        @_attributes[key]
 
     set: (key, value, options={silent: false}) ->
         if typeOf(key) == 'object'
@@ -33,17 +39,11 @@ Model = new Class
         else
             # Else set normally
             @_attributes[key] = @_makeValue key, value
-            if key == @_idField
+            if key == @idField
                 @id = value
         if not options.silent
             @fireEvent "change", [key, value]
             @fireEvent "change:#{key}", [value]
-
-    get: (key) ->
-        @_attributes[key]
-
-    has: (key) ->
-        @_attributes[key]?
 
     fetch: (options={}) ->
         return if @isNew()
@@ -164,7 +164,7 @@ Model = new Class
         @set attributes, silent: true
 
     _getType: (name) ->
-        type = @types[name]
+        type = @fields[name]
         if typeOf(type) == "function"
             type()
         else if typeOf(type) ==  "string"

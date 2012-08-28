@@ -126,7 +126,7 @@
     });
     it('inits types correctly', function() {
       Model.implement({
-        types: {
+        fields: {
           aDate: 'Date',
           aModel: function() {
             return Model;
@@ -144,15 +144,15 @@
       expect(instanceOf(m.get('aModel'), Model)).toBe(true);
       expect(m.get('aModel').get('feck')).toBe('arse');
       Model.implement({
-        types: null
+        fields: null
       });
       return Model.implement({
-        types: {}
+        fields: {}
       });
     });
     it('inits type within arrays correctly', function() {
       Model.implement({
-        types: {
+        fields: {
           aDate: 'Date'
         }
       });
@@ -162,10 +162,10 @@
       expect(m.get('aDate')[0].format('%Y/%m/%d %H:%M')).toBe('2012/01/01 02:02');
       expect(m.get('aDate')[1].format('%Y/%m/%d %H:%M')).toBe('2012/01/01 02:03');
       Model.implement({
-        types: null
+        fields: null
       });
       return Model.implement({
-        types: {}
+        fields: {}
       });
     });
     it('sets id attribute when passed in', function() {
@@ -177,7 +177,7 @@
     });
     it('sets custom id attribute when passed in', function() {
       Model.implement({
-        _idField: "_id"
+        idField: "_id"
       });
       m = new Model({
         _id: 12
@@ -185,7 +185,7 @@
       expect(m.get('_id')).toBe(12);
       expect(m.id).toBe(12);
       return Model.implement({
-        _idField: "id"
+        idField: "id"
       });
     });
     it('jsons basic key values', function() {
@@ -238,7 +238,7 @@
       var Mdl, mdl, subModel, vals;
       Mdl = new Class({
         Extends: Model,
-        types: {
+        fields: {
           subModel: Model
         }
       });
@@ -260,7 +260,7 @@
       });
       Mdl = new Class({
         Extends: Model,
-        types: {
+        fields: {
           subCollection: Cll
         }
       });
@@ -407,7 +407,7 @@
       Mdl = new Class({
         Implements: Model,
         url: '/items',
-        types: {
+        fields: {
           aDate: Date
         }
       });

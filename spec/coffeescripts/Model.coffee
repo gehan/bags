@@ -96,7 +96,7 @@ describe "Model test", ->
 
     it 'inits types correctly', ->
         Model.implement
-            types:
+            fields:
                 aDate: 'Date'
                 aModel: -> Model
 
@@ -110,12 +110,12 @@ describe "Model test", ->
         expect(instanceOf m.get('aModel'), Model).toBe true
         expect(m.get('aModel').get 'feck').toBe 'arse'
 
-        Model.implement types: null
-        Model.implement types: {}
+        Model.implement fields: null
+        Model.implement fields: {}
 
     it 'inits type within arrays correctly', ->
         Model.implement
-            types:
+            fields:
                 aDate: 'Date'
 
         m = new Model
@@ -124,8 +124,8 @@ describe "Model test", ->
         expect(m.get('aDate')[0].format '%Y/%m/%d %H:%M').toBe '2012/01/01 02:02'
         expect(m.get('aDate')[1].format '%Y/%m/%d %H:%M').toBe '2012/01/01 02:03'
 
-        Model.implement types: null
-        Model.implement types: {}
+        Model.implement fields: null
+        Model.implement fields: {}
 
     it 'sets id attribute when passed in', ->
         m = new Model id: 12
@@ -135,7 +135,7 @@ describe "Model test", ->
 
     it 'sets custom id attribute when passed in', ->
         Model.implement
-            _idField: "_id"
+            idField: "_id"
 
         m = new Model _id: 12
 
@@ -143,7 +143,7 @@ describe "Model test", ->
         expect(m.id).toBe(12)
 
         Model.implement
-            _idField: "id"
+            idField: "id"
 
     it 'jsons basic key values', ->
         vals =
@@ -187,7 +187,7 @@ describe "Model test", ->
     it 'gives child model reference to itself', ->
         Mdl = new Class
             Extends: Model
-            types:
+            fields:
                 subModel: Model
 
         vals =
@@ -206,7 +206,7 @@ describe "Model test", ->
 
         Mdl = new Class
             Extends: Model
-            types:
+            fields:
                 subCollection: Cll
 
         values = [
@@ -334,7 +334,7 @@ describe "Model test", ->
         Mdl = new Class
             Implements: Model
             url: '/items'
-            types:
+            fields:
                 aDate: Date
 
         m = new Mdl

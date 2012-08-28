@@ -6,10 +6,10 @@
     return Model = new Class({
       Implements: [Events, Options],
       Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"],
-      collections: {},
-      types: {},
+      fields: {},
       defaults: {},
-      _idField: "id",
+      idField: "id",
+      collections: {},
       initialize: function(attributes, options) {
         if (options == null) {
           options = {};
@@ -23,6 +23,12 @@
         this.setOptions(options);
         this._setInitial(attributes);
         return this;
+      },
+      has: function(key) {
+        return this._attributes[key] != null;
+      },
+      get: function(key) {
+        return this._attributes[key];
       },
       set: function(key, value, options) {
         var attrs, k, opts, v;
@@ -43,7 +49,7 @@
           this._attributes[key] = this._addCollection(key, value);
         } else {
           this._attributes[key] = this._makeValue(key, value);
-          if (key === this._idField) {
+          if (key === this.idField) {
             this.id = value;
           }
         }
@@ -51,12 +57,6 @@
           this.fireEvent("change", [key, value]);
           return this.fireEvent("change:" + key, [value]);
         }
-      },
-      get: function(key) {
-        return this._attributes[key];
-      },
-      has: function(key) {
-        return this._attributes[key] != null;
       },
       fetch: function(options) {
         var _this = this;
@@ -249,7 +249,7 @@
       },
       _getType: function(name) {
         var type;
-        type = this.types[name];
+        type = this.fields[name];
         if (typeOf(type) === "function") {
           return type();
         } else if (typeOf(type) === "string") {
