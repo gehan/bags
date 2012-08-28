@@ -5,14 +5,22 @@
     var Model;
     return Model = new Class({
       Implements: [Events, Options],
-      Binds: ["_saveStart", "_saveComplete", "_saveSuccess", "_saveFailure"],
+      Binds: ["_saveSuccess", "_saveFailure"],
       _attributes: {},
       collections: {},
       types: {},
       defaults: {},
       _idField: "id",
-      url: "/item/",
       initialize: function(attributes, options) {
+        if (options == null) {
+          options = {};
+        }
+        if (options.url != null) {
+          this.url = options.url;
+        }
+        if (options.collection != null) {
+          this.collection = options.collection;
+        }
         this.setOptions(options);
         this._setInitial(attributes);
         return this;
@@ -112,8 +120,6 @@
           url: this._getUrl(),
           data: data,
           method: this.isNew() ? "post" : "put",
-          onRequest: this._saveStart,
-          onComplete: this._saveComplete,
           onSuccess: function(response) {
             var reason;
             if (_this._isSuccess(response)) {
@@ -207,10 +213,18 @@
         return attrs;
       },
       _getUrl: function() {
+        var url;
+        url = this.url;
+        if (!(url != null) && (this.collection != null)) {
+          url = this.collection.url;
+        }
+        if (!(url != null)) {
+          throw new Error("No url specified in model collection or model itself");
+        }
         if (this.isNew()) {
-          return this.url;
+          return url;
         } else {
-          return "" + this.url + this.id + "/";
+          return "" + url + "/" + this.id;
         }
       },
       _setInitial: function(attributes) {

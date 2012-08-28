@@ -4,7 +4,7 @@ define ['bags/Collection', 'bags/Persist'], (Collection, Persist) -> \
 
 Model = new Class
     Implements: [Events, Options]
-    Binds: ["_saveStart", "_saveComplete", "_saveSuccess", "_saveFailure"]
+    Binds: ["_saveSuccess", "_saveFailure"]
 
     _attributes: {}
     collections: {}
@@ -13,9 +13,9 @@ Model = new Class
     defaults: {}
     _idField: "id"
 
-    url: "/item/"
-
-    initialize: (attributes, options) ->
+    initialize: (attributes, options={}) ->
+        @url = options.url if options.url?
+        @collection = options.collection if options.collection?
         @setOptions options
         @_setInitial attributes
         @
@@ -77,8 +77,6 @@ Model = new Class
             url: @_getUrl()
             data: data
             method: if @isNew() then "post" else "put"
-            onRequest: @_saveStart
-            onComplete: @_saveComplete
             onSuccess: (response) =>
                 if @_isSuccess response
                     setAttrFn() if not options.dontWait and setAttrFn?
@@ -138,10 +136,16 @@ Model = new Class
     # ===============
 
     _getUrl: ->
+        url = @url
+        if not url? and @collection?
+            url = @collection.url
+        if not url?
+            throw new Error "No url specified in model collection or model itself"
+
         if @isNew()
-            @url
+            url
         else
-            "#{@url}#{@id}/"
+            "#{url}/#{@id}"
 
     _setInitial: (attributes={}) ->
         defaults = Object.map (Object.clone(@defaults)), (value, key) =>

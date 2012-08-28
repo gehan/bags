@@ -13,6 +13,15 @@
         if (models == null) {
           models = [];
         }
+        if (options == null) {
+          options = {};
+        }
+        if (options.url != null) {
+          this.url = options.url;
+        }
+        if (options.model != null) {
+          this.model = options.model;
+        }
         this.setOptions(options);
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
@@ -25,7 +34,9 @@
       add: function(model, options) {
         var m, _i, _len, _results;
         if (options == null) {
-          options = {};
+          options = {
+            silent: false
+          };
         }
         if (!(this.model != null)) {
           throw new Error("Model not defined for collection");
@@ -39,6 +50,9 @@
           return _results;
         } else if (instanceOf(model, this.model)) {
           this._add(model);
+          if (!(model.collection != null)) {
+            model.collection = this;
+          }
           if (!options.silent) {
             return this.fireEvent('add', [model]);
           }
@@ -47,12 +61,6 @@
         }
       },
       _add: function(model) {
-        var _this = this;
-        model.addEvent('remove', function(m) {
-          return _this._remove(m, {
-            silent: true
-          });
-        });
         return this.push(model);
       },
       reset: function(models, options) {
@@ -63,9 +71,11 @@
         while (model = this.pop()) {
           this._remove(model, options);
         }
-        this.add(models, {
-          silent: true
-        });
+        if (models != null) {
+          this.add(models, {
+            silent: true
+          });
+        }
         if (!options.silent) {
           return this.fireEvent('reset', [this]);
         }
