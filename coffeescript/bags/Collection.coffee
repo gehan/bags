@@ -1,11 +1,11 @@
-define  -> \
+define ['bags/Model'], (Model) -> \
 
 new Class
     Extends: Array
     Implements: [Options, Events]
 
     _models: []
-    model: null
+    model: Model
     options: {}
     url: null
 

@@ -3,6 +3,7 @@ Collection = null
 
 done = false
 curl ['bags/Model', 'bags/Collection'], (_Model, _Collection) ->
+    window.Model = _Model
     Model = _Model
     Collection = _Collection
     done = true

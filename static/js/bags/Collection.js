@@ -1,11 +1,11 @@
 (function() {
 
-  define(function() {
+  define(['bags/Model'], function(Model) {
     return new Class({
       Extends: Array,
       Implements: [Options, Events],
       _models: [],
-      model: null,
+      model: Model,
       options: {},
       url: null,
       initialize: function(models, options) {

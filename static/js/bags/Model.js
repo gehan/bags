@@ -1,13 +1,14 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(['bags/Collection', 'bags/Persist'], function(Collection, Persist) {
+  define(['require', 'bags/Persist'], function(require, Persist) {
     var Model;
     return Model = new Class({
       Implements: [Events, Options],
       Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"],
       fields: {},
       defaults: {},
+      id: null,
       idField: "id",
       collections: {},
       initialize: function(attributes, options) {
@@ -86,7 +87,7 @@
         }).send();
       },
       save: function(key, value, options) {
-        var data, setAttrFn, toUpdate,
+        var ModelClass, attrs, data, setAttrFn, toUpdate,
           _this = this;
         if (options == null) {
           options = {
@@ -94,11 +95,20 @@
             silent: false
           };
         }
-        toUpdate = new Model(this.toJSON());
+        ModelClass = this.$constructor;
         if (key != null) {
-          toUpdate.set(key, value, {
-            silent: true
-          });
+          attrs = {};
+          if (!(this.isNew() != null)) {
+            attrs[this.idField] = this.id;
+          }
+          toUpdate = new ModelClass;
+          if (key != null) {
+            toUpdate.set(key, value, {
+              silent: true
+            });
+          }
+        } else {
+          toUpdate = new ModelClass(this.toJSON());
         }
         data = {
           model: JSON.encode(toUpdate.toJSON())
@@ -199,9 +209,6 @@
           }
         }).send();
       },
-      remove: function() {
-        return this.fireEvent('remove', [this]);
-      },
       toJSON: function() {
         var attrs, key, value, _ref;
         attrs = {};
@@ -214,6 +221,66 @@
         return attrs;
       },
       _attributes: {},
+      _makeValue: function(key, value) {
+        var item, type, _i, _len, _results;
+        type = this._getType(key);
+        if (typeOf(value) === 'array') {
+          _results = [];
+          for (_i = 0, _len = value.length; _i < _len; _i++) {
+            item = value[_i];
+            _results.push(this._makeValue(key, item));
+          }
+          return _results;
+        } else if (!type) {
+          return value;
+        } else if (type === String) {
+          return String(value);
+        } else if (type === Number) {
+          return Number.from(value);
+        } else if (type === Date) {
+          return Date.parse(value);
+        } else if (instanceOf(new type(), Model)) {
+          value = value || {};
+          value._parent = this;
+          return new type(value);
+        } else {
+          return new type(value);
+        }
+      },
+      _getType: function(name) {
+        var type;
+        type = this.fields[name];
+        if (typeOf(type) === "function") {
+          return type();
+        } else if (typeOf(type) === "string") {
+          return window[type];
+        } else {
+          return type;
+        }
+      },
+      _isCollection: function(key, value) {
+        var Collection, type;
+        try {
+          Collection = require('bags/Collection');
+        } catch (error) {
+          return false;
+        }
+        type = this._getType(key);
+        return (type != null) && typeOf(value) === 'array' && instanceOf(new type(), Collection);
+      },
+      _addCollection: function(key, value, options) {
+        var collection, collectionClass;
+        if (options == null) {
+          options = {};
+        }
+        collectionClass = this._getType(key);
+        collection = new collectionClass(value, {
+          parentModel: this
+        });
+        this.collections[key] = collection;
+        this.fireEvent('addCollection', [key, collection]);
+        return collection;
+      },
       _getUrl: function() {
         var url;
         url = this.url;
@@ -246,61 +313,6 @@
         return this.set(attributes, {
           silent: true
         });
-      },
-      _getType: function(name) {
-        var type;
-        type = this.fields[name];
-        if (typeOf(type) === "function") {
-          return type();
-        } else if (typeOf(type) === "string") {
-          return window[type];
-        } else {
-          return type;
-        }
-      },
-      _addCollection: function(key, value, options) {
-        var collection, collectionClass;
-        if (options == null) {
-          options = {};
-        }
-        collectionClass = this._getType(key);
-        collection = new collectionClass(value, {
-          parentModel: this
-        });
-        this.collections[key] = collection;
-        this.fireEvent('addCollection', [key, collection]);
-        return collection;
-      },
-      _isCollection: function(key, value) {
-        var type;
-        type = this._getType(key);
-        return (type != null) && typeOf(value) === 'array' && instanceOf(new type(), Collection);
-      },
-      _makeValue: function(key, value) {
-        var item, type, _i, _len, _results;
-        type = this._getType(key);
-        if (typeOf(value) === 'array') {
-          _results = [];
-          for (_i = 0, _len = value.length; _i < _len; _i++) {
-            item = value[_i];
-            _results.push(this._makeValue(key, item));
-          }
-          return _results;
-        } else if (!type) {
-          return value;
-        } else if (type === String) {
-          return String(value);
-        } else if (type === Number) {
-          return Number.from(value);
-        } else if (type === Date) {
-          return Date.parse(value);
-        } else if (instanceOf(new type(), Model)) {
-          value = value || {};
-          value._parent = this;
-          return new type(value);
-        } else {
-          return new type(value);
-        }
       },
       _getDefault: function(key) {
         var def;

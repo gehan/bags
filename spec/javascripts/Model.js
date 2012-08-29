@@ -8,6 +8,7 @@
   done = false;
 
   curl(['bags/Model', 'bags/Collection'], function(_Model, _Collection) {
+    window.Model = _Model;
     Model = _Model;
     Collection = _Collection;
     return done = true;

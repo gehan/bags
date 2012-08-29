@@ -1,0 +1,302 @@
+<!DOCTYPE html><html><head><title>Model.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../../index.html" class="source"><span class="file_name">README</span></a><a href="../../coffeescript/bags/View.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">View.coffee</span></a><a href="../../coffeescript/bags/Template.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Template.coffee</span></a><a href="../../coffeescript/bags/Persist.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Persist.coffee</span></a><a href="../../coffeescript/bags/Model.coffee.html" class="source selected"><span class="base_path">coffeescript / bags / </span><span class="file_name">Model.coffee</span></a><a href="../../coffeescript/bags/Collection.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Collection.coffee</span></a><a href="../../coffeescript/bags/Router.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Router.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>Model.coffee</h1><div class="filepath">coffeescript/bags/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><p>Provides a simple model class. The key benefit is separating models from
+your view code, along with concerns like persistance, and interacting
+through the events fired when a model is updated to handle rendering.</p>
+</td><td class="code"><div class="highlight"><pre><span class="nx">define</span> <span class="p">[</span><span class="s1">&#39;require&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Persist&#39;</span><span class="p">],</span> <span class="nf">(require, Persist) -&gt;</span> <span class="o">\</span>
+
+<span class="nv">Model = </span><span class="k">new</span> <span class="nx">Class</span>
+    <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Events</span><span class="p">,</span> <span class="nx">Options</span><span class="p">]</span>
+    <span class="nv">Binds: </span><span class="p">[</span><span class="s2">&quot;_saveSuccess&quot;</span><span class="p">,</span> <span class="s2">&quot;_saveFailure&quot;</span><span class="p">,</span> <span class="s2">&quot;_saveStart&quot;</span><span class="p">,</span> <span class="s2">&quot;_saveComplete&quot;</span><span class="p">]</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><p>Specificying fields is not required, as a model will accept whatever
+fields you give it, however they will just be strings or numbers as
+the case may be.</p>
+
+<p>If you wish to define types you can do so here, and when a value is
+passed to that field (e.g. JSON string representation) this class
+will be instatiated using that class as the first parameter,</p>
+
+<p>Values can be the class object directly, a function that returns a
+class or a string which will be queries as window[string]</p>
+
+<p>e.g.</p>
+
+<pre><code>fields:
+    createdDate: Date
+    someObj: "ObjectClass"
+    someModel: -&gt; SomeModel
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">fields: </span><span class="p">{}</span></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><p>Default values for fields can be set also, and do not require a field
+definition above.</p>
+
+<p>e.g.</p>
+
+<pre><code>defaults:
+    text: "Hello there"
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">defaults: </span><span class="p">{}</span></pre></div></td></tr><tr id="section-4"><td class="docs"><div class="pilwrap"><a href="#section-4" class="pilcrow">&#182;</a></div><p>When a model's id field has been set then this field is populated. Setting
+this field will not change it and will probably break your model</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">id: </span><span class="kc">null</span></pre></div></td></tr><tr id="section-5"><td class="docs"><div class="pilwrap"><a href="#section-5" class="pilcrow">&#182;</a></div><p>Some database systems use a different id field to <code>id</code>. If this is the case
+then override it here and that field will be used to give the magic <code>id</code> field
+here</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">idField: </span><span class="s2">&quot;id&quot;</span></pre></div></td></tr><tr id="section-6"><td class="docs"><div class="pilwrap"><a href="#section-6" class="pilcrow">&#182;</a></div><p>Collections can be associated with a model so as sub collections, e.g. a post
+object has number of comments associate with it. For this to work you would
+need to define the field as a Collection field in <code>fields</code>. To make Collection
+field access simpler they would then be stored in <code>collections[fieldName]</code></p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">collections: </span><span class="p">{}</span></pre></div></td></tr><tr id="section-7"><td class="docs"><div class="pilwrap"><a href="#section-7" class="pilcrow">&#182;</a></div><p>When instantiating a model often you will be passing it's field values to as
+the <code>attributes</code> object, typically after a json response from the server.</p>
+
+<p>e.g.</p>
+
+<pre><code>m = new Model
+    id: 5
+    text: "Hello there everyone"
+    createdDate: "2012/05/15"
+</code></pre>
+
+<p>Usually a model would be part of a collection and generally instatiated from
+there but if that's not the case then you pass in the collection it's part of
+directly, and the server resource url too for persistance. Generally the url
+would be taken from the associated collection.</p>
+
+<p>When a model is first instatiated no events are fired.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">initialize: </span><span class="nf">(attributes, options={}) -&gt;</span>
+        <span class="vi">@url = </span><span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="o">?</span>
+        <span class="vi">@collection = </span><span class="nx">options</span><span class="p">.</span><span class="nx">collection</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">collection</span><span class="o">?</span>
+        <span class="nx">@setOptions</span> <span class="nx">options</span>
+        <span class="nx">@_setInitial</span> <span class="nx">attributes</span>
+        <span class="err">@</span></pre></div></td></tr><tr id="section-8"><td class="docs"><div class="pilwrap"><a href="#section-8" class="pilcrow">&#182;</a></div><p>Simple has, get methods</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">has: </span><span class="nf">(key) -&gt;</span>
+        <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
+
+    <span class="nv">get: </span><span class="nf">(key) -&gt;</span>
+        <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span></pre></div></td></tr><tr id="section-9"><td class="docs"><div class="pilwrap"><a href="#section-9" class="pilcrow">&#182;</a></div><p>Set can accept <code>key</code>, <code>value</code> arguments to set one field's value, or it
+can accept a key/value object to set multiple at once.</p>
+
+<p>If any fields are defined then the value will be passed to the field class.
+If the value is an Collection then it is also added to <code>@collection</code>.</p>
+
+<p>For each field that's updated 2 <code>change</code> events are fired to notify any
+listeners, unless <code>silent: true</code> is passed through as an option.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">set: </span><span class="nf">(key, value, options={silent: false}) -&gt;</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
+            <span class="nv">attrs = </span><span class="nx">key</span>
+            <span class="nv">opts = </span><span class="nx">value</span> <span class="o">or</span> <span class="nx">options</span>
+            <span class="nx">@set</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">opts</span> <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">attrs</span>
+            <span class="k">return</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">@_isCollection</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
+            <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_addCollection</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
+        <span class="k">else</span>
+            <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_makeValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
+            <span class="k">if</span> <span class="nx">key</span> <span class="o">==</span> <span class="nx">@idField</span>
+                <span class="vi">@id = </span><span class="nx">value</span>
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+            <span class="nx">@fireEvent</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+            <span class="nx">@fireEvent</span> <span class="s2">&quot;change:#{key}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">]</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><p>Fetchs the model from the server, useful if you just have the id
+of the model.</p>
+
+<p>Fires a <code>fetch</code> event after the model has been successfully fetched
+and parsed.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">fetch: </span><span class="nf">(options={}) -&gt;</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
+        <span class="nx">@request</span><span class="p">.</span><span class="nx">cancel</span><span class="p">()</span> <span class="k">if</span> <span class="nx">@request</span><span class="o">?</span>
+        <span class="vi">@request = </span><span class="k">new</span> <span class="nx">Request</span><span class="p">.</span><span class="nx">JSON</span><span class="p">(</span>
+            <span class="nv">url: </span><span class="nx">@_getUrl</span><span class="p">()</span>
+            <span class="nv">method: </span><span class="s1">&#39;get&#39;</span>
+            <span class="nv">onSuccess: </span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="nx">@_fetchDone</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">options</span>
+                <span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="o">?</span>
+            <span class="nv">onFailure: </span><span class="p">(</span><span class="nx">xhr</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span><span class="p">(</span><span class="nx">xhr</span><span class="p">)</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span><span class="o">?</span>
+        <span class="p">).</span><span class="nx">send</span><span class="p">()</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><p>Saves the model in its current state to the server or only specific
+fields if passed in.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">save: </span><span class="nf">(key, value, options={dontWait: false, silent: false}) -&gt;</span>
+        <span class="nv">ModelClass = </span><span class="nx">@$constructor</span>
+        <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
+            <span class="nv">attrs = </span><span class="p">{}</span>
+            <span class="nx">attrs</span><span class="p">[</span><span class="nx">@idField</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@id</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">@isNew</span><span class="p">()</span><span class="o">?</span>
+            <span class="nv">toUpdate = </span><span class="k">new</span> <span class="nx">ModelClass</span>
+            <span class="nx">toUpdate</span><span class="p">.</span><span class="nx">set</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
+        <span class="k">else</span>
+            <span class="nv">toUpdate = </span><span class="k">new</span> <span class="nx">ModelClass</span> <span class="nx">@toJSON</span><span class="p">()</span>
+
+        <span class="nv">data = model: </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">toUpdate</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span>
+            <span class="nv">options = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><p>Update values immediately if saving optimistically</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="nv">setAttrFn = </span><span class="nx">@set</span><span class="p">.</span><span class="nx">bind</span> <span class="k">this</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">options</span> <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
+        <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span> <span class="o">and</span> <span class="nx">setAttrFn</span><span class="o">?</span>
+
+        <span class="nx">@request</span><span class="p">.</span><span class="nx">cancel</span><span class="p">()</span> <span class="k">if</span> <span class="nx">@request</span><span class="o">?</span>
+        <span class="vi">@request = </span><span class="k">new</span> <span class="nx">Request</span><span class="p">.</span><span class="nx">JSON</span>
+            <span class="nv">url: </span><span class="nx">@_getUrl</span><span class="p">()</span>
+            <span class="nv">data: </span><span class="nx">data</span>
+            <span class="nv">method: </span><span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span> <span class="k">then</span> <span class="s2">&quot;post&quot;</span> <span class="k">else</span> <span class="s2">&quot;put&quot;</span>
+            <span class="nv">onRequest: </span><span class="nx">@_saveStart</span>
+            <span class="nv">onComplete: </span><span class="nx">@_saveComplete</span>
+            <span class="nv">onSuccess: </span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span>
+
+                <span class="k">if</span> <span class="nx">@_isSuccess</span> <span class="nx">response</span>
+                    <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span> <span class="o">and</span> <span class="nx">setAttrFn</span><span class="o">?</span>
+                    <span class="nx">@_saveSuccess</span> <span class="nx">response</span>
+                    <span class="nx">options</span><span class="p">.</span><span class="nx">success</span> <span class="nx">response</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="o">?</span>
+                <span class="k">else</span>
+                    <span class="nv">reason = </span><span class="nx">@parseFailResponse</span> <span class="nx">response</span>
+                    <span class="nx">@_saveFailure</span> <span class="nx">reason</span>
+                    <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span> <span class="nx">reason</span><span class="p">,</span> <span class="nx">xhr</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span><span class="o">?</span>
+            <span class="nv">onFailure: </span><span class="p">(</span><span class="nx">xhr</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="nx">@_saveFailure</span> <span class="nx">xhr</span>
+                <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">xhr</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span><span class="o">?</span>
+        <span class="p">.</span><span class="nx">send</span><span class="p">()</span>
+
+    <span class="nv">parseResponse: </span><span class="nf">(response) -&gt;</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
+
+    <span class="nv">parseFailResponse: </span><span class="nf">(response) -&gt;</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">error</span>
+
+    <span class="nv">isNew: </span><span class="o">-&gt;</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span>
+
+    <span class="nv">destroy: </span><span class="nf">(options={dontWait: false}) -&gt;</span>
+        <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
+            <span class="nx">@fireEvent</span> <span class="s1">&#39;destroy&#39;</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
+            <span class="nx">@fireEvent</span> <span class="s1">&#39;destroy&#39;</span>
+
+        <span class="nx">@request</span><span class="p">.</span><span class="nx">cancel</span><span class="p">()</span> <span class="k">if</span> <span class="nx">@request</span><span class="o">?</span>
+        <span class="vi">@request = </span><span class="k">new</span> <span class="nx">Request</span><span class="p">.</span><span class="nx">JSON</span><span class="p">(</span>
+            <span class="nv">url: </span><span class="nx">@_getUrl</span><span class="p">()</span>
+            <span class="nv">method: </span><span class="s1">&#39;delete&#39;</span>
+            <span class="nv">onSuccess: </span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="k">if</span> <span class="nx">@_isSuccess</span> <span class="nx">response</span>
+                    <span class="nx">@fireEvent</span> <span class="s1">&#39;destroy&#39;</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
+                    <span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">success</span><span class="o">?</span>
+                <span class="k">else</span>
+                    <span class="nv">reason = </span><span class="nx">@parseFailResponse</span> <span class="nx">response</span>
+                    <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span> <span class="nx">reason</span><span class="p">,</span> <span class="nx">xhr</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span><span class="o">?</span>
+            <span class="nv">onFailure: </span><span class="p">(</span><span class="nx">xhr</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">failure</span><span class="o">?</span>
+        <span class="p">).</span><span class="nx">send</span><span class="p">()</span>
+
+    <span class="nv">toJSON: </span><span class="o">-&gt;</span>
+        <span class="nv">attrs = </span><span class="p">{}</span>
+        <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">@_attributes</span>
+            <span class="nx">attrs</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_jsonKeyValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
+        <span class="k">delete</span> <span class="nx">attrs</span><span class="p">.</span><span class="nx">_parent</span>
+        <span class="k">return</span> <span class="nx">attrs</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">_attributes: </span><span class="p">{}</span>
+
+    <span class="nv">_makeValue: </span><span class="nf">(key, value) -&gt;</span>
+        <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+            <span class="p">(</span><span class="nx">@_makeValue</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="k">for</span> <span class="nx">item</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">type</span>
+            <span class="nx">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">String</span>
+            <span class="nb">String</span> <span class="nx">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">Number</span>
+            <span class="nb">Number</span><span class="p">.</span><span class="nx">from</span> <span class="nx">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">Date</span>
+            <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">value</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><p>TODO check class constructor itself rather than creating instance
+not sure if possible as instanceof instpects prototype or constructor
+chain</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="k">else</span> <span class="k">if</span> <span class="nx">instanceOf</span> <span class="k">new</span> <span class="nx">type</span><span class="p">(),</span> <span class="nx">Model</span>
+            <span class="nv">value = </span><span class="nx">value</span> <span class="o">or</span> <span class="p">{}</span>
+            <span class="nv">value._parent = </span><span class="err">@</span>
+            <span class="k">new</span> <span class="nx">type</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="k">new</span> <span class="nx">type</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+
+    <span class="nv">_getType: </span><span class="nf">(name) -&gt;</span>
+        <span class="nv">type = </span><span class="nx">@fields</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
+            <span class="nx">type</span><span class="p">()</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span>  <span class="s2">&quot;string&quot;</span>
+            <span class="nb">window</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span>
+        <span class="k">else</span>
+            <span class="nx">type</span>
+
+    <span class="nv">_isCollection: </span><span class="nf">(key, value) -&gt;</span>
+        <span class="k">try</span>
+            <span class="nv">Collection = </span><span class="nx">require</span> <span class="s1">&#39;bags/Collection&#39;</span>
+        <span class="k">catch</span> <span class="nx">error</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><p>Error loading module, which means this can't possibly
+be a collection so we can safely return false</p>
+</td><td class="code"><div class="highlight"><pre>            <span class="k">return</span> <span class="kc">false</span>
+        <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
+        <span class="nx">type</span><span class="o">?</span> <span class="o">and</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span> <span class="o">and</span> <span class="nx">instanceOf</span> <span class="k">new</span> <span class="nx">type</span><span class="p">(),</span> <span class="nx">Collection</span>
+
+    <span class="nv">_addCollection: </span><span class="nf">(key, value, options={}) -&gt;</span>
+        <span class="nv">collectionClass = </span><span class="nx">@_getType</span> <span class="nx">key</span>
+        <span class="nv">collection = </span><span class="k">new</span> <span class="nx">collectionClass</span> <span class="nx">value</span><span class="p">,</span> <span class="nv">parentModel: </span><span class="err">@</span>
+        <span class="nx">@collections</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">collection</span>
+        <span class="nx">@fireEvent</span> <span class="s1">&#39;addCollection&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">collection</span><span class="p">]</span>
+        <span class="nx">collection</span>
+
+    <span class="nv">_getUrl: </span><span class="o">-&gt;</span>
+        <span class="nv">url = </span><span class="nx">@url</span>
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">url</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@collection</span><span class="o">?</span>
+            <span class="nv">url = </span><span class="nx">@collection</span><span class="p">.</span><span class="nx">url</span>
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">url</span><span class="o">?</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s2">&quot;No url specified in model collection or model itself&quot;</span>
+
+        <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
+            <span class="nx">url</span>
+        <span class="k">else</span>
+            <span class="s2">&quot;#{url}/#{@id}&quot;</span>
+
+    <span class="nv">_setInitial: </span><span class="nf">(attributes={}) -&gt;</span>
+        <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">@defaults</span><span class="p">)),</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="nx">@_getDefault</span> <span class="nx">key</span></pre></div></td></tr><tr id="section-16"><td class="docs"><div class="pilwrap"><a href="#section-16" class="pilcrow">&#182;</a></div><p>Merge defaults into attributes like this to
+keep references intact</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="nv">attrKeys = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">attributes</span>
+        <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nf">(value, key) -&gt;</span>
+            <span class="nx">key</span> <span class="o">not</span> <span class="k">in</span> <span class="nx">attrKeys</span>
+
+        <span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">attributes</span><span class="p">,</span> <span class="nx">defaults</span>
+        <span class="nx">@set</span> <span class="nx">attributes</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+
+    <span class="nv">_getDefault: </span><span class="nf">(key) -&gt;</span>
+        <span class="nv">def = </span><span class="nx">@defaults</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">def</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
+            <span class="nx">def</span><span class="p">.</span><span class="nx">call</span> <span class="err">@</span>
+        <span class="k">else</span>
+            <span class="nx">def</span>
+
+    <span class="nv">_fetchDone: </span><span class="nf">(response, options={}) -&gt;</span>
+        <span class="nv">model = </span><span class="nx">@parseResponse</span> <span class="nx">response</span>
+        <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+        <span class="nx">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span>
+
+    <span class="nv">_saveStart: </span><span class="o">-&gt;</span>
+        <span class="nx">@fireEvent</span> <span class="s1">&#39;saveStart&#39;</span>
+
+    <span class="nv">_saveComplete: </span><span class="o">-&gt;</span>
+        <span class="nx">@fireEvent</span> <span class="s1">&#39;saveComplete&#39;</span>
+
+    <span class="nv">_saveSuccess: </span><span class="nf">(response) -&gt;</span>
+        <span class="nv">model = </span><span class="nx">@parseResponse</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="o">or</span> <span class="p">{}</span>
+        <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+        <span class="nx">@fireEvent</span> <span class="s1">&#39;saveSuccess&#39;</span>
+
+    <span class="nv">_saveFailure: </span><span class="nf">(reason) -&gt;</span>
+        <span class="nx">@fireEvent</span> <span class="s1">&#39;saveFailure&#39;</span>
+
+    <span class="nv">_isSuccess: </span><span class="nf">(response) -&gt;</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">success</span> <span class="o">is</span> <span class="kc">true</span>
+
+    <span class="nv">_jsonKeyValue: </span><span class="nf">(key, value) -&gt;</span>
+        <span class="nv">jsonFn = </span><span class="s2">&quot;json#{key.capitalize()}&quot;</span>
+        <span class="k">if</span> <span class="err">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">]</span><span class="o">?</span>
+            <span class="err">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">](</span><span class="nx">value</span><span class="p">)</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">key</span> <span class="o">==</span> <span class="s1">&#39;_parent&#39;</span></pre></div></td></tr><tr id="section-17"><td class="docs"><div class="pilwrap"><a href="#section-17" class="pilcrow">&#182;</a></div><p>Skip parent model reference</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+            <span class="p">(</span><span class="nx">@_jsonValue</span> <span class="nx">v</span> <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="nx">@_jsonValue</span> <span class="nx">value</span>
+
+    <span class="nv">_jsonValue: </span><span class="nf">(value) -&gt;</span>
+        <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
+            <span class="nx">value</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span>
+        <span class="k">else</span>
+            <span class="nx">value</span>
+
+</pre></div></td></tr></tbody></table><div id="generated">generated Wed Aug 29 2012 22:16:17 GMT+0000 (UTC)  </div><div id="projectname"><a href="../../index.html">bags</a></div></div></body></html>

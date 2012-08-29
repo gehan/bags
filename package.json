@@ -1,7 +1,10 @@
 {
-    "name": "bags.js",
-    "docco_husky": {
-        "project_name": "bags.js",
-        "show_timestamp": true
-    }
+  "name": "bags",
+  "description": "bags framework",
+  "docco_husky": {
+    "project_name": "bags",
+    "show_timestamp": true
+  },
+  "dependencies": []
 }
+
