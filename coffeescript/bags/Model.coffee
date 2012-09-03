@@ -2,10 +2,10 @@
 # your view code, along with concerns like persistance, and interacting
 # through the events fired when a model is updated to handle rendering.
 
-define ['require', 'bags/Persist'], (require, Persist) -> \
+define ['require', 'bags/Storage'], (require, Storage) -> \
 
 Model = new Class
-    Implements: [Events, Options]
+    Implements: [Events, Options, Storage]
     Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"]
 
     # Specificying fields is not required, as a model will accept whatever
