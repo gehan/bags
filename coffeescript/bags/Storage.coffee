@@ -1,7 +1,52 @@
 define -> \
 
 new Class
-    Implements: [Options, Events]
+    Implements: [Events]
+
+    storage: (operation, data={}, callbacks={}) ->
+        # Cancel request if running?
+
+        method = @_crudMap operation
+
+        fail = (reason=null) =>
+            if callbacks.failure?
+                callbacks.failure.apply this, [xhr]
+            @fireEvent "#{operation}Failure", [reason]
+
+        new Request.JSON
+            url: @getUrl
+            method: method
+            data: data
+
+            onRequest: =>
+                @fireEvent "#{operation}Start"
+
+            onComplete: =>
+                @fireEvent "#{operation}Complete"
+
+            onSuccess: (response) =>
+                if @isSuccess response
+                    data = @parseResponse response
+                    if callbacks.success?
+                        callbacks.success.apply this, [data]
+                    @fireEvent "#{operation}Success", [data]
+                else
+                    reason = @parseFailResponse response
+                    fail reason
+
+            onFailure: (xhr) =>
+                fail null
+
+        .send()
+
+    isSuccess: (response) ->
+        response.success is true
+
+    parseResponse: (response) ->
+        response.data
+
+    parseFailResponse: (response) ->
+        response.error
 
     _crudMap:
         read: 'get'
@@ -20,36 +65,3 @@ new Class
             url
         else
             "#{url}/#{@id}"
-
-    storage: (operation, data={}) ->
-        # Cancel request if running?
-
-        method = @_crudMap operation
-
-        new Request.JSON
-            url: @getUrl
-            method: method
-            data: data
-
-            onRequest: =>
-                @fireEvent "#{operation}Start"
-
-            onComplete: =>
-                @fireEvent "#{operation}Complete"
-
-            onSuccess: (response) =>
-                @fireEvent "#{operation}Success"
-
-            onFailure: (xhr) =>
-                @fireEvent "#{operation}Failure"
-
-        .send()
-
-    parseResponse: (response) ->
-        response.data
-
-    parseFailResponse: (response) ->
-        response.error
-
-    _isSuccess: (response) ->
-        response.success is true

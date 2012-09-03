@@ -1,4 +1,4 @@
-define ['bags/Model'], (Model) -> \
+define ['bags/Model', 'bags/Storage'], (Model, Storage) -> \
 
 new Class
     Extends: Array
