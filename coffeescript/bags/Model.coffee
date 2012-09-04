@@ -141,8 +141,8 @@ Model = new Class
         setAttrFn() if options.dontWait and setAttrFn?
 
         # Send to storage
-        promise = @storage (if @isNew() then "create" else "update"), data,
-            eventName: 'save'
+        storageMethod = if @isNew() then "create" else "update"
+        promise = @storage storageMethod, data, eventName: 'save'
         promise.when (isSuccess, data) =>
             if isSuccess
                 setAttrFn() if not options.dontWait and setAttrFn?

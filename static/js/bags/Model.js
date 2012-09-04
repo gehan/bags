@@ -80,7 +80,7 @@
         });
       },
       save: function(key, value, options) {
-        var ModelClass, attrs, data, promise, setAttrFn, toUpdate,
+        var ModelClass, attrs, data, promise, setAttrFn, storageMethod, toUpdate,
           _this = this;
         if (options == null) {
           options = {
@@ -113,7 +113,8 @@
         if (options.dontWait && (setAttrFn != null)) {
           setAttrFn();
         }
-        promise = this.storage((this.isNew() ? "create" : "update"), data, {
+        storageMethod = this.isNew() ? "create" : "update";
+        promise = this.storage(storageMethod, data, {
           eventName: 'save'
         });
         return promise.when(function(isSuccess, data) {
