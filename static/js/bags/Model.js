@@ -1,11 +1,10 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(['require', 'bags/Persist'], function(require, Persist) {
+  define(['require', 'bags/Storage'], function(require, Storage) {
     var Model;
     return Model = new Class({
-      Implements: [Events, Options],
-      Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"],
+      Implements: [Events, Options, Storage],
       fields: {},
       defaults: {},
       id: null,
@@ -67,24 +66,23 @@
         if (this.isNew()) {
           return;
         }
-        if (this.request != null) {
-          this.request.cancel();
-        }
-        return this.request = new Request.JSON({
-          url: this._getUrl(),
-          method: 'get',
-          onSuccess: function(response) {
-            _this._fetchDone(response, options);
+        return this.storage('read', null, {
+          eventName: 'fetch',
+          success: function(model) {
+            _this.set(model, {
+              silent: true
+            });
+            _this.fireEvent('fetch', [true]);
             if (options.success != null) {
-              return options.success(response);
+              return options.success(data);
             }
           },
-          onFailure: function(xhr) {
+          failure: function(reason) {
             if (options.failure != null) {
-              return options.failure(xhr);
+              return options.failure(data);
             }
           }
-        }).send();
+        });
       },
       save: function(key, value, options) {
         var ModelClass, attrs, data, setAttrFn, toUpdate,
@@ -110,9 +108,7 @@
         } else {
           toUpdate = new ModelClass(this.toJSON());
         }
-        data = {
-          model: JSON.encode(toUpdate.toJSON())
-        };
+        data = toUpdate.toJSON();
         if (typeOf(key, 'object')) {
           options = Object.merge(options, value);
         }
@@ -122,46 +118,27 @@
         if (options.dontWait && (setAttrFn != null)) {
           setAttrFn();
         }
-        if (this.request != null) {
-          this.request.cancel();
-        }
-        return this.request = new Request.JSON({
-          url: this._getUrl(),
-          data: data,
-          method: this.isNew() ? "post" : "put",
-          onRequest: this._saveStart,
-          onComplete: this._saveComplete,
-          onSuccess: function(response) {
-            var reason;
-            if (_this._isSuccess(response)) {
-              if (!options.dontWait && (setAttrFn != null)) {
-                setAttrFn();
-              }
-              _this._saveSuccess(response);
-              if (options.success != null) {
-                return options.success(response);
-              }
-            } else {
-              reason = _this.parseFailResponse(response);
-              _this._saveFailure(reason);
-              if (options.failure != null) {
-                return options.failure(reason, xhr);
-              }
+        return this.storage((this.isNew() ? "create" : "update"), data, {
+          eventName: 'save',
+          success: function(data) {
+            var model;
+            if (!options.dontWait && (setAttrFn != null)) {
+              setAttrFn();
+            }
+            model = data || {};
+            _this.set(model, {
+              silent: true
+            });
+            if (options.success != null) {
+              return options.success(data);
             }
           },
-          onFailure: function(xhr) {
-            _this._saveFailure(xhr);
+          failure: function(reason) {
             if (options.failure != null) {
-              return options.failure(null, xhr);
+              return options.failure(reason);
             }
           }
-        }).send();
-      },
-      parseResponse: function(response) {
-        return response.data;
-      },
-      parseFailResponse: function(response) {
-        return response.error;
+        });
       },
       isNew: function() {
         return !(this.id != null);
@@ -180,34 +157,22 @@
         if (options.dontWait) {
           this.fireEvent('destroy');
         }
-        if (this.request != null) {
-          this.request.cancel();
-        }
-        return this.request = new Request.JSON({
-          url: this._getUrl(),
-          method: 'delete',
-          onSuccess: function(response) {
-            var reason;
-            if (_this._isSuccess(response)) {
-              if (!options.dontWait) {
-                _this.fireEvent('destroy');
-              }
-              if (options.success != null) {
-                return options.success(response);
-              }
-            } else {
-              reason = _this.parseFailResponse(response);
-              if (options.failure != null) {
-                return options.failure(reason, xhr);
-              }
+        return this.storage('delete', null, {
+          eventName: 'destroy',
+          success: function() {
+            if (!options.dontWait) {
+              _this.fireEvent('destroy');
+            }
+            if (options.success != null) {
+              return options.success();
             }
           },
-          onFailure: function(xhr) {
+          failure: function(reason) {
             if (options.failure != null) {
-              return options.failure(null, xhr);
+              return options.failure(reason);
             }
           }
-        }).send();
+        });
       },
       toJSON: function() {
         var attrs, key, value, _ref;
@@ -281,21 +246,6 @@
         this.fireEvent('addCollection', [key, collection]);
         return collection;
       },
-      _getUrl: function() {
-        var url;
-        url = this.url;
-        if (!(url != null) && (this.collection != null)) {
-          url = this.collection.url;
-        }
-        if (!(url != null)) {
-          throw new Error("No url specified in model collection or model itself");
-        }
-        if (this.isNew()) {
-          return url;
-        } else {
-          return "" + url + "/" + this.id;
-        }
-      },
       _setInitial: function(attributes) {
         var attrKeys, defaults,
           _this = this;
@@ -322,34 +272,6 @@
         } else {
           return def;
         }
-      },
-      _fetchDone: function(response, options) {
-        var model;
-        if (options == null) {
-          options = {};
-        }
-        model = this.parseResponse(response);
-        this.set(model, {
-          silent: true
-        });
-        return this.fireEvent('fetch', [true]);
-      },
-      _saveStart: function() {
-        return this.fireEvent('saveStart');
-      },
-      _saveComplete: function() {
-        return this.fireEvent('saveComplete');
-      },
-      _saveSuccess: function(response) {
-        var model;
-        model = this.parseResponse(response) || {};
-        this.set(model, {
-          silent: true
-        });
-        return this.fireEvent('saveSuccess');
-      },
-      _saveFailure: function(reason) {
-        return this.fireEvent('saveFailure');
       },
       _isSuccess: function(response) {
         return response.success === true;

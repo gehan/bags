@@ -6,7 +6,6 @@ define ['require', 'bags/Storage'], (require, Storage) -> \
 
 Model = new Class
     Implements: [Events, Options, Storage]
-    Binds: ["_saveSuccess", "_saveFailure", "_saveStart", "_saveComplete"]
 
     # Specificying fields is not required, as a model will accept whatever
     # fields you give it, however they will just be strings or numbers as
@@ -113,16 +112,15 @@ Model = new Class
     # and parsed.
     fetch: (options={}) ->
         return if @isNew()
-        @request.cancel() if @request?
-        @request = new Request.JSON(
-            url: @_getUrl()
-            method: 'get'
-            onSuccess: (response) =>
-                @_fetchDone response, options
-                options.success(response) if options.success?
-            onFailure: (xhr) =>
-                options.failure(xhr) if options.failure?
-        ).send()
+
+        @storage 'read', null,
+            eventName: 'fetch'
+            success: (model) =>
+                @set model, silent: true
+                @fireEvent 'fetch', [true]
+                options.success(data) if options.success?
+            failure: (reason) =>
+                options.failure(data) if options.failure?
 
     # Saves the model in its current state to the server or only specific
     # fields if passed in.
@@ -136,7 +134,7 @@ Model = new Class
         else
             toUpdate = new ModelClass @toJSON()
 
-        data = model: JSON.encode toUpdate.toJSON()
+        data = toUpdate.toJSON()
 
         if typeOf(key, 'object')
             options = Object.merge(options, value)
@@ -145,33 +143,16 @@ Model = new Class
         setAttrFn = @set.bind this, key, value, options if key?
         setAttrFn() if options.dontWait and setAttrFn?
 
-        @request.cancel() if @request?
-        @request = new Request.JSON
-            url: @_getUrl()
-            data: data
-            method: if @isNew() then "post" else "put"
-            onRequest: @_saveStart
-            onComplete: @_saveComplete
-            onSuccess: (response) =>
-
-                if @_isSuccess response
-                    setAttrFn() if not options.dontWait and setAttrFn?
-                    @_saveSuccess response
-                    options.success response if options.success?
-                else
-                    reason = @parseFailResponse response
-                    @_saveFailure reason
-                    options.failure reason, xhr if options.failure?
-            onFailure: (xhr) =>
-                @_saveFailure xhr
-                options.failure null, xhr if options.failure?
-        .send()
-
-    parseResponse: (response) ->
-        response.data
-
-    parseFailResponse: (response) ->
-        response.error
+        # Send to storage
+        @storage (if @isNew() then "create" else "update"), data,
+            eventName: 'save'
+            success: (data) =>
+                setAttrFn() if not options.dontWait and setAttrFn?
+                model = data or {}
+                @set model, silent: true
+                options.success data if options.success?
+            failure: (reason) =>
+                options.failure reason if options.failure?
 
     isNew: -> not @id?
 
@@ -183,20 +164,13 @@ Model = new Class
         if options.dontWait
             @fireEvent 'destroy'
 
-        @request.cancel() if @request?
-        @request = new Request.JSON(
-            url: @_getUrl()
-            method: 'delete'
-            onSuccess: (response) =>
-                if @_isSuccess response
-                    @fireEvent 'destroy' if not options.dontWait
-                    options.success(response) if options.success?
-                else
-                    reason = @parseFailResponse response
-                    options.failure reason, xhr if options.failure?
-            onFailure: (xhr) =>
-                options.failure(null, xhr) if options.failure?
-        ).send()
+        @storage 'delete', null,
+            eventName: 'destroy'
+            success: =>
+                @fireEvent 'destroy' if not options.dontWait
+                options.success() if options.success?
+            failure: (reason) =>
+                options.failure reason if options.failure?
 
     toJSON: ->
         attrs = {}
@@ -257,18 +231,6 @@ Model = new Class
         @fireEvent 'addCollection', [key, collection]
         collection
 
-    _getUrl: ->
-        url = @url
-        if not url? and @collection?
-            url = @collection.url
-        if not url?
-            throw new Error "No url specified in model collection or model itself"
-
-        if @isNew()
-            url
-        else
-            "#{url}/#{@id}"
-
     _setInitial: (attributes={}) ->
         defaults = Object.map (Object.clone(@defaults)), (value, key) =>
             @_getDefault key
@@ -288,25 +250,6 @@ Model = new Class
             def.call @
         else
             def
-
-    _fetchDone: (response, options={}) ->
-        model = @parseResponse response
-        @set model, silent: true
-        @fireEvent 'fetch', [true]
-
-    _saveStart: ->
-        @fireEvent 'saveStart'
-
-    _saveComplete: ->
-        @fireEvent 'saveComplete'
-
-    _saveSuccess: (response) ->
-        model = @parseResponse(response) or {}
-        @set model, silent: true
-        @fireEvent 'saveSuccess'
-
-    _saveFailure: (reason) ->
-        @fireEvent 'saveFailure'
 
     _isSuccess: (response) ->
         response.success is true

@@ -3,40 +3,42 @@ define -> \
 new Class
     Implements: [Events]
 
-    storage: (operation, data={}, callbacks={}) ->
+    storage: (operation, model, options={}) ->
         # Cancel request if running?
 
-        method = @_crudMap operation
+        method = @_crudMap[operation]
 
         fail = (reason=null) =>
-            if callbacks.failure?
-                callbacks.failure.apply this, [xhr]
-            @fireEvent "#{operation}Failure", [reason]
+            if options.failure?
+                options.failure reason
+            fireEvent "failure", [reason]
+
+        fireEvent = (event, args) =>
+            eventName = "#{options.eventName or operation}#{event.capitalize()}"
+            @fireEvent eventName, args
+
+        if model?
+            requestData = model: JSON.encode model
+        else
+            requestData = {}
 
         new Request.JSON
-            url: @getUrl
+            url: @_getUrl operation
             method: method
-            data: data
+            data: requestData
 
-            onRequest: =>
-                @fireEvent "#{operation}Start"
-
-            onComplete: =>
-                @fireEvent "#{operation}Complete"
-
+            onRequest: => fireEvent "start"
+            onComplete: => fireEvent "complete"
+            onFailure: (xhr) => fail()
             onSuccess: (response) =>
                 if @isSuccess response
                     data = @parseResponse response
-                    if callbacks.success?
-                        callbacks.success.apply this, [data]
-                    @fireEvent "#{operation}Success", [data]
+                    if options.success?
+                        options.success data
+                    fireEvent "success", [data]
                 else
                     reason = @parseFailResponse response
                     fail reason
-
-            onFailure: (xhr) =>
-                fail null
-
         .send()
 
     isSuccess: (response) ->
@@ -54,14 +56,15 @@ new Class
         update: 'put'
         delete: 'delete'
 
-    _getUrl: ->
+    _getUrl: (operation) ->
         url = @url
         if not url? and @collection?
             url = @collection.url
         if not url?
-            throw new Error "No url specified in model collection or model itself"
+            throw new Error "No url can be found"
 
-        if @isNew()
-            url
-        else
+        if operation in ['update', 'delete'] or (operation == 'read' and not
+                @isCollection)
             "#{url}/#{@id}"
+        else
+            url

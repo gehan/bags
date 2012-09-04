@@ -2,7 +2,7 @@ define ['bags/Model', 'bags/Storage'], (Model, Storage) -> \
 
 new Class
     Extends: Array
-    Implements: [Options, Events]
+    Implements: [Options, Events, Storage]
 
     _models: []
     model: Model
@@ -46,16 +46,14 @@ new Class
         @add model, options
 
     fetch: (options={}) ->
-        # Don't double up requests, cancel existing
-        @request.cancel() if @request?
-        @request = new Request.JSON(
-            url: options.url or @url
-            method: 'get'
-            onSuccess: (response) => @_fetchDone response, options
-        ).send()
+        @storage 'read', null,
+            success: (data) =>
+                @_fetchDone data, options
+                options.success(data) if options.success?
+            failure: (reason) =>
+                options.failure(data) if options.failure?
 
-    _fetchDone: (response, options={}) ->
-        models = @parseResponse response
+    _fetchDone: (models, options={}) ->
         if options.add
             @add models, options
         else
@@ -69,8 +67,7 @@ new Class
     comparator: (a, b) ->
         return a - b
 
-    parseResponse: (response) ->
-        return response
-
     toJSON: ->
         @invoke 'toJSON'
+
+    isCollection: true

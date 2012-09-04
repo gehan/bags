@@ -1,9 +1,9 @@
 (function() {
 
-  define(['bags/Model'], function(Model) {
+  define(['bags/Model', 'bags/Storage'], function(Model, Storage) {
     return new Class({
       Extends: Array,
-      Implements: [Options, Events],
+      Implements: [Options, Events, Storage],
       _models: [],
       model: Model,
       options: {},
@@ -99,23 +99,24 @@
         if (options == null) {
           options = {};
         }
-        if (this.request != null) {
-          this.request.cancel();
-        }
-        return this.request = new Request.JSON({
-          url: options.url || this.url,
-          method: 'get',
-          onSuccess: function(response) {
-            return _this._fetchDone(response, options);
+        return this.storage('read', null, {
+          success: function(data) {
+            _this._fetchDone(data, options);
+            if (options.success != null) {
+              return options.success(data);
+            }
+          },
+          failure: function(reason) {
+            if (options.failure != null) {
+              return options.failure(data);
+            }
           }
-        }).send();
+        });
       },
-      _fetchDone: function(response, options) {
-        var models;
+      _fetchDone: function(models, options) {
         if (options == null) {
           options = {};
         }
-        models = this.parseResponse(response);
         if (options.add) {
           this.add(models, options);
         } else {
@@ -133,12 +134,10 @@
       comparator: function(a, b) {
         return a - b;
       },
-      parseResponse: function(response) {
-        return response;
-      },
       toJSON: function() {
         return this.invoke('toJSON');
-      }
+      },
+      isCollection: true
     });
   });
 

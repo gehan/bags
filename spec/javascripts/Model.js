@@ -436,7 +436,10 @@
       setNextResponse({
         status: 200,
         responseText: flatten({
-          success: true
+          success: true,
+          data: {
+            id: 3
+          }
         })
       });
       m.save(null, null, {
@@ -446,7 +449,7 @@
       calledWith = flatten(success.mostRecentCall.args);
       return expect(calledWith).toBe(flatten([
         {
-          success: true
+          id: 3
         }
       ]));
     });
@@ -462,7 +465,7 @@
       return expect(fail).toHaveBeenCalled();
     });
     return it('destroy send delete request to server', function() {
-      var calledWith, destroy, req, success;
+      var destroy, req, success;
       m.id = 1;
       success = jasmine.createSpy('success callback');
       destroy = jasmine.createSpy('destroy event');
@@ -478,12 +481,6 @@
       });
       expect(success).toHaveBeenCalled();
       expect(destroy).toHaveBeenCalled();
-      calledWith = flatten(success.mostRecentCall.args);
-      expect(calledWith).toBe(flatten([
-        {
-          success: true
-        }
-      ]));
       req = mostRecentAjaxRequest();
       expect(req.method).toBe('POST');
       return expect(req.params).toBe("_method=delete");

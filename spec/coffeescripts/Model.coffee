@@ -354,11 +354,15 @@ describe "Model test", ->
 
     it 'save accepts callback for success', ->
         success = jasmine.createSpy 'success callback'
-        setNextResponse status: 200, responseText: flatten(success: true)
+        setNextResponse status: 200, responseText: flatten(
+            success: true
+            data:
+                id: 3
+        )
         m.save null, null, success: success
         expect(success).toHaveBeenCalled()
         calledWith = flatten(success.mostRecentCall.args)
-        expect(calledWith).toBe flatten([success: true])
+        expect(calledWith).toBe flatten([id: 3])
 
     it 'save accepts callback for failure', ->
         fail = jasmine.createSpy 'fail callback'
@@ -378,8 +382,6 @@ describe "Model test", ->
 
         expect(success).toHaveBeenCalled()
         expect(destroy).toHaveBeenCalled()
-        calledWith = flatten(success.mostRecentCall.args)
-        expect(calledWith).toBe flatten([success: true])
 
         req = mostRecentAjaxRequest()
         expect(req.method).toBe 'POST'
