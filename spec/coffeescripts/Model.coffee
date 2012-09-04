@@ -258,7 +258,7 @@ describe "Model test", ->
         expect(lastCall).toBeObject(['create', attrs, eventName: 'save' ])
         expect(m.id).toBe 2
 
-    it 'sends update query to url on save', ->
+    it 'sends update request to storage', ->
         attrs =
             id: 2
             value1: 'key1'
@@ -268,14 +268,13 @@ describe "Model test", ->
 
         expect(m.isNew()).toBe false
 
-        m.save()
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
 
-        req = mostRecentAjaxRequest()
-        expect(req.method).toBe 'POST'
-        requestData =
-            _method: "put"
-            model: JSON.encode attrs
-        expect(req.params).toBe Object.toQueryString(requestData)
+        promise2 = m.save()
+
+        lastCall = m.storage.mostRecentCall.args
+        expect(lastCall).toBeObject(['update', attrs, eventName: 'save' ])
 
     it 'save accepts values, doesnt update until server response', ->
         m.set 'action', 'face'
@@ -291,8 +290,7 @@ describe "Model test", ->
         m.addEvent 'saveComplete', ->
             saveCompleted = true
         m.addEvent 'change', ->
-            if not saveCompleted
-                changeCalledBeforeSave = true
+            changeCalledBeforeSave = true if not saveCompleted
 
         m.save 'action', 'deleted'
 
@@ -316,6 +314,17 @@ describe "Model test", ->
         m.save 'internet', 'face', dontWait: true
 
         expect(changeCalled).toBe true
+
+    it 'save accepts values, but keeps id if existing model', ->
+        m.set id: 1
+
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
+
+        promise2 = m.save internet: 'yes'
+
+        lastCall = m.storage.mostRecentCall.args
+        expect(lastCall).toBeObject(['update', {id: 1, internet: 'yes'}, eventName: 'save' ])
 
     it 'save accepts value obj', ->
         m.set 'action', 'face'

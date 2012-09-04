@@ -322,8 +322,8 @@
       ]);
       return expect(m.id).toBe(2);
     });
-    it('sends update query to url on save', function() {
-      var attrs, req, requestData;
+    it('sends update request to storage', function() {
+      var attrs, lastCall, promise, promise2;
       attrs = {
         id: 2,
         value1: 'key1',
@@ -331,14 +331,15 @@
       };
       m.set(attrs);
       expect(m.isNew()).toBe(false);
-      m.save();
-      req = mostRecentAjaxRequest();
-      expect(req.method).toBe('POST');
-      requestData = {
-        _method: "put",
-        model: JSON.encode(attrs)
-      };
-      return expect(req.params).toBe(Object.toQueryString(requestData));
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      promise2 = m.save();
+      lastCall = m.storage.mostRecentCall.args;
+      return expect(lastCall).toBeObject([
+        'update', attrs, {
+          eventName: 'save'
+        }
+      ]);
     });
     it('save accepts values, doesnt update until server response', function() {
       var changeCalledBeforeSave, req, requestData, saveCompleted;
@@ -385,6 +386,26 @@
         dontWait: true
       });
       return expect(changeCalled).toBe(true);
+    });
+    it('save accepts values, but keeps id if existing model', function() {
+      var lastCall, promise, promise2;
+      m.set({
+        id: 1
+      });
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      promise2 = m.save({
+        internet: 'yes'
+      });
+      lastCall = m.storage.mostRecentCall.args;
+      return expect(lastCall).toBeObject([
+        'update', {
+          id: 1,
+          internet: 'yes'
+        }, {
+          eventName: 'save'
+        }
+      ]);
     });
     it('save accepts value obj', function() {
       var req, requestData;

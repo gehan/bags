@@ -125,8 +125,8 @@ Model = new Class
         ModelClass = @$constructor
         if key?
             attrs = {}
-            attrs[@idField] = @id if not @isNew()?
-            toUpdate = new ModelClass
+            attrs[@idField] = @id if not @isNew()
+            toUpdate = new ModelClass attrs
             toUpdate.set key, value, silent: true if key?
         else
             toUpdate = new ModelClass @toJSON()

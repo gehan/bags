@@ -91,10 +91,10 @@
         ModelClass = this.$constructor;
         if (key != null) {
           attrs = {};
-          if (!(this.isNew() != null)) {
+          if (!this.isNew()) {
             attrs[this.idField] = this.id;
           }
-          toUpdate = new ModelClass;
+          toUpdate = new ModelClass(attrs);
           if (key != null) {
             toUpdate.set(key, value, {
               silent: true
