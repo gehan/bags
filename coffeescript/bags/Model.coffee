@@ -89,7 +89,7 @@ Model = new Class
     #
     # For each field that's updated 2 `change` events are fired to notify any
     # listeners, unless `silent: true` is passed through as an option.
-    set: (key, value, options={silent: false}) ->
+    set: (key, value, options={}) ->
         if typeOf(key) == 'object'
             attrs = key
             opts = value or options
@@ -101,7 +101,8 @@ Model = new Class
             @_attributes[key] = @_makeValue key, value
             if key == @idField
                 @id = value
-        if not options.silent
+
+        unless options.silent
             @fireEvent "change", [key, value]
             @fireEvent "change:#{key}", [value]
 
@@ -113,15 +114,16 @@ Model = new Class
     fetch: (options={}) ->
         return if @isNew()
 
-        promise = @storage 'read', null, eventName: 'fetch'
+        storageOptions = Object.merge {eventName: 'fetch'}, options
+        promise = @storage 'read', null, storageOptions
         promise.when (isSucess, data) =>
             if isSuccess
                 @set data, silent: true
-                @fireEvent 'fetch', [true]
+                @fireEvent 'fetch', [true] unless options.silent
 
     # Saves the model in its current state to the server or only specific
     # fields if passed in.
-    save: (key, value, options={dontWait: false, silent: false}) ->
+    save: (key, value, options={}) ->
         ModelClass = @$constructor
         if key?
             attrs = {}
@@ -142,27 +144,32 @@ Model = new Class
 
         # Send to storage
         storageMethod = if @isNew() then "create" else "update"
-        promise = @storage storageMethod, data, eventName: 'save'
+        storageOptions = Object.merge {eventName: 'save'}, options
+        promise = @storage storageMethod, data, storageOptions
         promise.when (isSuccess, data) =>
             if isSuccess
                 setAttrFn() if not options.dontWait and setAttrFn?
                 model = data or {}
                 @set model, silent: true
 
-    isNew: -> not @id?
+    destroy: (options={}) ->
+        fireEvent = =>
+            @fireEvent 'destroy' unless options.silent
 
-    destroy: (options={dontWait: false}) ->
         if @isNew()
-            @fireEvent 'destroy'
+            fireEvent()
             return
 
         if options.dontWait
-            @fireEvent 'destroy'
+            fireEvent()
 
-        promise = @storage 'delete', null, eventName: 'destroy'
+        storageOptions = Object.merge {eventName: 'destroy'}, options
+        promise = @storage 'delete', null, storageOptions
         promise.when (isSuccess, data) =>
             if isSuccess
-                @fireEvent 'destroy' if not options.dontWait
+                fireEvent() if not options.dontWait
+
+    isNew: -> not @id?
 
     toJSON: ->
         attrs = {}
@@ -220,7 +227,7 @@ Model = new Class
         collectionClass = @_getType key
         collection = new collectionClass value, parentModel: @
         @collections[key] = collection
-        @fireEvent 'addCollection', [key, collection]
+        @fireEvent 'addCollection', [key, collection] unless options.silent
         collection
 
     _setInitial: (attributes={}) ->

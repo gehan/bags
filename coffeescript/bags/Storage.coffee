@@ -17,7 +17,7 @@ new Class
 
         fireEvent = (event, args) =>
             eventName = "#{options.eventName or operation}#{event.capitalize()}"
-            @fireEvent eventName, args
+            @fireEvent eventName, args unless options.silent
 
         if operation == 'read'
             requestData = data

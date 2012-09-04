@@ -22,7 +22,9 @@
         fireEvent = function(event, args) {
           var eventName;
           eventName = "" + (options.eventName || operation) + (event.capitalize());
-          return _this.fireEvent(eventName, args);
+          if (!options.silent) {
+            return _this.fireEvent(eventName, args);
+          }
         };
         if (operation === 'read') {
           requestData = data;

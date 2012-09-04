@@ -18,14 +18,14 @@ new Class
             @add model, silent: true
         @
 
-    add: (model, options={silent: false}) ->
+    add: (model, options={}) ->
         if not @model? then throw new Error "Model not defined for collection"
         if typeOf(model) == 'array'
             @add(m, options) for m in model
         else if instanceOf model, @model
             @_add model
             model.collection = @ if not model.collection?
-            @fireEvent 'add', [model] if not options.silent
+            @fireEvent 'add', [model] unless options.silent
         else
             @create model, options
 
@@ -35,11 +35,11 @@ new Class
     reset: (models, options={}) ->
         @_remove model, options while model = @pop()
         @add models, silent: true if models?
-        @fireEvent 'reset', [@] if not options.silent
+        @fireEvent 'reset', [@] unless options.silent
 
-    _remove: (model, options) ->
+    _remove: (model, options={}) ->
         @erase model
-        @fireEvent 'remove', [model] if not options.silent
+        @fireEvent 'remove', [model] unless options.silent
 
     create: (attributes, options={}) ->
         model = new @model attributes
@@ -49,14 +49,11 @@ new Class
         promise = @storage 'read', filter
         promise.when (isSuccess, data) =>
             if isSuccess
-                @_fetchDone data, options
-
-    _fetchDone: (models, options={}) ->
-        if options.add
-            @add models, options
-        else
-            @reset models, options
-        @fireEvent 'fetch', [true]
+                if options.add
+                    @add models, options
+                else
+                    @reset models, options
+                @fireEvent 'fetch', [true] unless options.silent
 
     sort: (comparator=@comparator) ->
         @parent comparator

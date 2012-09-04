@@ -34,9 +34,7 @@
       add: function(model, options) {
         var m, _i, _len, _results;
         if (options == null) {
-          options = {
-            silent: false
-          };
+          options = {};
         }
         if (!(this.model != null)) {
           throw new Error("Model not defined for collection");
@@ -81,6 +79,9 @@
         }
       },
       _remove: function(model, options) {
+        if (options == null) {
+          options = {};
+        }
         this.erase(model);
         if (!options.silent) {
           return this.fireEvent('remove', [model]);
@@ -106,20 +107,16 @@
         promise = this.storage('read', filter);
         return promise.when(function(isSuccess, data) {
           if (isSuccess) {
-            return _this._fetchDone(data, options);
+            if (options.add) {
+              _this.add(models, options);
+            } else {
+              _this.reset(models, options);
+            }
+            if (!options.silent) {
+              return _this.fireEvent('fetch', [true]);
+            }
           }
         });
-      },
-      _fetchDone: function(models, options) {
-        if (options == null) {
-          options = {};
-        }
-        if (options.add) {
-          this.add(models, options);
-        } else {
-          this.reset(models, options);
-        }
-        return this.fireEvent('fetch', [true]);
       },
       sort: function(comparator) {
         if (comparator == null) {

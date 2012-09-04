@@ -33,9 +33,7 @@
       set: function(key, value, options) {
         var attrs, k, opts, v;
         if (options == null) {
-          options = {
-            silent: false
-          };
+          options = {};
         }
         if (typeOf(key) === 'object') {
           attrs = key;
@@ -59,7 +57,7 @@
         }
       },
       fetch: function(options) {
-        var promise,
+        var promise, storageOptions,
           _this = this;
         if (options == null) {
           options = {};
@@ -67,26 +65,26 @@
         if (this.isNew()) {
           return;
         }
-        promise = this.storage('read', null, {
+        storageOptions = Object.merge({
           eventName: 'fetch'
-        });
+        }, options);
+        promise = this.storage('read', null, storageOptions);
         return promise.when(function(isSucess, data) {
           if (isSuccess) {
             _this.set(data, {
               silent: true
             });
-            return _this.fireEvent('fetch', [true]);
+            if (!options.silent) {
+              return _this.fireEvent('fetch', [true]);
+            }
           }
         });
       },
       save: function(key, value, options) {
-        var ModelClass, attrs, data, promise, setAttrFn, storageMethod, toUpdate,
+        var ModelClass, attrs, data, promise, setAttrFn, storageMethod, storageOptions, toUpdate,
           _this = this;
         if (options == null) {
-          options = {
-            dontWait: false,
-            silent: false
-          };
+          options = {};
         }
         ModelClass = this.$constructor;
         if (key != null) {
@@ -114,9 +112,10 @@
           setAttrFn();
         }
         storageMethod = this.isNew() ? "create" : "update";
-        promise = this.storage(storageMethod, data, {
+        storageOptions = Object.merge({
           eventName: 'save'
-        });
+        }, options);
+        promise = this.storage(storageMethod, data, storageOptions);
         return promise.when(function(isSuccess, data) {
           var model;
           if (isSuccess) {
@@ -130,34 +129,38 @@
           }
         });
       },
-      isNew: function() {
-        return !(this.id != null);
-      },
       destroy: function(options) {
-        var promise,
+        var fireEvent, promise, storageOptions,
           _this = this;
         if (options == null) {
-          options = {
-            dontWait: false
-          };
+          options = {};
         }
+        fireEvent = function() {
+          if (!options.silent) {
+            return _this.fireEvent('destroy');
+          }
+        };
         if (this.isNew()) {
-          this.fireEvent('destroy');
+          fireEvent();
           return;
         }
         if (options.dontWait) {
-          this.fireEvent('destroy');
+          fireEvent();
         }
-        promise = this.storage('delete', null, {
+        storageOptions = Object.merge({
           eventName: 'destroy'
-        });
+        }, options);
+        promise = this.storage('delete', null, storageOptions);
         return promise.when(function(isSuccess, data) {
           if (isSuccess) {
             if (!options.dontWait) {
-              return _this.fireEvent('destroy');
+              return fireEvent();
             }
           }
         });
+      },
+      isNew: function() {
+        return !(this.id != null);
       },
       toJSON: function() {
         var attrs, key, value, _ref;
@@ -228,7 +231,9 @@
           parentModel: this
         });
         this.collections[key] = collection;
-        this.fireEvent('addCollection', [key, collection]);
+        if (!options.silent) {
+          this.fireEvent('addCollection', [key, collection]);
+        }
         return collection;
       },
       _setInitial: function(attributes) {

@@ -17,9 +17,9 @@ describe "Storage test", ->
         StorageClass = new Class
             Implements: [Storage]
             url: '/items'
-            fetch: ->
-                @storage 'read', null,
-                    eventName: 'fetch'
+            fetch: (options={}) ->
+                storageOptions = Object.merge({eventName: 'fetch'}, options)
+                @storage 'read', null, storageOptions
 
         s = new StorageClass()
 
@@ -183,6 +183,16 @@ describe "Storage test", ->
         s.addEvent 'fetchFailure', failSpy
         s.fetch()
         expect(failSpy).toHaveBeenCalled()
+
+    it 'fires no events if silent passed in', ->
+        setNextResponse
+            status: 404
+
+        failSpy = jasmine.createSpy 'fail spy'
+        s.isCollection = true
+        s.addEvent 'fetchFailure', failSpy
+        s.fetch silent: true
+        expect(failSpy).wasNotCalled()
 
     it 'sends qs data to read command', ->
         s.isCollection = true

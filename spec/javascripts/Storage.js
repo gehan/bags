@@ -25,10 +25,15 @@
       StorageClass = new Class({
         Implements: [Storage],
         url: '/items',
-        fetch: function() {
-          return this.storage('read', null, {
+        fetch: function(options) {
+          var storageOptions;
+          if (options == null) {
+            options = {};
+          }
+          storageOptions = Object.merge({
             eventName: 'fetch'
-          });
+          }, options);
+          return this.storage('read', null, storageOptions);
         }
       });
       return s = new StorageClass();
@@ -207,6 +212,19 @@
       s.addEvent('fetchFailure', failSpy);
       s.fetch();
       return expect(failSpy).toHaveBeenCalled();
+    });
+    it('fires no events if silent passed in', function() {
+      var failSpy;
+      setNextResponse({
+        status: 404
+      });
+      failSpy = jasmine.createSpy('fail spy');
+      s.isCollection = true;
+      s.addEvent('fetchFailure', failSpy);
+      s.fetch({
+        silent: true
+      });
+      return expect(failSpy).wasNotCalled();
     });
     return it('sends qs data to read command', function() {
       var req;
