@@ -76,6 +76,7 @@
     });
     it('sets request methods correctly', function() {
       var req;
+      s.id = 1;
       req = s.storage('read');
       expect(req.options.method).toBe('get');
       req = s.storage('create');
@@ -111,6 +112,7 @@
       setNextResponse(response);
       spyOn(s, 'isSuccess').andCallThrough();
       spyOn(s, 'parseResponse').andCallThrough();
+      s.isCollection = true;
       s.storage('read');
       expect(s.isSuccess).toHaveBeenCalled();
       lastCall = flatten(s.parseResponse.mostRecentCall.args[0]);
@@ -129,6 +131,7 @@
       };
       setNextResponse(response);
       success = jasmine.createSpy('succes cb');
+      s.isCollection = true;
       s.storage('read', null, {
         success: success
       });
@@ -148,6 +151,7 @@
       };
       setNextResponse(response);
       fail = jasmine.createSpy('fail cb');
+      s.isCollection = true;
       s.storage('read', null, {
         failure: fail
       });
@@ -170,6 +174,7 @@
       s.addEvent('readStart', readSpy);
       s.addEvent('readComplete', completeSpy);
       s.addEvent('readSuccess', successSpy);
+      s.isCollection = true;
       s.storage('read');
       expect(readSpy).toHaveBeenCalled();
       expect(completeSpy).toHaveBeenCalled();
@@ -182,18 +187,30 @@
       });
       failSpy = jasmine.createSpy('fail spy');
       s.addEvent('readFailure', failSpy);
+      s.isCollection = true;
       s.storage('read');
       return expect(failSpy).toHaveBeenCalled();
     });
-    return it('fires off failure events with custom name', function() {
+    it('fires off failure events with custom name', function() {
       var failSpy;
       setNextResponse({
         status: 404
       });
       failSpy = jasmine.createSpy('fail spy');
+      s.isCollection = true;
       s.addEvent('fetchFailure', failSpy);
       s.fetch();
       return expect(failSpy).toHaveBeenCalled();
+    });
+    return it('sends qs data to read command', function() {
+      var req;
+      s.isCollection = true;
+      s.storage('read', {
+        page: 1,
+        action: 'A'
+      });
+      req = mostRecentAjaxRequest();
+      return expect(req.url).toBe('/items?page=1&action=A');
     });
   });
 

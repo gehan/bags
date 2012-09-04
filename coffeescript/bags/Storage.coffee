@@ -3,7 +3,7 @@ define -> \
 new Class
     Implements: [Events]
 
-    storage: (operation, model, options={}) ->
+    storage: (operation, data, options={}) ->
         # Cancel request if running?
 
         method = @_crudMap[operation]
@@ -17,8 +17,10 @@ new Class
             eventName = "#{options.eventName or operation}#{event.capitalize()}"
             @fireEvent eventName, args
 
-        if model?
-            requestData = model: JSON.encode model
+        if operation == 'read'
+            requestData = data
+        else if data?
+            requestData = model: JSON.encode data
         else
             requestData = {}
 
@@ -65,6 +67,10 @@ new Class
 
         if operation in ['update', 'delete'] or (operation == 'read' and not
                 @isCollection)
+
+            if not @id?
+                throw new Error "Model doesn't have an id, cannot perform #{operation}"
+
             "#{url}/#{@id}"
         else
             url

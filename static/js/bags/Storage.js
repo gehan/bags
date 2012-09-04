@@ -3,7 +3,7 @@
   define(function() {
     return new Class({
       Implements: [Events],
-      storage: function(operation, model, options) {
+      storage: function(operation, data, options) {
         var fail, fireEvent, method, requestData,
           _this = this;
         if (options == null) {
@@ -24,9 +24,11 @@
           eventName = "" + (options.eventName || operation) + (event.capitalize());
           return _this.fireEvent(eventName, args);
         };
-        if (model != null) {
+        if (operation === 'read') {
+          requestData = data;
+        } else if (data != null) {
           requestData = {
-            model: JSON.encode(model)
+            model: JSON.encode(data)
           };
         } else {
           requestData = {};
@@ -45,7 +47,7 @@
             return fail();
           },
           onSuccess: function(response) {
-            var data, reason;
+            var reason;
             if (_this.isSuccess(response)) {
               data = _this.parseResponse(response);
               if (options.success != null) {
@@ -84,6 +86,9 @@
           throw new Error("No url can be found");
         }
         if ((operation === 'update' || operation === 'delete') || (operation === 'read' && !this.isCollection)) {
+          if (!(this.id != null)) {
+            throw new Error("Model doesn't have an id, cannot perform " + operation);
+          }
           return "" + url + "/" + this.id;
         } else {
           return url;

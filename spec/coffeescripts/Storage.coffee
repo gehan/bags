@@ -60,6 +60,8 @@ describe "Storage test", ->
         expect(url).toBe '/items'
 
     it 'sets request methods correctly', ->
+        s.id = 1
+
         req = s.storage 'read'
         expect(req.options.method).toBe 'get'
 
@@ -94,6 +96,7 @@ describe "Storage test", ->
         spyOn(s, 'isSuccess').andCallThrough()
         spyOn(s, 'parseResponse').andCallThrough()
 
+        s.isCollection = true
         s.storage 'read'
 
         expect(s.isSuccess).toHaveBeenCalled()
@@ -112,6 +115,7 @@ describe "Storage test", ->
 
         success = jasmine.createSpy 'succes cb'
 
+        s.isCollection = true
         s.storage 'read', null, success: success
 
         lastCall = success.mostRecentCall.args[0]
@@ -128,6 +132,7 @@ describe "Storage test", ->
 
         fail = jasmine.createSpy 'fail cb'
 
+        s.isCollection = true
         s.storage 'read', null, failure: fail
 
         expect(fail).toHaveBeenCalledWith('its rubbish')
@@ -149,6 +154,7 @@ describe "Storage test", ->
         s.addEvent 'readComplete', completeSpy
         s.addEvent 'readSuccess', successSpy
 
+        s.isCollection = true
         s.storage 'read'
 
         expect(readSpy).toHaveBeenCalled()
@@ -161,6 +167,7 @@ describe "Storage test", ->
 
         failSpy = jasmine.createSpy 'fail spy'
         s.addEvent 'readFailure', failSpy
+        s.isCollection = true
         s.storage 'read'
         expect(failSpy).toHaveBeenCalled()
 
@@ -169,6 +176,13 @@ describe "Storage test", ->
             status: 404
 
         failSpy = jasmine.createSpy 'fail spy'
+        s.isCollection = true
         s.addEvent 'fetchFailure', failSpy
         s.fetch()
         expect(failSpy).toHaveBeenCalled()
+
+    it 'sends qs data to read command', ->
+        s.isCollection = true
+        s.storage 'read', page: 1, action: 'A'
+        req = mostRecentAjaxRequest()
+        expect(req.url).toBe '/items?page=1&action=A'

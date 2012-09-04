@@ -45,8 +45,8 @@ new Class
         model = new @model attributes
         @add model, options
 
-    fetch: (options={}) ->
-        @storage 'read', null,
+    fetch: (filter={}, options={}) ->
+        @storage 'read', filter,
             success: (data) =>
                 @_fetchDone data, options
                 options.success(data) if options.success?

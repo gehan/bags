@@ -94,12 +94,15 @@
         model = new this.model(attributes);
         return this.add(model, options);
       },
-      fetch: function(options) {
+      fetch: function(filter, options) {
         var _this = this;
+        if (filter == null) {
+          filter = {};
+        }
         if (options == null) {
           options = {};
         }
-        return this.storage('read', null, {
+        return this.storage('read', filter, {
           success: function(data) {
             _this._fetchDone(data, options);
             if (options.success != null) {
