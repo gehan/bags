@@ -75,16 +75,16 @@
       return expect(url).toBe('/items');
     });
     it('sets request methods correctly', function() {
-      var req;
+      var promise;
       s.id = 1;
-      req = s.storage('read');
-      expect(req.options.method).toBe('get');
-      req = s.storage('create');
-      expect(req.options.method).toBe('post');
-      req = s.storage('delete');
-      expect(req.options.method).toBe('delete');
-      req = s.storage('update');
-      return expect(req.options.method).toBe('put');
+      promise = s.storage('read');
+      expect(promise.request.options.method).toBe('get');
+      promise = s.storage('create');
+      expect(promise.request.options.method).toBe('post');
+      promise = s.storage('delete');
+      expect(promise.request.options.method).toBe('delete');
+      promise = s.storage('update');
+      return expect(promise.request.options.method).toBe('put');
     });
     it('sends data across to server as json', function() {
       var model, req;
@@ -119,7 +119,7 @@
       return expect(lastCall).toBe(response.responseText);
     });
     it('executes success callback if passed through', function() {
-      var lastCall, response, success;
+      var lastCall, promise, response, success;
       response = {
         status: 200,
         responseText: flatten({
@@ -132,8 +132,11 @@
       setNextResponse(response);
       success = jasmine.createSpy('succes cb');
       s.isCollection = true;
-      s.storage('read', null, {
-        success: success
+      promise = s.storage('read');
+      promise.when(function(isSuccess, ret) {
+        if (isSuccess) {
+          return success(ret);
+        }
       });
       lastCall = success.mostRecentCall.args[0];
       return expect(lastCall).toBeObject({
@@ -141,7 +144,7 @@
       });
     });
     it('executes failure callback if passed through', function() {
-      var fail, response;
+      var fail, promise, response;
       response = {
         status: 200,
         responseText: flatten({
@@ -152,8 +155,11 @@
       setNextResponse(response);
       fail = jasmine.createSpy('fail cb');
       s.isCollection = true;
-      s.storage('read', null, {
-        failure: fail
+      promise = s.storage('read');
+      promise.when(function(isSuccess, ret) {
+        if (!isSuccess) {
+          return fail(ret);
+        }
       });
       return expect(fail).toHaveBeenCalledWith('its rubbish');
     });

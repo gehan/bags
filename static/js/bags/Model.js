@@ -59,33 +59,28 @@
         }
       },
       fetch: function(options) {
-        var _this = this;
+        var promise,
+          _this = this;
         if (options == null) {
           options = {};
         }
         if (this.isNew()) {
           return;
         }
-        return this.storage('read', null, {
-          eventName: 'fetch',
-          success: function(model) {
-            _this.set(model, {
+        promise = this.storage('read', null, {
+          eventName: 'fetch'
+        });
+        return promise.when(function(isSucess, data) {
+          if (isSuccess) {
+            _this.set(data, {
               silent: true
             });
-            _this.fireEvent('fetch', [true]);
-            if (options.success != null) {
-              return options.success(data);
-            }
-          },
-          failure: function(reason) {
-            if (options.failure != null) {
-              return options.failure(data);
-            }
+            return _this.fireEvent('fetch', [true]);
           }
         });
       },
       save: function(key, value, options) {
-        var ModelClass, attrs, data, setAttrFn, toUpdate,
+        var ModelClass, attrs, data, promise, setAttrFn, toUpdate,
           _this = this;
         if (options == null) {
           options = {
@@ -118,25 +113,19 @@
         if (options.dontWait && (setAttrFn != null)) {
           setAttrFn();
         }
-        return this.storage((this.isNew() ? "create" : "update"), data, {
-          eventName: 'save',
-          success: function(data) {
-            var model;
+        promise = this.storage((this.isNew() ? "create" : "update"), data, {
+          eventName: 'save'
+        });
+        return promise.when(function(isSuccess, data) {
+          var model;
+          if (isSuccess) {
             if (!options.dontWait && (setAttrFn != null)) {
               setAttrFn();
             }
             model = data || {};
-            _this.set(model, {
+            return _this.set(model, {
               silent: true
             });
-            if (options.success != null) {
-              return options.success(data);
-            }
-          },
-          failure: function(reason) {
-            if (options.failure != null) {
-              return options.failure(reason);
-            }
           }
         });
       },
@@ -144,7 +133,8 @@
         return !(this.id != null);
       },
       destroy: function(options) {
-        var _this = this;
+        var promise,
+          _this = this;
         if (options == null) {
           options = {
             dontWait: false
@@ -157,19 +147,13 @@
         if (options.dontWait) {
           this.fireEvent('destroy');
         }
-        return this.storage('delete', null, {
-          eventName: 'destroy',
-          success: function() {
+        promise = this.storage('delete', null, {
+          eventName: 'destroy'
+        });
+        return promise.when(function(isSuccess, data) {
+          if (isSuccess) {
             if (!options.dontWait) {
-              _this.fireEvent('destroy');
-            }
-            if (options.success != null) {
-              return options.success();
-            }
-          },
-          failure: function(reason) {
-            if (options.failure != null) {
-              return options.failure(reason);
+              return _this.fireEvent('destroy');
             }
           }
         });

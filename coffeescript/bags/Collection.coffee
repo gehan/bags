@@ -46,12 +46,10 @@ new Class
         @add model, options
 
     fetch: (filter={}, options={}) ->
-        @storage 'read', filter,
-            success: (data) =>
+        promise = @storage 'read', filter
+        promise.when (isSuccess, data) =>
+            if isSuccess
                 @_fetchDone data, options
-                options.success(data) if options.success?
-            failure: (reason) =>
-                options.failure(data) if options.failure?
 
     _fetchDone: (models, options={}) ->
         if options.add

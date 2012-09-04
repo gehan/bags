@@ -8,6 +8,8 @@ curl ['bags/Model', 'bags/Collection'], (_Model, _Collection) ->
     Collection = _Collection
     done = true
 
+Future = require 'future'
+
 flatten = (obj) ->
     JSON.encode obj
 
@@ -232,35 +234,28 @@ describe "Model test", ->
         expect(addedKey).toBe 'subCollection'
         expect(addedCollection).toBe mdl.get('subCollection')
 
-    it 'sends post query to url on save', ->
+    it 'sends create request to storage', ->
         attrs =
             value1: 'key1'
             value2: 'key2'
-
-        saved = false
-        m.addEvent 'saveSuccess', ->
-            saved = true
 
         m.set attrs
 
         expect(m.isNew()).toBe true
 
-        setNextResponse
-            status: 200
-            responseText: flatten
-                success: true
-                data:
-                    id: 2
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
 
-        m.save()
+        saved = false
+        promise2 = m.save()
+        promise2.when (isSuccess, ret) ->
+            saved = true if isSuccess
 
-        req = mostRecentAjaxRequest()
-        expect(req.method).toBe 'POST'
+        promise.fulfill true, id: 2
+
         expect(saved).toBe true
-        requestData =
-            model: JSON.encode attrs
-        console.log requestData
-        expect(req.params).toBe Object.toQueryString(requestData)
+        lastCall = m.storage.mostRecentCall.args
+        expect(lastCall).toBeObject(['create', attrs, eventName: 'save' ])
         expect(m.id).toBe 2
 
     it 'sends update query to url on save', ->
@@ -354,36 +349,56 @@ describe "Model test", ->
 
     it 'save accepts callback for success', ->
         success = jasmine.createSpy 'success callback'
-        setNextResponse status: 200, responseText: flatten(
-            success: true
-            data:
-                id: 3
-        )
-        m.save null, null, success: success
+
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
+
+        promise2 = m.save()
+        promise2.when (isSuccess, data) ->
+            success(data) if isSuccess
+
+        promise.fulfill true, id: 3
+
         expect(success).toHaveBeenCalled()
         calledWith = flatten(success.mostRecentCall.args)
         expect(calledWith).toBe flatten([id: 3])
 
     it 'save accepts callback for failure', ->
         fail = jasmine.createSpy 'fail callback'
-        setNextResponse status: 500
-        m.save null, null, failure: fail
+
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
+
+        m.save()
+
+        promise2 = m.save()
+        promise2.when (isSuccess, data) ->
+            fail(data) unless isSuccess
+
+        promise.fulfill false
+
         expect(fail).toHaveBeenCalled()
 
     it 'destroy send delete request to server', ->
-        m.id = 1
         success = jasmine.createSpy 'success callback'
         destroy = jasmine.createSpy 'destroy event'
-        setNextResponse status: 200, responseText: flatten(success: true)
 
+        m.id = 1
         m.addEvent 'destroy', destroy
 
-        m.destroy success: success
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
+
+        promise2 = m.destroy()
+        promise2.when (isSuccess) ->
+            success() if isSuccess
+
+        promise2.fulfill true
+
+        lastCall = m.storage.mostRecentCall.args
+        expect(lastCall).toBeObject(['delete', null, eventName: 'destroy' ])
 
         expect(success).toHaveBeenCalled()
         expect(destroy).toHaveBeenCalled()
 
-        req = mostRecentAjaxRequest()
-        expect(req.method).toBe 'POST'
-        expect(req.params).toBe "_method=delete"
 

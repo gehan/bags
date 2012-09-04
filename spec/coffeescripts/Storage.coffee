@@ -62,17 +62,17 @@ describe "Storage test", ->
     it 'sets request methods correctly', ->
         s.id = 1
 
-        req = s.storage 'read'
-        expect(req.options.method).toBe 'get'
+        promise = s.storage 'read'
+        expect(promise.request.options.method).toBe 'get'
 
-        req = s.storage 'create'
-        expect(req.options.method).toBe 'post'
+        promise = s.storage 'create'
+        expect(promise.request.options.method).toBe 'post'
 
-        req = s.storage 'delete'
-        expect(req.options.method).toBe 'delete'
+        promise = s.storage 'delete'
+        expect(promise.request.options.method).toBe 'delete'
 
-        req = s.storage 'update'
-        expect(req.options.method).toBe 'put'
+        promise = s.storage 'update'
+        expect(promise.request.options.method).toBe 'put'
 
     it 'sends data across to server as json', ->
         model =
@@ -116,7 +116,9 @@ describe "Storage test", ->
         success = jasmine.createSpy 'succes cb'
 
         s.isCollection = true
-        s.storage 'read', null, success: success
+        promise = s.storage 'read'
+        promise.when (isSuccess, ret) ->
+            success(ret) if isSuccess
 
         lastCall = success.mostRecentCall.args[0]
         expect(lastCall).toBeObject(id: 2)
@@ -133,8 +135,9 @@ describe "Storage test", ->
         fail = jasmine.createSpy 'fail cb'
 
         s.isCollection = true
-        s.storage 'read', null, failure: fail
-
+        promise = s.storage 'read'
+        promise.when (isSuccess, ret) ->
+            fail(ret) if not isSuccess
         expect(fail).toHaveBeenCalledWith('its rubbish')
 
 

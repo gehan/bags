@@ -15,6 +15,7 @@ PIPELINE_JS = {
             "js/lib/behaviour/Behavior.js",
             "js/lib/behaviour/Delegator.js",
             "js/lib/behaviour/Behavior.Startup.js",
+            "js/lib/futures.ender.js",
             "js/lib/dust-full-0.3.0.min.js",
         ),
         'output_filename': 'js/base_libs.js',

@@ -113,14 +113,11 @@ Model = new Class
     fetch: (options={}) ->
         return if @isNew()
 
-        @storage 'read', null,
-            eventName: 'fetch'
-            success: (model) =>
-                @set model, silent: true
+        promise = @storage 'read', null, eventName: 'fetch'
+        promise.when (isSucess, data) =>
+            if isSuccess
+                @set data, silent: true
                 @fireEvent 'fetch', [true]
-                options.success(data) if options.success?
-            failure: (reason) =>
-                options.failure(data) if options.failure?
 
     # Saves the model in its current state to the server or only specific
     # fields if passed in.
@@ -144,15 +141,13 @@ Model = new Class
         setAttrFn() if options.dontWait and setAttrFn?
 
         # Send to storage
-        @storage (if @isNew() then "create" else "update"), data,
+        promise = @storage (if @isNew() then "create" else "update"), data,
             eventName: 'save'
-            success: (data) =>
+        promise.when (isSuccess, data) =>
+            if isSuccess
                 setAttrFn() if not options.dontWait and setAttrFn?
                 model = data or {}
                 @set model, silent: true
-                options.success data if options.success?
-            failure: (reason) =>
-                options.failure reason if options.failure?
 
     isNew: -> not @id?
 
@@ -164,13 +159,10 @@ Model = new Class
         if options.dontWait
             @fireEvent 'destroy'
 
-        @storage 'delete', null,
-            eventName: 'destroy'
-            success: =>
+        promise = @storage 'delete', null, eventName: 'destroy'
+        promise.when (isSuccess, data) =>
+            if isSuccess
                 @fireEvent 'destroy' if not options.dontWait
-                options.success() if options.success?
-            failure: (reason) =>
-                options.failure reason if options.failure?
 
     toJSON: ->
         attrs = {}

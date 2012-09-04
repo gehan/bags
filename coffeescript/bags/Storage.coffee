@@ -4,13 +4,15 @@ new Class
     Implements: [Events]
 
     storage: (operation, data, options={}) ->
+        Future = require 'future'
+        promise = new Future()
+
         # Cancel request if running?
 
         method = @_crudMap[operation]
 
         fail = (reason=null) =>
-            if options.failure?
-                options.failure reason
+            promise.fulfill false, reason
             fireEvent "failure", [reason]
 
         fireEvent = (event, args) =>
@@ -24,7 +26,7 @@ new Class
         else
             requestData = {}
 
-        new Request.JSON
+        promise.request = new Request.JSON
             url: @_getUrl operation
             method: method
             data: requestData
@@ -35,13 +37,14 @@ new Class
             onSuccess: (response) =>
                 if @isSuccess response
                     data = @parseResponse response
-                    if options.success?
-                        options.success data
+                    promise.fulfill true, data
                     fireEvent "success", [data]
                 else
                     reason = @parseFailResponse response
                     fail reason
         .send()
+
+        return promise
 
     isSuccess: (response) ->
         response.success is true

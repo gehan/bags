@@ -14,6 +14,8 @@ src_files:
     - lib/mootools-core-1.4.5.js
     - lib/mootools-more-1.4.0.1.js
     - lib/curl.js
+    - lib/futures.ender.js
+    - lib/ender.noconflict.js
     - lib/behaviour/Element.Data.js
     - lib/behaviour/Event.Mock.js
     - lib/behaviour/BehaviorAPI.js

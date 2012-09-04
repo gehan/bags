@@ -1,5 +1,5 @@
 (function() {
-  var Collection, Model, done, flatten;
+  var Collection, Future, Model, done, flatten;
 
   Model = null;
 
@@ -13,6 +13,8 @@
     Collection = _Collection;
     return done = true;
   });
+
+  Future = require('future');
 
   flatten = function(obj) {
     return JSON.encode(obj);
@@ -291,36 +293,33 @@
       expect(addedKey).toBe('subCollection');
       return expect(addedCollection).toBe(mdl.get('subCollection'));
     });
-    it('sends post query to url on save', function() {
-      var attrs, req, requestData, saved;
+    it('sends create request to storage', function() {
+      var attrs, lastCall, promise, promise2, saved;
       attrs = {
         value1: 'key1',
         value2: 'key2'
       };
-      saved = false;
-      m.addEvent('saveSuccess', function() {
-        return saved = true;
-      });
       m.set(attrs);
       expect(m.isNew()).toBe(true);
-      setNextResponse({
-        status: 200,
-        responseText: flatten({
-          success: true,
-          data: {
-            id: 2
-          }
-        })
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      saved = false;
+      promise2 = m.save();
+      promise2.when(function(isSuccess, ret) {
+        if (isSuccess) {
+          return saved = true;
+        }
       });
-      m.save();
-      req = mostRecentAjaxRequest();
-      expect(req.method).toBe('POST');
+      promise.fulfill(true, {
+        id: 2
+      });
       expect(saved).toBe(true);
-      requestData = {
-        model: JSON.encode(attrs)
-      };
-      console.log(requestData);
-      expect(req.params).toBe(Object.toQueryString(requestData));
+      lastCall = m.storage.mostRecentCall.args;
+      expect(lastCall).toBeObject([
+        'create', attrs, {
+          eventName: 'save'
+        }
+      ]);
       return expect(m.id).toBe(2);
     });
     it('sends update query to url on save', function() {
@@ -431,19 +430,18 @@
       return expect(changeCalled).toBe(false);
     });
     it('save accepts callback for success', function() {
-      var calledWith, success;
+      var calledWith, promise, promise2, success;
       success = jasmine.createSpy('success callback');
-      setNextResponse({
-        status: 200,
-        responseText: flatten({
-          success: true,
-          data: {
-            id: 3
-          }
-        })
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      promise2 = m.save();
+      promise2.when(function(isSuccess, data) {
+        if (isSuccess) {
+          return success(data);
+        }
       });
-      m.save(null, null, {
-        success: success
+      promise.fulfill(true, {
+        id: 3
       });
       expect(success).toHaveBeenCalled();
       calledWith = flatten(success.mostRecentCall.args);
@@ -454,36 +452,43 @@
       ]));
     });
     it('save accepts callback for failure', function() {
-      var fail;
+      var fail, promise, promise2;
       fail = jasmine.createSpy('fail callback');
-      setNextResponse({
-        status: 500
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      m.save();
+      promise2 = m.save();
+      promise2.when(function(isSuccess, data) {
+        if (!isSuccess) {
+          return fail(data);
+        }
       });
-      m.save(null, null, {
-        failure: fail
-      });
+      promise.fulfill(false);
       return expect(fail).toHaveBeenCalled();
     });
     return it('destroy send delete request to server', function() {
-      var destroy, req, success;
-      m.id = 1;
+      var destroy, lastCall, promise, promise2, success;
       success = jasmine.createSpy('success callback');
       destroy = jasmine.createSpy('destroy event');
-      setNextResponse({
-        status: 200,
-        responseText: flatten({
-          success: true
-        })
-      });
+      m.id = 1;
       m.addEvent('destroy', destroy);
-      m.destroy({
-        success: success
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      promise2 = m.destroy();
+      promise2.when(function(isSuccess) {
+        if (isSuccess) {
+          return success();
+        }
       });
+      promise2.fulfill(true);
+      lastCall = m.storage.mostRecentCall.args;
+      expect(lastCall).toBeObject([
+        'delete', null, {
+          eventName: 'destroy'
+        }
+      ]);
       expect(success).toHaveBeenCalled();
-      expect(destroy).toHaveBeenCalled();
-      req = mostRecentAjaxRequest();
-      expect(req.method).toBe('POST');
-      return expect(req.params).toBe("_method=delete");
+      return expect(destroy).toHaveBeenCalled();
     });
   });
 

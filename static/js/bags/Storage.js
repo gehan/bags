@@ -4,19 +4,19 @@
     return new Class({
       Implements: [Events],
       storage: function(operation, data, options) {
-        var fail, fireEvent, method, requestData,
+        var Future, fail, fireEvent, method, promise, requestData,
           _this = this;
         if (options == null) {
           options = {};
         }
+        Future = require('future');
+        promise = new Future();
         method = this._crudMap[operation];
         fail = function(reason) {
           if (reason == null) {
             reason = null;
           }
-          if (options.failure != null) {
-            options.failure(reason);
-          }
+          promise.fulfill(false, reason);
           return fireEvent("failure", [reason]);
         };
         fireEvent = function(event, args) {
@@ -33,7 +33,7 @@
         } else {
           requestData = {};
         }
-        return new Request.JSON({
+        promise.request = new Request.JSON({
           url: this._getUrl(operation),
           method: method,
           data: requestData,
@@ -50,9 +50,7 @@
             var reason;
             if (_this.isSuccess(response)) {
               data = _this.parseResponse(response);
-              if (options.success != null) {
-                options.success(data);
-              }
+              promise.fulfill(true, data);
               return fireEvent("success", [data]);
             } else {
               reason = _this.parseFailResponse(response);
@@ -60,6 +58,7 @@
             }
           }
         }).send();
+        return promise;
       },
       isSuccess: function(response) {
         return response.success === true;

@@ -95,24 +95,18 @@
         return this.add(model, options);
       },
       fetch: function(filter, options) {
-        var _this = this;
+        var promise,
+          _this = this;
         if (filter == null) {
           filter = {};
         }
         if (options == null) {
           options = {};
         }
-        return this.storage('read', filter, {
-          success: function(data) {
-            _this._fetchDone(data, options);
-            if (options.success != null) {
-              return options.success(data);
-            }
-          },
-          failure: function(reason) {
-            if (options.failure != null) {
-              return options.failure(data);
-            }
+        promise = this.storage('read', filter);
+        return promise.when(function(isSuccess, data) {
+          if (isSuccess) {
+            return _this._fetchDone(data, options);
           }
         });
       },
