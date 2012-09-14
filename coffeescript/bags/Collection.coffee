@@ -10,12 +10,10 @@ new Class
     url: null
 
     initialize: (models=[], options={}) ->
-        @url = options.url if options.url?
-        @model = options.model if options.model?
         @setOptions options
-
-        for model in models
-            @add model, silent: true
+        @url = @options.url if @options.url?
+        @model = @options.model if @options.model?
+        @add(model, silent: true) for model in models
         @
 
     add: (model, options={}) ->
