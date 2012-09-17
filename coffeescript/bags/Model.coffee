@@ -4,7 +4,7 @@
 
 define ['require', 'bags/Storage'], (require, Storage) -> \
 
-Model = new Class
+new Class
     Implements: [Events, Options, Storage]
 
     # Specificying fields is not required, as a model will accept whatever
@@ -197,7 +197,7 @@ Model = new Class
         # TODO check class constructor itself rather than creating instance
         # not sure if possible as instanceof instpects prototype or constructor
         # chain
-        else if instanceOf new type(), Model
+        else if type.prototype and type.prototype.isModel
             value = value or {}
             value._parent = @
             new type(value)
@@ -214,14 +214,8 @@ Model = new Class
             type
 
     _isCollection: (key, value) ->
-        try
-            Collection = require 'bags/Collection'
-        catch error
-            # Error loading module, which means this can't possibly
-            # be a collection so we can safely return false
-            return false
         type = @_getType key
-        type? and typeOf(value) == 'array' and instanceOf new type(), Collection
+        return type? and type.prototype and type.prototype.isCollection
 
     _addCollection: (key, value, options={}) ->
         collectionClass = @_getType key
@@ -269,3 +263,5 @@ Model = new Class
             value.toJSON()
         else
             value
+
+    isModel: true

@@ -44,7 +44,7 @@ new Class
         if @model?
             @model.addEvent 'remove', => @destroy()
         @setOptions options
-        @render()
+        @render options.data
         if @options.injectTo?
             @inject @options.injectTo
         @
@@ -60,7 +60,8 @@ new Class
     #   fired on `document`
     #
     render: (data) ->
-        el = @_render data
+        @data = data
+        el = @_render()
         el.store 'view', @
 
         if not @el?
@@ -104,7 +105,8 @@ new Class
     #
     # * If within the dom then `domupdated` is still fired on `document`
     rerender: (refs, data) ->
-        el = @_render data
+        @data = data
+        el = @_render()
         Array.from(refs).each (ref) =>
             replaceThis = @refs[ref]
             if not replaceThis
@@ -159,6 +161,6 @@ new Class
 
     _parseForDisplay: ->
         if @model?
-            @model.toJSON()
+            Object.merge @model.toJSON(), @data
         else
             @data

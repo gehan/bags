@@ -10,9 +10,17 @@ new Class
     url: null
 
     initialize: (models=[], options={}) ->
+        if options.parentModel?
+            @parentModel =
+                id: options.parentModel.id
+                klass: options.parentModel.constructor
+            # Can't store actual instance otherwise browswers crash
+            # in some instances presumabley down to a circular reference
+            delete options.parentModel
         @setOptions options
         @url = @options.url if @options.url?
         @model = @options.model if @options.model?
+
         @add(model, silent: true) for model in models
         @
 

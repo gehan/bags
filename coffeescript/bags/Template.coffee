@@ -146,7 +146,14 @@ new Class
         @_loadTemplate templateName
         data = Object.clone data
         data.let = data or 0
+        data.iter = (chk, ctx, bodies) ->
+            obj = ctx.current()
+            for r, k of obj
+                chk = chk.render(bodies.block, ctx.push({key: r, value: k}))
+            chk
         rendered = ""
+        # add custom filter to capitalise strings in dust
+        dust.filters.c = (value) => value.capitalize()
         dust.render(templateName, data, (err, out) ->
             rendered = out
         )
