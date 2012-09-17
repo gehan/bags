@@ -69,7 +69,9 @@ collection will be added to the <code>@collections</code> object and a
 <pre><code>model.set 'myCollection', [{model}, {model}]
 =&gt; model.collections.myCollection = collection
 </code></pre>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">collections: </span><span class="p">{}</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><h1>Using the Model class</h1>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">collections: </span><span class="p">{}</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><p>If using default <code>Storage</code> class then you can set the server url here. If
+the Model was create via a Collection then @url will be read from that.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">url: </span><span class="kc">null</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><h1>Using the Model class</h1>
 
 <p>When instantiating a model often you will be passing it's field values to as
 the <code>attributes</code> object, typically after a json response from the server.</p>
@@ -93,12 +95,12 @@ would be taken from the associated collection.</p>
         <span class="vi">@collection = </span><span class="nx">options</span><span class="p">.</span><span class="nx">collection</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">collection</span><span class="o">?</span>
         <span class="nx">@setOptions</span> <span class="nx">options</span>
         <span class="nx">@_setInitial</span> <span class="nx">attributes</span>
-        <span class="err">@</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><p>Simple has, get methods</p>
+        <span class="err">@</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><p>Simple has, get methods</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">has: </span><span class="nf">(key) -&gt;</span>
         <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
 
     <span class="nv">get: </span><span class="nf">(key) -&gt;</span>
-        <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><p>Set can accept <code>key</code>, <code>value</code> arguments to set one field's value, or it
+        <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><p>Set can accept <code>key</code>, <code>value</code> arguments to set one field's value, or it
 can accept a key/value object to set multiple at once.</p>
 
 <p>If any fields are defined then the value will be passed to the field class.
@@ -121,8 +123,8 @@ listeners, unless <code>silent: true</code> is passed through as an option.</p>
 
         <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
             <span class="nx">@fireEvent</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
-            <span class="nx">@fireEvent</span> <span class="s2">&quot;change:#{key}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">]</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><p>Whether model is already stored or new</p>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">isNew: </span><span class="o">-&gt;</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><h2>Serialisation</h2>
+            <span class="nx">@fireEvent</span> <span class="s2">&quot;change:#{key}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">]</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><p>Whether model is already stored or new</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">isNew: </span><span class="o">-&gt;</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span></pre></div></td></tr><tr id="section-16"><td class="docs"><div class="pilwrap"><a href="#section-16" class="pilcrow">&#182;</a></div><h2>Serialisation</h2>
 
 <p>This method will return a represenation of the model in a format that
 is suitable for JSON encoding. This is used to store the model but is
@@ -147,13 +149,13 @@ data</p></li>
         <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">@_attributes</span>
             <span class="nx">attrs</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_jsonKeyValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
         <span class="k">delete</span> <span class="nx">attrs</span><span class="p">.</span><span class="nx">_parent</span>
-        <span class="k">return</span> <span class="nx">attrs</span></pre></div></td></tr><tr id="section-16"><td class="docs"><div class="pilwrap"><a href="#section-16" class="pilcrow">&#182;</a></div><h1>Model storage</h1>
+        <span class="k">return</span> <span class="nx">attrs</span></pre></div></td></tr><tr id="section-17"><td class="docs"><div class="pilwrap"><a href="#section-17" class="pilcrow">&#182;</a></div><h1>Model storage</h1>
 
 <p>The actual model storage has been abstracted out to
 <a href="Storage.coffee.html">Storage</a>
 which should be read to learn about the various events fired during each
 operation and as well as how to handle to returned promise.</p>
-</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-17"><td class="docs"><div class="pilwrap"><a href="#section-17" class="pilcrow">&#182;</a></div><p>Fetches the model from the server, useful if you just have the id
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-18"><td class="docs"><div class="pilwrap"><a href="#section-18" class="pilcrow">&#182;</a></div><p>Fetches the model from the server, useful if you just have the id
 of the model.</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">fetch: </span><span class="nf">(options={}) -&gt;</span>
         <span class="k">return</span> <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
@@ -163,7 +165,7 @@ of the model.</p>
         <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSucess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
             <span class="k">if</span> <span class="nx">isSuccess</span>
                 <span class="nx">@set</span> <span class="nx">data</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-                <span class="nx">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div></td></tr><tr id="section-18"><td class="docs"><div class="pilwrap"><a href="#section-18" class="pilcrow">&#182;</a></div><p>Saves the model. Can be called simply as <code>save()</code> to store the model in
+                <span class="nx">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div></td></tr><tr id="section-19"><td class="docs"><div class="pilwrap"><a href="#section-19" class="pilcrow">&#182;</a></div><p>Saves the model. Can be called simply as <code>save()</code> to store the model in
 its current state or you can specificy only certain values to update and
 call <code>save(field, value)</code> or <code>save(fieldValueObject</code> in the same way you
 call <code>set</code></p>
@@ -198,7 +200,7 @@ it.</p>
             <span class="k">if</span> <span class="nx">isSuccess</span>
                 <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span> <span class="o">and</span> <span class="nx">setAttrFn</span><span class="o">?</span>
                 <span class="nv">model = </span><span class="nx">data</span> <span class="o">or</span> <span class="p">{}</span>
-                <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span></pre></div></td></tr><tr id="section-19"><td class="docs"><div class="pilwrap"><a href="#section-19" class="pilcrow">&#182;</a></div><p>Deletes the model from storage</p>
+                <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span></pre></div></td></tr><tr id="section-20"><td class="docs"><div class="pilwrap"><a href="#section-20" class="pilcrow">&#182;</a></div><p>Deletes the model from storage</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">destroy: </span><span class="nf">(options={}) -&gt;</span>
         <span class="nv">fireEvent = </span><span class="o">=&gt;</span>
             <span class="nx">@fireEvent</span> <span class="s1">&#39;destroy&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
@@ -214,7 +216,7 @@ it.</p>
         <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">storageOptions</span>
         <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
             <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="nx">fireEvent</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span></pre></div></td></tr><tr id="section-20"><td class="docs"><div class="pilwrap"><a href="#section-20" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
+                <span class="nx">fireEvent</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span></pre></div></td></tr><tr id="section-21"><td class="docs"><div class="pilwrap"><a href="#section-21" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">_attributes: </span><span class="p">{}</span>
 
     <span class="nv">_makeValue: </span><span class="nf">(key, value) -&gt;</span>
@@ -228,10 +230,8 @@ it.</p>
         <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">Number</span>
             <span class="nb">Number</span><span class="p">.</span><span class="nx">from</span> <span class="nx">value</span>
         <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">Date</span>
-            <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">value</span></pre></div></td></tr><tr id="section-21"><td class="docs"><div class="pilwrap"><a href="#section-21" class="pilcrow">&#182;</a></div><p>TODO check class constructor itself rather than creating instance
-not sure if possible as instanceof instpects prototype or constructor
-chain</p>
-</td><td class="code"><div class="highlight"><pre>        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">isModel</span>
+            <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">isModel</span>
             <span class="nv">value = </span><span class="nx">value</span> <span class="o">or</span> <span class="p">{}</span>
             <span class="nv">value._parent = </span><span class="err">@</span>
             <span class="k">new</span> <span class="nx">type</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
@@ -297,4 +297,4 @@ keep references intact</p>
 
     <span class="nv">isModel: </span><span class="kc">true</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Mon Sep 17 2012 22:07:59 GMT+0000 (UTC)  </div><div id="projectname"><a href="../../index.html">bags</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Mon Sep 17 2012 22:35:26 GMT+0000 (UTC)  </div><div id="projectname"><a href="../../index.html">bags</a></div></div></body></html>

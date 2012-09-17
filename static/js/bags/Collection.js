@@ -4,9 +4,8 @@
     return new Class({
       Extends: Array,
       Implements: [Options, Events, Storage],
-      _models: [],
-      model: Model,
       options: {},
+      model: Model,
       url: null,
       initialize: function(models, options) {
         var model, _i, _len;
@@ -38,6 +37,46 @@
         }
         return this;
       },
+      fetch: function(filter, options) {
+        var promise,
+          _this = this;
+        if (filter == null) {
+          filter = {};
+        }
+        if (options == null) {
+          options = {};
+        }
+        promise = this.storage('read', filter);
+        return promise.when(function(isSuccess, data) {
+          if (isSuccess) {
+            if (options.add) {
+              _this.add(models, options);
+            } else {
+              _this.reset(models, options);
+            }
+            if (!options.silent) {
+              return _this.fireEvent('fetch', [true]);
+            }
+          }
+        });
+      },
+      reset: function(models, options) {
+        var model;
+        if (options == null) {
+          options = {};
+        }
+        while (model = this.pop()) {
+          this._remove(model, options);
+        }
+        if (models != null) {
+          this.add(models, {
+            silent: true
+          });
+        }
+        if (!options.silent) {
+          return this.fireEvent('reset', [this]);
+        }
+      },
       add: function(model, options) {
         var m, _i, _len, _results;
         if (options == null) {
@@ -65,25 +104,29 @@
           return this.create(model, options);
         }
       },
-      _add: function(model) {
-        return this.push(model);
-      },
-      reset: function(models, options) {
+      create: function(attributes, options) {
         var model;
         if (options == null) {
           options = {};
         }
-        while (model = this.pop()) {
-          this._remove(model, options);
+        model = new this.model(attributes);
+        return this.add(model, options);
+      },
+      sort: function(comparator) {
+        if (comparator == null) {
+          comparator = this.comparator;
         }
-        if (models != null) {
-          this.add(models, {
-            silent: true
-          });
-        }
-        if (!options.silent) {
-          return this.fireEvent('reset', [this]);
-        }
+        this.parent(comparator);
+        return this.fireEvent('sort');
+      },
+      comparator: function(a, b) {
+        return a - b;
+      },
+      toJSON: function() {
+        return this.invoke('toJSON');
+      },
+      _add: function(model) {
+        return this.push(model);
       },
       _remove: function(model, options) {
         if (options == null) {
@@ -93,50 +136,6 @@
         if (!options.silent) {
           return this.fireEvent('remove', [model]);
         }
-      },
-      create: function(attributes, options) {
-        var model;
-        if (options == null) {
-          options = {};
-        }
-        model = new this.model(attributes);
-        return this.add(model, options);
-      },
-      fetch: function(filter, options) {
-        var promise,
-          _this = this;
-        if (filter == null) {
-          filter = {};
-        }
-        if (options == null) {
-          options = {};
-        }
-        promise = this.storage('read', filter);
-        return promise.when(function(isSuccess, data) {
-          if (isSuccess) {
-            if (options.add) {
-              _this.add(models, options);
-            } else {
-              _this.reset(models, options);
-            }
-            if (!options.silent) {
-              return _this.fireEvent('fetch', [true]);
-            }
-          }
-        });
-      },
-      sort: function(comparator) {
-        if (comparator == null) {
-          comparator = this.comparator;
-        }
-        this.parent(comparator);
-        return this.fireEvent('sort', this);
-      },
-      comparator: function(a, b) {
-        return a - b;
-      },
-      toJSON: function() {
-        return this.invoke('toJSON');
       },
       isCollection: true
     });

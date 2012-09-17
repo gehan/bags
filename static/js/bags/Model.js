@@ -9,6 +9,7 @@
       id: null,
       idField: "id",
       collections: {},
+      url: null,
       initialize: function(attributes, options) {
         if (options == null) {
           options = {};

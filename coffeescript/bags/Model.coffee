@@ -84,6 +84,10 @@ new Class
     #     => model.collections.myCollection = collection
     collections: {}
 
+    # If using default `Storage` class then you can set the server url here. If
+    # the Model was create via a Collection then @url will be read from that.
+    url: null
+
     # Using the Model class
     # =====================
     #
