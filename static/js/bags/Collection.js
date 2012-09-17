@@ -16,13 +16,20 @@
         if (options == null) {
           options = {};
         }
-        if (options.url != null) {
-          this.url = options.url;
-        }
-        if (options.model != null) {
-          this.model = options.model;
+        if (options.parentModel != null) {
+          this.parentModel = {
+            id: options.parentModel.id,
+            klass: options.parentModel.constructor
+          };
+          delete options.parentModel;
         }
         this.setOptions(options);
+        if (this.options.url != null) {
+          this.url = this.options.url;
+        }
+        if (this.options.model != null) {
+          this.model = this.options.model;
+        }
         for (_i = 0, _len = models.length; _i < _len; _i++) {
           model = models[_i];
           this.add(model, {

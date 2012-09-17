@@ -104,14 +104,30 @@
         return this.getRefs(el, ref);
       },
       _renderDustTemplate: function(templateName, data) {
-        var rendered;
+        var rendered,
+          _this = this;
         if (data == null) {
           data = {};
         }
         this._loadTemplate(templateName);
         data = Object.clone(data);
         data["let"] = data || 0;
+        data.iter = function(chk, ctx, bodies) {
+          var k, obj, r;
+          obj = ctx.current();
+          for (r in obj) {
+            k = obj[r];
+            chk = chk.render(bodies.block, ctx.push({
+              key: r,
+              value: k
+            }));
+          }
+          return chk;
+        };
         rendered = "";
+        dust.filters.c = function(value) {
+          return value.capitalize();
+        };
         dust.render(templateName, data, function(err, out) {
           return rendered = out;
         });

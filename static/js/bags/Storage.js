@@ -3,6 +3,12 @@
   define(function() {
     return new Class({
       Implements: [Events],
+      _crudMap: {
+        create: 'post',
+        read: 'get',
+        update: 'put',
+        "delete": 'delete'
+      },
       storage: function(operation, data, options) {
         var Future, fail, fireEvent, method, promise, requestData,
           _this = this;
@@ -71,12 +77,6 @@
       parseFailResponse: function(response) {
         return response.error;
       },
-      _crudMap: {
-        read: 'get',
-        create: 'post',
-        update: 'put',
-        "delete": 'delete'
-      },
       _getUrl: function(operation) {
         var url;
         url = this.url;
@@ -88,7 +88,7 @@
         }
         if ((operation === 'update' || operation === 'delete') || (operation === 'read' && !this.isCollection)) {
           if (!(this.id != null)) {
-            throw new Error("Model doesn't have an id, cannot perform " + operation);
+            throw new Error("Model doesn't have an id, cannot perform\n" + operation);
           }
           return "" + url + "/" + this.id;
         } else {

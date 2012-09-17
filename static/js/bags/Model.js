@@ -2,8 +2,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define(['require', 'bags/Storage'], function(require, Storage) {
-    var Model;
-    return Model = new Class({
+    return new Class({
       Implements: [Events, Options, Storage],
       fields: {},
       defaults: {},
@@ -55,6 +54,20 @@
           this.fireEvent("change", [key, value]);
           return this.fireEvent("change:" + key, [value]);
         }
+      },
+      isNew: function() {
+        return !(this.id != null);
+      },
+      toJSON: function() {
+        var attrs, key, value, _ref;
+        attrs = {};
+        _ref = this._attributes;
+        for (key in _ref) {
+          value = _ref[key];
+          attrs[key] = this._jsonKeyValue(key, value);
+        }
+        delete attrs._parent;
+        return attrs;
       },
       fetch: function(options) {
         var promise, storageOptions,
@@ -159,20 +172,6 @@
           }
         });
       },
-      isNew: function() {
-        return !(this.id != null);
-      },
-      toJSON: function() {
-        var attrs, key, value, _ref;
-        attrs = {};
-        _ref = this._attributes;
-        for (key in _ref) {
-          value = _ref[key];
-          attrs[key] = this._jsonKeyValue(key, value);
-        }
-        delete attrs._parent;
-        return attrs;
-      },
       _attributes: {},
       _makeValue: function(key, value) {
         var item, type, _i, _len, _results;
@@ -192,7 +191,7 @@
           return Number.from(value);
         } else if (type === Date) {
           return Date.parse(value);
-        } else if (instanceOf(new type(), Model)) {
+        } else if (type.prototype && type.prototype.isModel) {
           value = value || {};
           value._parent = this;
           return new type(value);
@@ -212,14 +211,9 @@
         }
       },
       _isCollection: function(key, value) {
-        var Collection, type;
-        try {
-          Collection = require('bags/Collection');
-        } catch (error) {
-          return false;
-        }
+        var type;
         type = this._getType(key);
-        return (type != null) && typeOf(value) === 'array' && instanceOf(new type(), Collection);
+        return (type != null) && type.prototype && type.prototype.isCollection;
       },
       _addCollection: function(key, value, options) {
         var collection, collectionClass;
@@ -290,7 +284,8 @@
         } else {
           return value;
         }
-      }
+      },
+      isModel: true
     });
   });
 

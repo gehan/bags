@@ -60,8 +60,7 @@ new Class
     #   fired on `document`
     #
     render: (data) ->
-        @data = data
-        el = @_render()
+        el = @_render data
         el.store 'view', @
 
         if not @el?
@@ -105,8 +104,7 @@ new Class
     #
     # * If within the dom then `domupdated` is still fired on `document`
     rerender: (refs, data) ->
-        @data = data
-        el = @_render()
+        el = @_render data
         Array.from(refs).each (ref) =>
             replaceThis = @refs[ref]
             if not replaceThis
@@ -144,7 +142,9 @@ new Class
             @el.each (currentEl, idx) =>
                 @el[idx] = el[idx].replaces currentEl
 
-    _render: (data=@_parseForDisplay()) ->
+    _render: (data={}) ->
+        if @model?
+            data = Object.combine @model.toJSON(), data
         el = @renderTemplate @template, data
 
     # Recurse back through an elements parents to determine whether it is
@@ -158,9 +158,3 @@ new Class
             inDom = true if parent == document.body
         if inDom
             document.fireEvent 'domupdated', [container]
-
-    _parseForDisplay: ->
-        if @model?
-            Object.merge @model.toJSON(), @data
-        else
-            @data

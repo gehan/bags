@@ -31,7 +31,7 @@
           });
         }
         this.setOptions(options);
-        this.render();
+        this.render(options.data);
         if (this.options.injectTo != null) {
           this.inject(this.options.injectTo);
         }
@@ -102,7 +102,10 @@
       _render: function(data) {
         var el;
         if (data == null) {
-          data = this._parseForDisplay();
+          data = {};
+        }
+        if (this.model != null) {
+          data = Object.combine(this.model.toJSON(), data);
         }
         return el = this.renderTemplate(this.template, data);
       },
@@ -120,13 +123,6 @@
         }
         if (inDom) {
           return document.fireEvent('domupdated', [container]);
-        }
-      },
-      _parseForDisplay: function() {
-        if (this.model != null) {
-          return this.model.toJSON();
-        } else {
-          return this.data;
         }
       }
     });

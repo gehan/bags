@@ -5,15 +5,29 @@
 define ['require', 'bags/Storage'], (require, Storage) -> \
 
 new Class
+    # Uses [Storage](Storage.coffee.html) for model storage
     Implements: [Events, Options, Storage]
 
+    # Specfying field classes (optional)
+    # ----------------------------------
+    #
     # Specificying fields is not required, as a model will accept whatever
     # fields you give it, however they will just be strings or numbers as
     # the case may be.
     #
-    # If you wish to define types you can do so here, and when a value is
-    # passed to that field (e.g. JSON string representation) this class
-    # will be instatiated using that class as the first parameter,
+    # If you wish to use different classes for fields then you can define them
+    # here. If defined for a field then when a value is set, the constructor
+    # will be called with that value.
+    #
+    # e.g. if
+    #
+    #     fields:
+    #         someField: MyObject
+    #
+    # then
+    #
+    #     model.set 'someField', id: 1, text: 'Hello there'
+    #     => model.someField = new MyObject(id: 1, text: 'Hello there')
     #
     # Values can be the class object directly, a function that returns a
     # class or a string which will be queries as window[string]
@@ -26,6 +40,8 @@ new Class
     #         someModel: -> SomeModel
     fields: {}
 
+    # Field defaults
+    # --------------
 
     # Default values for fields can be set also, and do not require a field
     # definition above.
@@ -36,21 +52,41 @@ new Class
     #         text: "Hello there"
     defaults: {}
 
+    # Model id
+    # --------
+
     # When a model's id field has been set then this field is populated. Setting
     # this field will not change it and will probably break your model
     id: null
 
     # Some database systems use a different id field to `id`. If this is the case
-    # then override it here and that field will be used to give the magic `id` field
+    # then override it here and that field will be used to give the magic `id`
+    # field
     # here
     idField: "id"
 
-    # Collections can be associated with a model so as sub collections, e.g. a post
-    # object has number of comments associate with it. For this to work you would
-    # need to define the field as a Collection field in `fields`. To make Collection
-    # field access simpler they would then be stored in `collections[fieldName]`
+    # Using [Collection](Collection.coffee.html) classes as fields
+    # ------------------------------------------------------------
+
+    # If you set a field as a Collection then it is handled slightly
+    # differently. As well as the field being set as a Collection instance, the
+    # collection will be added to the `@collections` object and a
+    # `addCollection [key, collection]` event is fired.
+    #
+    # e.g. if
+    #
+    #     fields:
+    #         myCollection: Collection
+    #
+    # then
+    #
+    #     model.set 'myCollection', [{model}, {model}]
+    #     => model.collections.myCollection = collection
     collections: {}
 
+    # Using the Model class
+    # =====================
+    #
     # When instantiating a model often you will be passing it's field values to as
     # the `attributes` object, typically after a json response from the server.
     #
@@ -106,11 +142,46 @@ new Class
             @fireEvent "change", [key, value]
             @fireEvent "change:#{key}", [value]
 
-    # Fetchs the model from the server, useful if you just have the id
-    # of the model.
+    # Whether model is already stored or new
+    isNew: -> not @id?
+
+    # Serialisation
+    # -------------
     #
-    # Fires a `fetch` event after the model has been successfully fetched
-    # and parsed.
+    # This method will return a represenation of the model in a format that
+    # is suitable for JSON encoding. This is used to store the model but is
+    # also very handy for rendering the model in templates etc.
+    #
+    # For string or numbers their values do not need any conversion, but for
+    # any custom classes then serialisation of these can be handled in two ways
+    #
+    # * **Ensure object has `toJSON` method**
+    #
+    #   Much like Model and Collection have a `toJSON`, any custom classes you
+    #   use for fields can simply have a `toJSON` method
+    #
+    # * **Specify a custom JSON method**
+    #
+    #   Alternatively for a given field `myField` you can create a method on
+    #   the class called `jsonMyField` which will be called to serialise the
+    #   data
+    toJSON: ->
+        attrs = {}
+        for key, value of @_attributes
+            attrs[key] = @_jsonKeyValue key, value
+        delete attrs._parent
+        return attrs
+
+    # Model storage
+    # =============
+    #
+    # The actual model storage has been abstracted out to
+    # [Storage](Storage.coffee.html)
+    # which should be read to learn about the various events fired during each
+    # operation and as well as how to handle to returned promise.
+
+    # Fetches the model from the server, useful if you just have the id
+    # of the model.
     fetch: (options={}) ->
         return if @isNew()
 
@@ -121,8 +192,16 @@ new Class
                 @set data, silent: true
                 @fireEvent 'fetch', [true] unless options.silent
 
-    # Saves the model in its current state to the server or only specific
-    # fields if passed in.
+    # Saves the model. Can be called simply as `save()` to store the model in
+    # its current state or you can specificy only certain values to update and
+    # call `save(field, value)` or `save(fieldValueObject` in the same way you
+    # call `set`
+    #
+    # By default if any values are specified then when the save operation has
+    # completed then the standard set `change` events are fired. However if
+    # `options.dontWait=true` then the `change` events are fired immediately.
+    # This is for if you are assuming request success rather than waiting for
+    # it.
     save: (key, value, options={}) ->
         ModelClass = @$constructor
         if key?
@@ -138,11 +217,9 @@ new Class
         if typeOf(key, 'object')
             options = Object.merge(options, value)
 
-        # Update values immediately if saving optimistically
         setAttrFn = @set.bind this, key, value, options if key?
         setAttrFn() if options.dontWait and setAttrFn?
 
-        # Send to storage
         storageMethod = if @isNew() then "create" else "update"
         storageOptions = Object.merge {eventName: 'save'}, options
         promise = @storage storageMethod, data, storageOptions
@@ -152,6 +229,7 @@ new Class
                 model = data or {}
                 @set model, silent: true
 
+    # Deletes the model from storage
     destroy: (options={}) ->
         fireEvent = =>
             @fireEvent 'destroy' unless options.silent
@@ -169,15 +247,6 @@ new Class
             if isSuccess
                 fireEvent() if not options.dontWait
 
-    isNew: -> not @id?
-
-    toJSON: ->
-        attrs = {}
-        for key, value of @_attributes
-            attrs[key] = @_jsonKeyValue key, value
-        delete attrs._parent
-        return attrs
-
     # Private methods
     # ===============
     _attributes: {}
@@ -194,9 +263,6 @@ new Class
             Number.from value
         else if type is Date
             Date.parse value
-        # TODO check class constructor itself rather than creating instance
-        # not sure if possible as instanceof instpects prototype or constructor
-        # chain
         else if type.prototype and type.prototype.isModel
             value = value or {}
             value._parent = @
