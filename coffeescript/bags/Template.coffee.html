@@ -1,0 +1,187 @@
+<!DOCTYPE html><html><head><title>Template.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../../index.html" class="source"><span class="file_name">README</span></a><a href="../../coffeescript/bags/View.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">View.coffee</span></a><a href="../../coffeescript/bags/Template.coffee.html" class="source selected"><span class="base_path">coffeescript / bags / </span><span class="file_name">Template.coffee</span></a><a href="../../coffeescript/bags/Storage.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Storage.coffee</span></a><a href="../../coffeescript/bags/Model.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Model.coffee</span></a><a href="../../coffeescript/bags/Collection.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Collection.coffee</span></a><a href="../../coffeescript/bags/Router.coffee.html" class="source "><span class="base_path">coffeescript / bags / </span><span class="file_name">Router.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>Template.coffee</h1><div class="filepath">coffeescript/bags/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><p>Provides rendering of dust.js templates as well as simple node reference
+tracking and event delegation.</p>
+</td><td class="code"><div class="highlight"><pre><span class="nx">define</span> <span class="o">-&gt;</span> <span class="o">\</span>
+
+<span class="k">new</span> <span class="nx">Class</span>
+    <span class="nv">TEMPLATES: </span><span class="p">{}</span>
+    <span class="nv">refs: </span><span class="p">{}</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><h1>Template Rendering</h1>
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><p>Renders a dust.js template and returns the html nodes. It does not insert
+these into the DOM.</p>
+
+<ul>
+<li><p><code>templateName</code></p>
+
+<p>Name of dust template to use. Dust templates have to be loaded before
+the are used, but this will try to load it if it hasn't already. If
+however the template uses partials then you need to make sure that
+these have all been loaded - see <code>loadAllTemplates</code>.</p></li>
+<li><p><code>data</code></p>
+
+<p>Data object to be passed into dust template.</p></li>
+<li><p><code>events</code></p>
+
+<p>Any events passed in will be delegated from the top-level node(s) -
+see <code>delegateEvents</code> for syntax.</p></li>
+</ul>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">renderTemplate: </span><span class="nf">(templateName, data={}, events=null) -&gt;</span>
+        <span class="nv">rendered = </span><span class="nx">@_renderDustTemplate</span> <span class="nx">templateName</span><span class="p">,</span> <span class="nx">data</span>
+        <span class="nv">els = </span><span class="nx">Elements</span><span class="p">.</span><span class="nx">from</span> <span class="nx">rendered</span>
+        <span class="nx">@delegateEvents</span> <span class="nx">els</span><span class="p">,</span> <span class="nx">events</span> <span class="k">if</span> <span class="nx">events</span><span class="o">?</span>
+
+        <span class="k">if</span> <span class="nx">els</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="nx">els</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span>
+            <span class="nx">els</span></pre></div></td></tr><tr id="section-4"><td class="docs"><div class="pilwrap"><a href="#section-4" class="pilcrow">&#182;</a></div><p>Loads all current dust templates into memory so they can be rendered.
+This step is essential if partials are used anywhere as they are
+expected to be in the dust cache already when called.</p>
+
+<p>Templates are loaded from either:</p>
+
+<ul>
+<li><p><code>@TEMPLATES</code> object in this class.</p>
+
+<p>e.g.</p>
+
+<pre><code>  TEMPLATES:
+      "templateName": """
+      &lt;body&gt;
+          &lt;p&gt;Some elements&lt;/p&gt;
+      &lt;/body&gt;
+      """
+</code></pre></li>
+<li><p>Any script tags in the current HTML.</p>
+
+<p>e.g.</p>
+
+<pre><code>  &lt;script template="templateName" type="text/html"&gt;
+  &lt;body&gt;
+      &lt;p&gt;I am the internet&lt;/p&gt;
+  &lt;/body&gt;
+  &lt;/script&gt;
+</code></pre></li>
+</ul>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">loadAllTemplates: </span><span class="o">-&gt;</span>
+        <span class="nx">@_loadTemplate</span><span class="p">(</span><span class="nx">k</span><span class="p">)</span> <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">@TEMPLATES</span>
+        <span class="nx">@_loadTemplate</span><span class="p">(</span><span class="nx">k</span><span class="p">)</span> <span class="k">for</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">$$</span><span class="p">(</span><span class="s1">&#39;script[type=text/html]&#39;</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">)</span></pre></div></td></tr><tr id="section-5"><td class="docs"><div class="pilwrap"><a href="#section-5" class="pilcrow">&#182;</a></div><p>Delegates events from the top level node(s) of the passed in <code>els</code>.</p>
+
+<p>The <code>events</code> object is of the following syntax</p>
+
+<pre><code>"eventType:cssSelector": "functionName"
+</code></pre>
+
+<p>e.g.</p>
+
+<pre><code>"click:div.close": "close"
+"click:div.delete": "delete"
+</code></pre>
+
+<p>You can chose to stop event propagation upwards and the default action
+of the elements by default if you wish.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">delegateEvents: </span><span class="nf">(els, events, stopPropagation=false,</span>
+<span class="nf">            preventDefault=false) -&gt;</span>
+
+        <span class="nv">els = </span><span class="nb">Array</span><span class="p">.</span><span class="nx">from</span> <span class="nx">els</span>
+        <span class="k">for</span> <span class="nx">eventKey</span><span class="p">,</span> <span class="nx">fnName</span> <span class="k">of</span> <span class="nx">events</span>
+            <span class="nv">boundFn = </span><span class="nf">(fnName, event, target) -&gt;</span>
+                <span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">()</span> <span class="k">if</span> <span class="nx">stopPropagation</span>
+                <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span> <span class="k">if</span> <span class="nx">preventDefault</span>
+                <span class="err">@</span><span class="p">[</span><span class="nx">fnName</span><span class="p">]</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">target</span>
+            <span class="nv">boundFn = </span><span class="nx">boundFn</span><span class="p">.</span><span class="nx">bind</span> <span class="err">@</span><span class="p">,</span> <span class="nx">fnName</span>
+            <span class="k">for</span> <span class="nx">node</span> <span class="k">in</span> <span class="nx">els</span>
+                <span class="nx">@_addDelegatedEvent</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">eventKey</span><span class="p">,</span> <span class="nx">boundFn</span></pre></div></td></tr><tr id="section-6"><td class="docs"><div class="pilwrap"><a href="#section-6" class="pilcrow">&#182;</a></div><p>To make saving references to elements with the template easier, if you
+add the property ref to the element. Running this will then pull those
+references back into an object.</p>
+
+<p>e.g.</p>
+
+<pre><code>    &lt;div&gt;
+        &lt;a href="/somewhere" ref="link"&gt;Link&lt;/a&gt;
+        &lt;div ref="title"&gt;Title&lt;/div&gt;
+    &lt;/div&gt;
+</code></pre>
+
+<p>results in</p>
+
+<pre><code>    link: &lt;reference to a Element&gt;
+    title: &lt;reference to div Element&gt;
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">getRefs: </span><span class="nf">(els, ref=null) -&gt;</span>
+        <span class="nv">refs = </span><span class="p">{}</span>
+        <span class="k">for</span> <span class="nx">el</span> <span class="k">in</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span> <span class="nx">els</span>
+            <span class="nv">elRefName = </span><span class="nx">el</span><span class="p">.</span><span class="nx">get</span> <span class="s1">&#39;ref&#39;</span>
+            <span class="k">return</span> <span class="nx">el</span> <span class="k">if</span> <span class="nx">ref</span> <span class="o">and</span> <span class="nx">elRefName</span> <span class="o">==</span> <span class="nx">ref</span>
+            <span class="nx">refs</span><span class="p">[</span><span class="nx">elRefName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">el</span> <span class="k">if</span> <span class="nx">elRefName</span>
+
+            <span class="k">for</span> <span class="nx">refEl</span> <span class="k">in</span> <span class="nx">el</span><span class="p">.</span><span class="nx">getElements</span> <span class="s2">&quot;*[ref]&quot;</span>
+                <span class="nv">refName = </span><span class="nx">refEl</span><span class="p">.</span><span class="nx">get</span> <span class="s1">&#39;ref&#39;</span>
+                <span class="k">return</span> <span class="nx">refEl</span> <span class="k">if</span> <span class="nx">ref</span> <span class="o">and</span> <span class="nx">refName</span> <span class="o">==</span> <span class="nx">ref</span>
+
+                <span class="nx">refs</span><span class="p">[</span><span class="nx">refName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">refEl</span>
+
+        <span class="k">return</span> <span class="nx">refs</span></pre></div></td></tr><tr id="section-7"><td class="docs"><div class="pilwrap"><a href="#section-7" class="pilcrow">&#182;</a></div><p>Pulls out a given ref, calls getRefs directly so just gives a more
+meaningful name.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">getRef: </span><span class="nf">(el, ref) -&gt;</span> <span class="nx">@getRefs</span> <span class="nx">el</span><span class="p">,</span> <span class="nx">ref</span></pre></div></td></tr><tr id="section-8"><td class="docs"><div class="pilwrap"><a href="#section-8" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-9"><td class="docs"><div class="pilwrap"><a href="#section-9" class="pilcrow">&#182;</a></div><p>Calls dust to render the given template. It will try to load the template
+before rendering.</p>
+
+<p>To allow for setting variables it adds the variable <code>let</code> to the context
+and points it to the root so that the context with <code>let</code> is effectively
+unchanged. This means you can do the following to override a variable
+with a <code>#let</code> statement</p>
+
+<pre><code>{#let var1="value" var2="value"}
+{/let}
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">_renderDustTemplate: </span><span class="nf">(templateName, data={}) -&gt;</span>
+        <span class="nx">@_loadTemplate</span> <span class="nx">templateName</span>
+        <span class="nv">data = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">data</span>
+        <span class="nv">data.let = </span><span class="nx">data</span> <span class="o">or</span> <span class="mi">0</span>
+        <span class="nv">data.iter = </span><span class="nf">(chk, ctx, bodies) -&gt;</span>
+            <span class="nv">obj = </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">current</span><span class="p">()</span>
+            <span class="k">for</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">k</span> <span class="k">of</span> <span class="nx">obj</span>
+                <span class="nv">chk = </span><span class="nx">chk</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">bodies</span><span class="p">.</span><span class="nx">block</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span><span class="nv">key: </span><span class="nx">r</span><span class="p">,</span> <span class="nv">value: </span><span class="nx">k</span><span class="p">}))</span>
+            <span class="nx">chk</span>
+        <span class="nv">rendered = </span><span class="s2">&quot;&quot;</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><p>add custom filter to capitalise strings in dust</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="nv">dust.filters.c = </span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">value</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">()</span>
+        <span class="nx">dust</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">templateName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nf">(err, out) -&gt;</span>
+            <span class="nv">rendered = </span><span class="nx">out</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nx">rendered</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><p>Tries to find and load a dustjs template if it is not already in the
+cache</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">_loadTemplate: </span><span class="nf">(templateName) -&gt;</span>
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">dust</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">templateName</span><span class="p">]</span><span class="o">?</span>
+            <span class="nv">compiled = </span><span class="nx">dust</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">@_getTemplate</span><span class="p">(</span><span class="nx">templateName</span><span class="p">),</span> <span class="nx">templateName</span>
+            <span class="nx">dust</span><span class="p">.</span><span class="nx">loadSource</span> <span class="nx">compiled</span></pre></div></td></tr><tr id="section-12"><td class="docs"><div class="pilwrap"><a href="#section-12" class="pilcrow">&#182;</a></div><p>Tries to find template in the following order of precedence:</p>
+
+<p>1 - Within the current class in <code>@TEMPLATES</code></p>
+
+<p>2 - Within a JST script tag on the page</p>
+
+<pre><code>    &lt;script type="text/html" template="template-name"&gt;
+    &lt;div&gt;{{somestuff}}&lt;/div&gt;
+    &lt;/script&gt;
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">_getTemplate: </span><span class="nf">(templateName) -&gt;</span>
+        <span class="nv">template = </span><span class="nx">@TEMPLATES</span><span class="p">[</span><span class="nx">templateName</span><span class="p">]</span> <span class="k">if</span> <span class="nx">@TEMPLATES</span><span class="o">?</span>
+        <span class="k">return</span> <span class="nx">template</span> <span class="k">if</span> <span class="nx">template</span><span class="o">?</span>
+        <span class="nv">template = </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElement</span> <span class="s2">&quot;script[template=#{templateName}]&quot;</span>
+        <span class="k">return</span> <span class="nx">template</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;html&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nx">template</span><span class="o">?</span>
+        <span class="k">throw</span> <span class="s2">&quot;Cannot find template #{templateName}&quot;</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><p>Delegates an event from a given element.</p>
+
+<p>Mootools uses a more verbose syntax to specify the event.</p>
+
+<p>e.g</p>
+
+<pre><code>"click:a.close"
+</code></pre>
+
+<p>in converted to</p>
+
+<pre><code>"click:relay(a.close)"
+</code></pre>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">_addDelegatedEvent: </span><span class="nf">(el, eventKey, fn) -&gt;</span>
+        <span class="nv">eventKey = </span><span class="nx">eventKey</span><span class="p">.</span><span class="nx">split</span> <span class="s2">&quot;:&quot;</span>
+        <span class="nv">mtEvent = </span><span class="s2">&quot;#{eventKey[0]}:relay(#{eventKey[1]})&quot;</span>
+        <span class="nx">el</span><span class="p">.</span><span class="nx">addEvent</span> <span class="nx">mtEvent</span><span class="p">,</span> <span class="nx">fn</span>
+
+</pre></div></td></tr></tbody></table><div id="generated">generated Mon Sep 17 2012 22:35:26 GMT+0000 (UTC)  </div><div id="projectname"><a href="../../index.html">bags</a></div></div></body></html>
