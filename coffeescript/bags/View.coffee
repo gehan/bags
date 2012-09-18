@@ -19,9 +19,13 @@ new Class
     el: null
 
     # Model can be passed in to provide the template with data. If so we'll
-    # listen to the `remove` event and destroy this view if the models is
+    # listen to the `destroy` event and destroy this view if the model is
     # ever removed.
     model: null
+
+    # If using a View without a model then use this object to store for the
+    # template.
+    data: {}
 
     # If `injectTo` specified then rendered view will be injected into this
     # element
@@ -41,8 +45,11 @@ new Class
             if options[key]?
                 @[key] = options[key]
                 delete options[key]
+        if options.model?
+            @model = options.model
+            delete options.model
         if @model?
-            @model.addEvent 'remove', => @destroy()
+            @model.addEvent 'destroy', => @destroy()
         @setOptions options
         @render options.data
         if @options.injectTo?
@@ -59,7 +66,7 @@ new Class
     # * If the view is currently within the dom then a `domupdated` event is
     #   fired on `document`
     #
-    render: (data) ->
+    render: (data={}) ->
         el = @_render data
         el.store 'view', @
 
@@ -103,7 +110,7 @@ new Class
     # they are updated without disturbing the other refs
     #
     # * If within the dom then `domupdated` is still fired on `document`
-    rerender: (refs, data) ->
+    rerender: (refs, data={}) ->
         el = @_render data
         Array.from(refs).each (ref) =>
             replaceThis = @refs[ref]
@@ -143,6 +150,7 @@ new Class
                 @el[idx] = el[idx].replaces currentEl
 
     _render: (data={}) ->
+        data = Object.merge @data, data
         if @model?
             data = Object.combine @model.toJSON(), data
         el = @renderTemplate @template, data

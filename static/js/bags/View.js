@@ -7,6 +7,7 @@
       events: {},
       el: null,
       model: null,
+      data: {},
       options: {
         injectTo: null
       },
@@ -25,8 +26,12 @@
             delete options[key];
           }
         }
+        if (options.model != null) {
+          this.model = options.model;
+          delete options.model;
+        }
         if (this.model != null) {
-          this.model.addEvent('remove', function() {
+          this.model.addEvent('destroy', function() {
             return _this.destroy();
           });
         }
@@ -39,6 +44,9 @@
       },
       render: function(data) {
         var container, el;
+        if (data == null) {
+          data = {};
+        }
         el = this._render(data);
         el.store('view', this);
         if (!(this.el != null)) {
@@ -56,6 +64,9 @@
       rerender: function(refs, data) {
         var el,
           _this = this;
+        if (data == null) {
+          data = {};
+        }
         el = this._render(data);
         return Array.from(refs).each(function(ref) {
           var newEl, replaceThis;
@@ -104,6 +115,7 @@
         if (data == null) {
           data = {};
         }
+        data = Object.merge(this.data, data);
         if (this.model != null) {
           data = Object.combine(this.model.toJSON(), data);
         }
