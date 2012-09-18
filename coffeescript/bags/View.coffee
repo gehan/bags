@@ -45,9 +45,6 @@ new Class
             if options[key]?
                 @[key] = options[key]
                 delete options[key]
-        if options.model?
-            @model = options.model
-            delete options.model
         if @model?
             @model.addEvent 'destroy', => @destroy()
         @setOptions options

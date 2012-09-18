@@ -112,8 +112,10 @@ new Class
     # ==============
     _add: (model) ->
         @push model
+        model.addEvent 'destroy', => @erase model
 
     _remove: (model, options={}) ->
+        model.removeEvents 'destroy'
         @erase model
         @fireEvent 'remove', [model] unless options.silent
 
