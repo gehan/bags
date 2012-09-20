@@ -164,9 +164,9 @@ new Class
         if not url?
             throw new Error "No url can be found"
 
-        if operation in ['update', 'delete'] or (operation == 'read' and not
-                @isCollection)
-
+        if @isCollection
+            "#{url}/"
+        else if operation in ['update', 'delete', 'read']
             if not @id?
                 throw new Error """Model doesn't have an id, cannot perform
                     #{operation}"""

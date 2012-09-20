@@ -3,17 +3,18 @@
   define(['bags/Template'], function(Template) {
     return new Class({
       Implements: [Options, Events, Template],
+      Binds: ['destroy'],
       template: null,
       events: {},
       el: null,
       model: null,
       data: {},
       options: {
-        injectTo: null
+        injectTo: null,
+        autoDestroyModel: true
       },
       initialize: function(options) {
-        var key, _i, _len, _ref,
-          _this = this;
+        var key, _i, _len, _ref;
         if (options == null) {
           options = {};
         }
@@ -26,26 +27,25 @@
             delete options[key];
           }
         }
-        if (options.model != null) {
-          this.model = options.model;
-          delete options.model;
-        }
-        if (this.model != null) {
-          this.model.addEvent('destroy', function() {
-            return _this.destroy();
-          });
-        }
         this.setOptions(options);
-        this.render(options.data);
+        if ((this.model != null) && this.options.autoDestroyModel) {
+          this.model.addEvent('destroy', this.destroy);
+        }
+        this.render(options.data, {
+          silent: true
+        });
         if (this.options.injectTo != null) {
           this.inject(this.options.injectTo);
         }
         return this;
       },
-      render: function(data) {
+      render: function(data, options) {
         var container, el;
         if (data == null) {
           data = {};
+        }
+        if (options == null) {
+          options = {};
         }
         el = this._render(data);
         el.store('view', this);
@@ -58,8 +58,13 @@
         this.delegateEvents(this.el, this.events);
         container = Array.from(el)[0].getParent();
         this._checkDomUpdate(container);
-        this.fireEvent('render');
+        if (!options.silent) {
+          this.fireEvent('render');
+        }
         return el;
+      },
+      parseForDisplay: function(model) {
+        return this.model.toJSON();
       },
       rerender: function(refs, data) {
         var el,
@@ -93,7 +98,35 @@
       getElements: function() {
         return this.el.getElements.apply(this.el, arguments);
       },
+      getViews: function(el) {
+        var els;
+        els = el.getChildren();
+        return els.retrieve('view');
+      },
+      reorderViews: function(collection, rootEl) {
+        var current, desiredIndex, dummy, swap, view, views, _i, _len, _results;
+        views = this.getViews(rootEl);
+        _results = [];
+        for (_i = 0, _len = views.length; _i < _len; _i++) {
+          view = views[_i];
+          dummy = new Element('div');
+          current = $(view);
+          desiredIndex = collection.indexOf(view.model);
+          swap = rootEl.getChildren()[desiredIndex];
+          dummy.inject(current, 'before');
+          current.inject(swap, 'before');
+          swap.inject(dummy, 'before');
+          _results.push(dummy.destroy());
+        }
+        return _results;
+      },
+      destroyViews: function(el) {
+        return this.getViews(el).invoke('destroy');
+      },
       destroy: function() {
+        if ((this.model != null) && this.options.autoDestroyModel) {
+          this.model.removeEvent('destroy', this.destroy);
+        }
         this.el.eliminate('view');
         return this.el.destroy();
       },
@@ -117,7 +150,7 @@
         }
         data = Object.merge(this.data, data);
         if (this.model != null) {
-          data = Object.combine(this.model.toJSON(), data);
+          data = Object.merge({}, this.parseForDisplay(this.model), data);
         }
         return el = this.renderTemplate(this.template, data);
       },

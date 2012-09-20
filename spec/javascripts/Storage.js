@@ -73,11 +73,11 @@
       url = s._getUrl('update');
       return expect(url).toBe('/items/1');
     });
-    it('doesnt add /@id to read for collections', function() {
+    it('doesnt add /@id to read for collections, adds /', function() {
       var url;
       s.isCollection = true;
       url = s._getUrl('read');
-      return expect(url).toBe('/items');
+      return expect(url).toBe('/items/');
     });
     it('sets request methods correctly', function() {
       var promise;
@@ -234,7 +234,7 @@
         action: 'A'
       });
       req = mostRecentAjaxRequest();
-      return expect(req.url).toBe('/items?page=1&action=A');
+      return expect(req.url).toBe('/items/?page=1&action=A');
     });
   });
 

@@ -137,9 +137,11 @@
               setAttrFn();
             }
             model = data || {};
-            return _this.set(model, {
-              silent: true
-            });
+            if (_this.isNew()) {
+              return _this.set(model, {
+                silent: true
+              });
+            }
           }
         });
       },

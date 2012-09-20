@@ -86,7 +86,9 @@
         if (!(url != null)) {
           throw new Error("No url can be found");
         }
-        if ((operation === 'update' || operation === 'delete') || (operation === 'read' && !this.isCollection)) {
+        if (this.isCollection) {
+          return "" + url + "/";
+        } else if (operation === 'update' || operation === 'delete' || operation === 'read') {
           if (!(this.id != null)) {
             throw new Error("Model doesn't have an id, cannot perform\n" + operation);
           }

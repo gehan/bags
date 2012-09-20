@@ -54,10 +54,10 @@ describe "Storage test", ->
         url = s._getUrl 'update'
         expect(url).toBe '/items/1'
 
-    it 'doesnt add /@id to read for collections', ->
+    it 'doesnt add /@id to read for collections, adds /', ->
         s.isCollection = true
         url = s._getUrl 'read'
-        expect(url).toBe '/items'
+        expect(url).toBe '/items/'
 
     it 'sets request methods correctly', ->
         s.id = 1
@@ -198,4 +198,4 @@ describe "Storage test", ->
         s.isCollection = true
         s.storage 'read', page: 1, action: 'A'
         req = mostRecentAjaxRequest()
-        expect(req.url).toBe '/items?page=1&action=A'
+        expect(req.url).toBe '/items/?page=1&action=A'

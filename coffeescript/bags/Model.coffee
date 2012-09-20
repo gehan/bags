@@ -231,7 +231,7 @@ new Class
             if isSuccess
                 setAttrFn() if not options.dontWait and setAttrFn?
                 model = data or {}
-                @set model, silent: true
+                @set model, silent: true if @isNew()
 
     # Deletes the model from storage
     destroy: (options={}) ->

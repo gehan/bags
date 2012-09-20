@@ -94,10 +94,31 @@ new Class
         model = new @model attributes
         @add model, options
 
+    # Get model with field matching value
+    get: (field, value) ->
+        obj = null
+        if (@some (obj) -> obj.get(field) == value)
+            obj
+
     # Sorts the collection like a normal array but also fires a `sort` event
-    sort: (comparator=@comparator) ->
+    sort: (comparator=@comparator, options={}) ->
         @parent comparator
-        @fireEvent 'sort'
+        @fireEvent 'sort' unless options.silent
+
+    sortBy: (field, options) ->
+        @sort (a, b ) ->
+            aVal = a.get field
+            bVal = b.get field
+            type = typeOf aVal
+            if type == 'number'
+                aVal - bVal
+            else if type == 'string'
+                aVal.localeCompare bVal
+            else if type == 'date'
+                bVal.diff aVal, 'ms'
+        , options
+
+    sortField: null
 
     # Set this to define a custom comparator for the `sort` function
     comparator: (a, b) ->
@@ -112,7 +133,10 @@ new Class
     # ==============
     _add: (model) ->
         @push model
-        model.addEvent 'destroy', => @erase model
+        model.addEvents
+            destroy: =>
+                @erase model
+                @fireEvent 'remove', [model]
 
     _remove: (model, options={}) ->
         model.removeEvents 'destroy'

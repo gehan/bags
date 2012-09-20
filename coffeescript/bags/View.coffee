@@ -5,6 +5,7 @@ define ['bags/Template'], (Template) -> \
 
 new Class
     Implements: [Options, Events, Template]
+    Binds: ['destroy']
 
     # Dust.js template name to be used for rendering this view
     template: null
@@ -31,6 +32,7 @@ new Class
     # element
     options:
         injectTo: null
+        autoDestroyModel: true
 
     # On class initialisation any dust templates present will be loaded, the
     # view will be rendered and injected into the passed in container if
@@ -45,10 +47,10 @@ new Class
             if options[key]?
                 @[key] = options[key]
                 delete options[key]
-        if @model?
-            @model.addEvent 'destroy', => @destroy()
         @setOptions options
-        @render options.data
+        if @model? and @options.autoDestroyModel
+            @model.addEvent 'destroy', @destroy
+        @render options.data, silent: true
         if @options.injectTo?
             @inject @options.injectTo
         @
@@ -63,7 +65,7 @@ new Class
     # * If the view is currently within the dom then a `domupdated` event is
     #   fired on `document`
     #
-    render: (data={}) ->
+    render: (data={}, options={}) ->
         el = @_render data
         el.store 'view', @
 
@@ -78,8 +80,14 @@ new Class
         container = Array.from(el)[0].getParent()
         @_checkDomUpdate container
 
-        @fireEvent 'render'
+        @fireEvent 'render' unless options.silent
         el
+
+    # When rendering a model this is called to get a representation suitable
+    # for passing into the template. By default this calls `model.toJSON` but
+    # can be overridden.
+    parseForDisplay: (model) ->
+        @model.toJSON()
 
     # Use to rerender a template partially, can be used to preserve visual
     # state within the template. Doesn't alter events as assumed to be run on
@@ -128,7 +136,32 @@ new Class
     getElement: -> @el.getElement.apply @el, arguments
     getElements: -> @el.getElements.apply @el, arguments
 
+    getViews: (el) ->
+        els = el.getChildren()
+        els.retrieve('view')
+
+    reorderViews: (collection, rootEl) ->
+        views = @getViews rootEl
+        for view in views
+
+            dummy = new Element 'div'
+            current = $(view)
+            desiredIndex = collection.indexOf view.model
+            swap = rootEl.getChildren()[desiredIndex]
+
+            dummy.inject current, 'before'
+            current.inject swap, 'before'
+            swap.inject dummy, 'before'
+            dummy.destroy()
+
+    # Very handy method for emptying an element and killing all the views
+    # inside it by calling their `destroy` methods
+    destroyViews: (el) ->
+        @getViews(el).invoke 'destroy'
+
     destroy: ->
+        if @model? and @options.autoDestroyModel
+            @model.removeEvent 'destroy', @destroy
         @el.eliminate 'view'
         @el.destroy()
 
@@ -149,7 +182,7 @@ new Class
     _render: (data={}) ->
         data = Object.merge @data, data
         if @model?
-            data = Object.combine @model.toJSON(), data
+            data = Object.merge {}, @parseForDisplay(@model), data
         el = @renderTemplate @template, data
 
     # Recurse back through an elements parents to determine whether it is
