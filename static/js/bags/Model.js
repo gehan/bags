@@ -79,7 +79,7 @@
       toJSON: function() {
         var attrs, key, value, _ref;
         attrs = {};
-        _ref = Object.clone(this._attributes);
+        _ref = this._attributes;
         for (key in _ref) {
           value = _ref[key];
           attrs[key] = this._jsonKeyValue(key, value);

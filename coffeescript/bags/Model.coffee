@@ -201,7 +201,7 @@ new Class
     #   data
     toJSON: ->
         attrs = {}
-        for key, value of Object.clone @_attributes
+        for key, value of @_attributes
             attrs[key] = @_jsonKeyValue key, value
         delete attrs._parent
         return attrs
