@@ -410,4 +410,27 @@ describe "Model test", ->
         expect(success).toHaveBeenCalled()
         expect(destroy).toHaveBeenCalled()
 
+    it 'allows custom get methods', ->
+        m.properties =
+            fullName:
+                get: ->
+                    "#{@get 'firstName'} #{@get 'lastName'}"
+        m.set
+            firstName: 'Gehan'
+            lastName: 'Gonsalkorale'
+        expect(m.get 'fullName').toBe 'Gehan Gonsalkorale'
+
+    it 'allows custom set methods', ->
+        m.properties =
+            fullName:
+                set: (value) ->
+                    split = value.split " "
+                    @set
+                        firstName: split[0]
+                        lastName: split[1]
+                    , silent: true
+        m.set
+            fullName: 'Gehan Gonsalkorale'
+        expect(m.get 'firstName').toBe 'Gehan'
+        expect(m.get 'lastName').toBe 'Gonsalkorale'
 

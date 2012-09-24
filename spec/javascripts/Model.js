@@ -487,7 +487,7 @@
       promise.fulfill(false);
       return expect(fail).toHaveBeenCalled();
     });
-    return it('destroy send delete request to server', function() {
+    it('destroy send delete request to server', function() {
       var destroy, lastCall, promise, promise2, success;
       success = jasmine.createSpy('success callback');
       destroy = jasmine.createSpy('destroy event');
@@ -510,6 +510,41 @@
       ]);
       expect(success).toHaveBeenCalled();
       return expect(destroy).toHaveBeenCalled();
+    });
+    it('allows custom get methods', function() {
+      m.properties = {
+        fullName: {
+          get: function() {
+            return "" + (this.get('firstName')) + " " + (this.get('lastName'));
+          }
+        }
+      };
+      m.set({
+        firstName: 'Gehan',
+        lastName: 'Gonsalkorale'
+      });
+      return expect(m.get('fullName')).toBe('Gehan Gonsalkorale');
+    });
+    return it('allows custom set methods', function() {
+      m.properties = {
+        fullName: {
+          set: function(value) {
+            var split;
+            split = value.split(" ");
+            return this.set({
+              firstName: split[0],
+              lastName: split[1]
+            }, {
+              silent: true
+            });
+          }
+        }
+      };
+      m.set({
+        fullName: 'Gehan Gonsalkorale'
+      });
+      expect(m.get('firstName')).toBe('Gehan');
+      return expect(m.get('lastName')).toBe('Gonsalkorale');
     });
   });
 

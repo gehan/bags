@@ -6,19 +6,23 @@
       Implements: [Events, Options, Storage],
       fields: {},
       defaults: {},
+      properties: {},
       id: null,
       idField: "id",
       collections: {},
       url: null,
       initialize: function(attributes, options) {
+        var key, _i, _len, _ref;
         if (options == null) {
           options = {};
         }
-        if (options.url != null) {
-          this.url = options.url;
-        }
-        if (options.collection != null) {
-          this.collection = options.collection;
+        _ref = ['collection', 'url'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          key = _ref[_i];
+          if (options[key] != null) {
+            this[key] = options[key];
+            delete options[key];
+          }
         }
         this.setOptions(options);
         this._setInitial(attributes);
@@ -27,9 +31,13 @@
       has: function(key) {
         return this._attributes[key] != null;
       },
-      get: function(key) {
-        return this._attributes[key];
-      },
+      get: (function(key) {
+        if (this.properties[key] && this.properties[key].get) {
+          return this.properties[key].get.call(this);
+        } else {
+          return this._attributes[key];
+        }
+      }).overloadGetter(),
       set: function(key, value, options) {
         var attrs, k, opts, v;
         if (options == null) {
@@ -40,9 +48,18 @@
           opts = value || options;
           for (k in attrs) {
             v = attrs[k];
-            this.set(k, v, opts);
+            this._set(k, v, opts);
           }
-          return;
+        } else {
+          return this._set(key, value, options);
+        }
+      },
+      _set: function(key, value, options) {
+        if (options == null) {
+          options = {};
+        }
+        if (this.properties[key] && (this.properties[key].set != null)) {
+          this.properties[key].set.call(this, value);
         } else if (this._isCollection(key, value)) {
           this._attributes[key] = this._addCollection(key, value);
         } else {

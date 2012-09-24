@@ -52,6 +52,24 @@ new Class
     #         text: "Hello there"
     defaults: {}
 
+    # Custom accessors
+    # ----------------
+
+    # For each field in the model you can define custom get/set methods
+    #
+    # e.g.
+    #
+    #     properties:
+    #         someField:
+    #             get: ->
+    #                 return this.get('firstName') + ' ' this.get('lastName')
+    #             set: (value) ->
+    #                 parts = value.split ' '
+    #                 @_set
+    #                     firstName: parts[0]
+    #                     lastName: parts[1]
+    properties: {}
+
     # Model id
     # --------
 
@@ -108,8 +126,10 @@ new Class
     #
     # When a model is first instatiated no events are fired.
     initialize: (attributes, options={}) ->
-        @url = options.url if options.url?
-        @collection = options.collection if options.collection?
+        for key in ['collection', 'url']
+            if options[key]?
+                @[key] = options[key]
+                delete options[key]
         @setOptions options
         @_setInitial attributes
         @
@@ -118,8 +138,12 @@ new Class
     has: (key) ->
         @_attributes[key]?
 
-    get: (key) ->
-        @_attributes[key]
+    get: ((key) ->
+        if @properties[key] and @properties[key].get
+            @properties[key].get.call this
+        else
+            @_attributes[key]
+    ).overloadGetter()
 
     # Set can accept `key`, `value` arguments to set one field's value, or it
     # can accept a key/value object to set multiple at once.
@@ -133,8 +157,14 @@ new Class
         if typeOf(key) == 'object'
             attrs = key
             opts = value or options
-            @set k, v, opts for k, v of attrs
+            @_set k, v, opts for k, v of attrs
             return
+        else
+            @_set key, value, options
+
+    _set: (key, value, options={}) ->
+        if @properties[key] and @properties[key].set?
+            @properties[key].set.call this, value
         else if @_isCollection key, value
             @_attributes[key] = @_addCollection key, value
         else

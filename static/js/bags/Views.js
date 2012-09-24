@@ -4,17 +4,15 @@
     return {
       CollectionView: new Class({
         Extends: View,
-        Binds: ['_sortViews', '_sortCollection', '_collectionAdd'],
+        Binds: ['_sortViews', '_collectionAdd'],
         initialize: function(collection, listEl, modelView, options) {
           this.collection = collection;
           this.listEl = listEl;
           this.modelView = modelView;
+          this.setOptions(options);
           this.collection.addEvents({
             add: this._collectionAdd,
             sort: this._sortViews
-          });
-          this._sortCollection({
-            silent: true
           });
           this._createModelViews();
           return this;
@@ -30,23 +28,27 @@
           return _results;
         },
         _createModelView: function(model) {
-          var view;
-          view = new this.modelView({
+          var view,
+            _this = this;
+          return view = new this.modelView({
             model: model,
-            onRender: this._sortCollection
+            injectTo: this.listEl,
+            onRender: function() {
+              _this._sortCollection();
+              return _this.fireEvent('render', [view].combine(arguments));
+            },
+            onDelete: function() {
+              return _this.fireEvent('delete', [view].combine(arguments));
+            }
           });
-          return this.listEl.adopt($(view));
         },
         _collectionAdd: function(model) {
           this._createModelView(model);
-          return this._sortCollection();
+          return this._sortViews();
         },
-        _sortCollection: function(options) {
-          if (options == null) {
-            options = {};
-          }
-          if (this.collection.sortField) {
-            return this.collection.sortBy(this.collection.sortField, options);
+        _sortCollection: function() {
+          if (this.collection.sortField != null) {
+            return this.collection.sortBy(this.collection.sortField);
           }
         },
         _sortViews: function() {

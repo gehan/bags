@@ -8,7 +8,7 @@
       model: Model,
       url: null,
       initialize: function(models, options) {
-        var model, _i, _len;
+        var key, _i, _len, _ref;
         if (models == null) {
           models = [];
         }
@@ -22,19 +22,18 @@
           };
           delete options.parentModel;
         }
+        _ref = ['model', 'url', 'sortField'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          key = _ref[_i];
+          if (options[key] != null) {
+            this[key] = options[key];
+            delete options[key];
+          }
+        }
         this.setOptions(options);
-        if (this.options.url != null) {
-          this.url = this.options.url;
-        }
-        if (this.options.model != null) {
-          this.model = this.options.model;
-        }
-        for (_i = 0, _len = models.length; _i < _len; _i++) {
-          model = models[_i];
-          this.add(model, {
-            silent: true
-          });
-        }
+        this.add(models, {
+          silent: true
+        });
         return this;
       },
       fetch: function(filter, options) {
@@ -78,7 +77,7 @@
         }
       },
       add: function(model, options) {
-        var m, _i, _len, _results;
+        var added, m, _i, _j, _len, _len1, _ref, _results;
         if (options == null) {
           options = {};
         }
@@ -86,30 +85,42 @@
           throw new Error("Model not defined for collection");
         }
         if (typeOf(model) === 'array') {
-          _results = [];
           for (_i = 0, _len = model.length; _i < _len; _i++) {
             m = model[_i];
-            _results.push(this.add(m, options));
-          }
-          return _results;
-        } else if (instanceOf(model, this.model)) {
-          this._add(model);
-          if (!(model.collection != null)) {
-            model.collection = this;
-          }
-          if (!options.silent) {
-            return this.fireEvent('add', [model]);
+            added = this._add(m, options);
           }
         } else {
-          return this.create(model, options);
+          added = this._add(model, options);
         }
+        if (this.sortField != null) {
+          this.sortBy(this.sortField, {
+            silent: true
+          });
+        }
+        if (!options.silent) {
+          _ref = Array.from(added);
+          _results = [];
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            model = _ref[_j];
+            _results.push(this.fireEvent('add', [model]));
+          }
+          return _results;
+        }
+      },
+      _add: function(model, options) {
+        if (options == null) {
+          options = {};
+        }
+        model = this._makeModel(model);
+        this.push(model);
+        return model;
       },
       create: function(attributes, options) {
         var model;
         if (options == null) {
           options = {};
         }
-        model = new this.model(attributes);
+        model = this._makeModel(attributes);
         return this.add(model, options);
       },
       get: function(field, value) {
@@ -155,15 +166,22 @@
       toJSON: function() {
         return this.invoke('toJSON');
       },
-      _add: function(model) {
+      _makeModel: function(model) {
         var _this = this;
-        this.push(model);
-        return model.addEvents({
+        if (!instanceOf(model, this.model)) {
+          model = new this.model(model, {
+            collection: this
+          });
+        } else if (!(model.collection != null)) {
+          model.collection = this;
+        }
+        model.addEvents({
           destroy: function() {
             _this.erase(model);
             return _this.fireEvent('remove', [model]);
           }
         });
+        return model;
       },
       _remove: function(model, options) {
         if (options == null) {

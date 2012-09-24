@@ -38,25 +38,13 @@ describe "ViewCollection test", ->
         ,
             id: 3
             name: 'item c'
-        ])
-        c.sortField = 'name'
+        ], sortField: 'name')
         listEl = new Element 'ul'
 
     afterEach ->
         listEl.destroy()
 
     it 'renders views into collection el', ->
-        c.sortField = null
-        cv = new Views.CollectionView c, listEl, View2
-
-        children = listEl.getChildren()
-        views = children.retrieve 'view'
-        expect(views.length).toBe 3
-        expect(views[0].model.id).toBe 1
-        expect(views[1].model.id).toBe 2
-        expect(views[2].model.id).toBe 3
-
-    it 'renders views into collection el sorted if has sortField', ->
         cv = new Views.CollectionView c, listEl, View2
 
         children = listEl.getChildren()
@@ -99,3 +87,22 @@ describe "ViewCollection test", ->
         views = children.retrieve 'view'
 
         expect(children.length).toBe 0
+
+    it 'resorts collection on element render', ->
+        cv = new Views.CollectionView c, listEl, View2
+
+        children = listEl.getChildren()
+        views = children.retrieve 'view'
+        expect(views[0].model.id).toBe 1
+        expect(views[1].model.id).toBe 3
+        expect(views[2].model.id).toBe 2
+
+        m = views[2].model
+        m.set 'name', 'am first'
+        views[2].render()
+
+        children = listEl.getChildren()
+        views = children.retrieve 'view'
+        expect(views[0].model.id).toBe 2
+        expect(views[1].model.id).toBe 1
+        expect(views[2].model.id).toBe 3

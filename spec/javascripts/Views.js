@@ -59,25 +59,15 @@
           id: 3,
           name: 'item c'
         }
-      ]);
-      c.sortField = 'name';
+      ], {
+        sortField: 'name'
+      });
       return listEl = new Element('ul');
     });
     afterEach(function() {
       return listEl.destroy();
     });
     it('renders views into collection el', function() {
-      var children, views;
-      c.sortField = null;
-      cv = new Views.CollectionView(c, listEl, View2);
-      children = listEl.getChildren();
-      views = children.retrieve('view');
-      expect(views.length).toBe(3);
-      expect(views[0].model.id).toBe(1);
-      expect(views[1].model.id).toBe(2);
-      return expect(views[2].model.id).toBe(3);
-    });
-    it('renders views into collection el sorted if has sortField', function() {
       var children, views;
       cv = new Views.CollectionView(c, listEl, View2);
       children = listEl.getChildren();
@@ -120,12 +110,29 @@
         name: 'item b'
       });
     });
-    return it('kills els on destroy', function() {
+    it('kills els on destroy', function() {
       var children, views;
       cv.destroy();
       children = listEl.getChildren();
       views = children.retrieve('view');
       return expect(children.length).toBe(0);
+    });
+    return it('resorts collection on element render', function() {
+      var children, m, views;
+      cv = new Views.CollectionView(c, listEl, View2);
+      children = listEl.getChildren();
+      views = children.retrieve('view');
+      expect(views[0].model.id).toBe(1);
+      expect(views[1].model.id).toBe(3);
+      expect(views[2].model.id).toBe(2);
+      m = views[2].model;
+      m.set('name', 'am first');
+      views[2].render();
+      children = listEl.getChildren();
+      views = children.retrieve('view');
+      expect(views[0].model.id).toBe(2);
+      expect(views[1].model.id).toBe(1);
+      return expect(views[2].model.id).toBe(3);
     });
   });
 

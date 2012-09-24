@@ -36,11 +36,14 @@ new Class
             # Can't store actual instance otherwise browswers crash
             # in some instances presumabley down to a circular reference
             delete options.parentModel
-        @setOptions options
-        @url = @options.url if @options.url?
-        @model = @options.model if @options.model?
 
-        @add(model, silent: true) for model in models
+        for key in ['model', 'url', 'sortField']
+            if options[key]?
+                @[key] = options[key]
+                delete options[key]
+        @setOptions options
+
+        @add models, silent: true
         @
 
     # Collection retrieval
@@ -78,20 +81,28 @@ new Class
         @fireEvent 'reset', [@] unless options.silent
 
     # Call to add a model or an array of models to the collection
+    # Fires an `add(model)` event
     add: (model, options={}) ->
         if not @model? then throw new Error "Model not defined for collection"
+
         if typeOf(model) == 'array'
-            @add(m, options) for m in model
-        else if instanceOf model, @model
-            @_add model
-            model.collection = @ if not model.collection?
-            @fireEvent 'add', [model] unless options.silent
+            added = @_add(m, options) for m in model
         else
-            @create model, options
+            added = @_add model, options
+
+        @sortBy @sortField, silent: true if @sortField?
+
+        unless options.silent
+            @fireEvent 'add', [model] for model in Array.from added
+
+    _add: (model, options={}) ->
+        model = @_makeModel model
+        @push model
+        model
 
     # Provides a shortcut to create a new model in the collection
     create: (attributes, options={}) ->
-        model = new @model attributes
+        model = @_makeModel attributes
         @add model, options
 
     # Get model with field matching value
@@ -131,12 +142,16 @@ new Class
 
     # Private methods
     # ==============
-    _add: (model) ->
-        @push model
+    _makeModel: (model) ->
+        if not instanceOf model, @model
+            model = new @model model, collection: this
+        else if not model.collection?
+            model.collection = this
         model.addEvents
             destroy: =>
                 @erase model
                 @fireEvent 'remove', [model]
+        model
 
     _remove: (model, options={}) ->
         model.removeEvents 'destroy'
