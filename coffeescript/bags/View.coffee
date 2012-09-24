@@ -24,9 +24,13 @@ new Class
     # ever removed.
     model: null
 
-    # If using a View without a model then use this object to store for the
-    # template.
+    # Use this object to store for the template, which can be used as well
+    # as a model
     data: {}
+
+    # Define parser funcions to create dynamic template fields or alter
+    # existing mode/data attributes for template display only
+    parsers: {}
 
     # If `injectTo` specified then rendered view will be injected into this
     # element
@@ -180,10 +184,16 @@ new Class
                 @el[idx] = el[idx].replaces currentEl
 
     _render: (data={}) ->
+        data = @_getTemplateData data
+        el = @renderTemplate @template, data
+
+    _getTemplateData: (data={}) ->
         data = Object.merge @data, data
         if @model?
             data = Object.merge {}, @parseForDisplay(@model), data
-        el = @renderTemplate @template, data
+        for fieldName, parser of @parsers
+            data[fieldName] = parser.call this, data
+        data
 
     # Recurse back through an elements parents to determine whether it is
     # within the DOM or not, if so fire `domupdated` on `document`

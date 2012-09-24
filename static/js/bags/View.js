@@ -9,6 +9,7 @@
       el: null,
       model: null,
       data: {},
+      parsers: {},
       options: {
         injectTo: null,
         autoDestroyModel: true
@@ -148,11 +149,24 @@
         if (data == null) {
           data = {};
         }
+        data = this._getTemplateData(data);
+        return el = this.renderTemplate(this.template, data);
+      },
+      _getTemplateData: function(data) {
+        var fieldName, parser, _ref;
+        if (data == null) {
+          data = {};
+        }
         data = Object.merge(this.data, data);
         if (this.model != null) {
           data = Object.merge({}, this.parseForDisplay(this.model), data);
         }
-        return el = this.renderTemplate(this.template, data);
+        _ref = this.parsers;
+        for (fieldName in _ref) {
+          parser = _ref[fieldName];
+          data[fieldName] = parser.call(this, data);
+        }
+        return data;
       },
       _checkDomUpdate: function(container) {
         var inDom, parent;

@@ -108,7 +108,7 @@
       expect(elContainer).toBe(container);
       return container.destroy();
     });
-    return it('partially rerenders and keeps existing refs', function() {
+    it('partially rerenders and keeps existing refs', function() {
       var ano, ayes, hello, what;
       View.implement({
         template: 'test4',
@@ -133,6 +133,20 @@
       expect(ayes).toNotBe(v.refs.yes);
       expect(ano).toBe(v.refs.no);
       return expect($(v).innerHTML).toBe("<li ref=\"hello\">interface</li>" + "<li ref=\"yes\">interface</li><li ref=\"no\">No</li>");
+    });
+    return it('allows customer parse functions for display', function() {
+      var data;
+      v.parsers = {
+        fullName: function(data) {
+          return data.firstName + ' ' + data.lastName;
+        }
+      };
+      v.data = {
+        firstName: 'Gehan',
+        lastName: 'Gonsalkorale'
+      };
+      data = v._getTemplateData();
+      return expect(data.fullName).toBe('Gehan Gonsalkorale');
     });
   });
 

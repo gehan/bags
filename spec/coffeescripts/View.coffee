@@ -128,3 +128,13 @@ describe "View test", ->
         expect($(v).innerHTML).toBe("""<li ref="hello">interface</li>""" +
             """<li ref="yes">interface</li><li ref="no">No</li>""")
 
+    it ('allows customer parse functions for display'), ->
+        v.parsers =
+            fullName: (data) ->
+                data.firstName + ' ' + data.lastName
+        v.data =
+            firstName: 'Gehan'
+            lastName: 'Gonsalkorale'
+        data = v._getTemplateData()
+        expect(data.fullName).toBe 'Gehan Gonsalkorale'
+
