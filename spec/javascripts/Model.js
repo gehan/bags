@@ -525,7 +525,7 @@
       });
       return expect(m.get('fullName')).toBe('Gehan Gonsalkorale');
     });
-    return it('allows custom set methods', function() {
+    it('allows custom set methods', function() {
       m.properties = {
         fullName: {
           set: function(value) {
@@ -546,6 +546,7 @@
       expect(m.get('firstName')).toBe('Gehan');
       return expect(m.get('lastName')).toBe('Gonsalkorale');
     });
+    return it('allow validation when trying to set values', function() {});
   });
 
 }).call(this);

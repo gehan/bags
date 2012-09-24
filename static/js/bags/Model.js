@@ -7,6 +7,7 @@
       fields: {},
       defaults: {},
       properties: {},
+      validators: {},
       id: null,
       idField: "id",
       collections: {},

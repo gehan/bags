@@ -70,6 +70,24 @@ new Class
     #                     lastName: parts[1]
     properties: {}
 
+
+    # Model validation
+    # ----------------
+
+    # When attempting to create or update a model validation can be performed
+    # for each field if desired. Return true to pass validation otherwise
+    # return false or a string for an error message.
+    #
+    # e.g.
+    #
+    #     validatos:
+    #         email: (value) ->
+    #             if value.indexOf '@' < 0
+    #                 return 'Invalid email address'
+    #             else
+    #                 return true
+    validators: {}
+
     # Model id
     # --------
 

@@ -434,3 +434,6 @@ describe "Model test", ->
         expect(m.get 'firstName').toBe 'Gehan'
         expect(m.get 'lastName').toBe 'Gonsalkorale'
 
+    it 'allow validation when trying to set values', ->
+
+
