@@ -158,10 +158,13 @@ new Class
         @_attributes[key]?
 
     get: ((key) ->
+        _value = @_cloneField key
+
         if @properties[key] and @properties[key].get
-            @properties[key].get.call this
+            @properties[key].get.call this, _value
         else
-            @_attributes[key]
+            _value
+
     ).overloadGetter()
 
     # Set can accept `key`, `value` arguments to set one field's value, or it
@@ -190,7 +193,7 @@ new Class
                 return false
 
         for key, value of _attrs
-            if @_isCollection key, value
+            if @_isCollection key
                 @_addCollection key, value, options
 
             @_dirtyFields[key] = @_attributes[key]
@@ -205,7 +208,7 @@ new Class
         return true
 
     _set: (key, value, options) ->
-        if @_isCollection key, value
+        if @_isCollection key
             _value = @_makeCollection key, value
         else
             _value = @_makeValue key, value
@@ -262,7 +265,6 @@ new Class
         attrs = {}
         for key, value of @_attributes
             attrs[key] = @_jsonKeyValue key, value
-        delete attrs._parent
         return attrs
 
     # Model storage
@@ -364,8 +366,9 @@ new Class
             Date.parse value
         else if type.prototype and type.prototype.isModel
             value = value or {}
-            value._parent = @
-            new type(value)
+            val = new type(value)
+            val._parent = @
+            val
         else
             new type(value)
 
@@ -378,9 +381,13 @@ new Class
         else
             type
 
-    _isCollection: (key, value) ->
+    _isCollection: (key) ->
         type = @_getType key
         return type? and type.prototype and type.prototype.isCollection
+
+    _isModel: (key) ->
+        type = @_getType key
+        return type? and type.prototype and type.prototype.isModel
 
     _makeCollection: (key, value) ->
         collectionClass = @_getType key
@@ -404,6 +411,34 @@ new Class
         @set attributes, silent: true
         @_clearDirtyFields()
 
+    _cloneField: (key) ->
+        value = @_attributes[key]
+        type = @_getType key
+        jsonValue = @_jsonKeyValue key, value
+
+        if typeOf(jsonValue) == 'array'
+            _value = jsonValue.clone()
+        else if typeOf(jsonValue) == 'object'
+            _value = Object.clone jsonValue
+        else
+            _value = jsonValue
+
+        if _value and @_isCollection key
+            _value = new type _value
+        else if _value and @_isModel key
+            _value = new type _value
+            _value._parent = this
+        else if typeOf(value) in ['object', 'date'] and value.constructor
+            _value = new value.constructor _value
+        else if typeOf(value) == 'array'
+            _value = _value.map (item, idx) ->
+                orig = value[0]
+                if typeOf(orig) in ['object', 'date'] and orig.constructor
+                    new orig.constructor item
+                else
+                    item
+        _value
+
     _getDefault: (key) ->
         def = @defaults[key]
         if typeOf(def) == 'function'
@@ -418,8 +453,6 @@ new Class
         jsonFn = "json#{key.capitalize()}"
         if @[jsonFn]?
             @[jsonFn](value)
-        else if key == '_parent'
-            # Skip parent model reference
         else if typeOf(value) == 'array'
             (@_jsonValue v for v in value)
         else

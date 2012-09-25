@@ -4,6 +4,7 @@ Collection = null
 done = false
 curl ['bags/Model', 'bags/Collection'], (_Model, _Collection) ->
     window.Model = _Model
+    window.Collection = _Collection
     Model = _Model
     Collection = _Collection
     done = true
@@ -57,7 +58,7 @@ describe "Model test", ->
     it 'gets/sets attributes', ->
         obj = {k:'val'}
         m = new Model key: obj
-        expect(m.get 'key').toBe obj
+        expect(m.get 'key').toBeObject obj
 
     it 'fires change event on attr change', ->
         changed = {}
@@ -199,8 +200,9 @@ describe "Model test", ->
 
         mdl = new Mdl vals
         subModel = mdl.get 'subModel'
+        window.f = mdl
 
-        expect(subModel.get '_parent').toBe mdl
+        expect(subModel._parent).toBe mdl
 
     it 'instantiates a collection if set as type, adds to collections', ->
         Cll = new Class
@@ -234,7 +236,8 @@ describe "Model test", ->
         mdl.set 'subCollection', values
 
         expect(addedKey).toBe 'subCollection'
-        expect(addedCollection).toBe mdl.get('subCollection')
+        expect(addedCollection.toJSON()).toBeObject \
+            mdl.get('subCollection').toJSON()
 
     it 'sends create request to storage', ->
         attrs =

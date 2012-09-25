@@ -33,10 +33,12 @@
         return this._attributes[key] != null;
       },
       get: (function(key) {
+        var _value;
+        _value = this._cloneField(key);
         if (this.properties[key] && this.properties[key].get) {
-          return this.properties[key].get.call(this);
+          return this.properties[key].get.call(this, _value);
         } else {
-          return this._attributes[key];
+          return _value;
         }
       }).overloadGetter(),
       set: function(key, value, options) {
@@ -64,7 +66,7 @@
         }
         for (key in _attrs) {
           value = _attrs[key];
-          if (this._isCollection(key, value)) {
+          if (this._isCollection(key)) {
             this._addCollection(key, value, options);
           }
           this._dirtyFields[key] = this._attributes[key];
@@ -81,7 +83,7 @@
       },
       _set: function(key, value, options) {
         var _value;
-        if (this._isCollection(key, value)) {
+        if (this._isCollection(key)) {
           _value = this._makeCollection(key, value);
         } else {
           _value = this._makeValue(key, value);
@@ -130,7 +132,6 @@
           value = _ref[key];
           attrs[key] = this._jsonKeyValue(key, value);
         }
-        delete attrs._parent;
         return attrs;
       },
       fetch: function(options) {
@@ -246,7 +247,7 @@
       _attributes: {},
       _dirtyFields: {},
       _makeValue: function(key, value) {
-        var item, type, _i, _len, _results;
+        var item, type, val, _i, _len, _results;
         type = this._getType(key);
         if (typeOf(value) === 'array') {
           _results = [];
@@ -265,8 +266,9 @@
           return Date.parse(value);
         } else if (type.prototype && type.prototype.isModel) {
           value = value || {};
-          value._parent = this;
-          return new type(value);
+          val = new type(value);
+          val._parent = this;
+          return val;
         } else {
           return new type(value);
         }
@@ -282,10 +284,15 @@
           return type;
         }
       },
-      _isCollection: function(key, value) {
+      _isCollection: function(key) {
         var type;
         type = this._getType(key);
         return (type != null) && type.prototype && type.prototype.isCollection;
+      },
+      _isModel: function(key) {
+        var type;
+        type = this._getType(key);
+        return (type != null) && type.prototype && type.prototype.isModel;
       },
       _makeCollection: function(key, value) {
         var collectionClass;
@@ -322,6 +329,38 @@
         });
         return this._clearDirtyFields();
       },
+      _cloneField: function(key) {
+        var jsonValue, type, value, _ref, _value;
+        value = this._attributes[key];
+        type = this._getType(key);
+        jsonValue = this._jsonKeyValue(key, value);
+        if (typeOf(jsonValue) === 'array') {
+          _value = jsonValue.clone();
+        } else if (typeOf(jsonValue) === 'object') {
+          _value = Object.clone(jsonValue);
+        } else {
+          _value = jsonValue;
+        }
+        if (_value && this._isCollection(key)) {
+          _value = new type(_value);
+        } else if (_value && this._isModel(key)) {
+          _value = new type(_value);
+          _value._parent = this;
+        } else if (((_ref = typeOf(value)) === 'object' || _ref === 'date') && value.constructor) {
+          _value = new value.constructor(_value);
+        } else if (typeOf(value) === 'array') {
+          _value = _value.map(function(item, idx) {
+            var orig, _ref1;
+            orig = value[0];
+            if (((_ref1 = typeOf(orig)) === 'object' || _ref1 === 'date') && orig.constructor) {
+              return new orig.constructor(item);
+            } else {
+              return item;
+            }
+          });
+        }
+        return _value;
+      },
       _getDefault: function(key) {
         var def;
         def = this.defaults[key];
@@ -339,8 +378,6 @@
         jsonFn = "json" + (key.capitalize());
         if (this[jsonFn] != null) {
           return this[jsonFn](value);
-        } else if (key === '_parent') {
-
         } else if (typeOf(value) === 'array') {
           _results = [];
           for (_i = 0, _len = value.length; _i < _len; _i++) {

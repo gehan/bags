@@ -9,6 +9,7 @@
 
   curl(['bags/Model', 'bags/Collection'], function(_Model, _Collection) {
     window.Model = _Model;
+    window.Collection = _Collection;
     Model = _Model;
     Collection = _Collection;
     return done = true;
@@ -79,7 +80,7 @@
       m = new Model({
         key: obj
       });
-      return expect(m.get('key')).toBe(obj);
+      return expect(m.get('key')).toBeObject(obj);
     });
     it('fires change event on attr change', function() {
       var changed, changedAKey;
@@ -253,7 +254,8 @@
       };
       mdl = new Mdl(vals);
       subModel = mdl.get('subModel');
-      return expect(subModel.get('_parent')).toBe(mdl);
+      window.f = mdl;
+      return expect(subModel._parent).toBe(mdl);
     });
     it('instantiates a collection if set as type, adds to collections', function() {
       var Cll, Mdl, addedCollection, addedKey, mdl, vals, values;
@@ -292,7 +294,7 @@
       expect(flatten(mdl.get('subCollection').toJSON())).toBe(flatten(values));
       mdl.set('subCollection', values);
       expect(addedKey).toBe('subCollection');
-      return expect(addedCollection).toBe(mdl.get('subCollection'));
+      return expect(addedCollection.toJSON()).toBeObject(mdl.get('subCollection').toJSON());
     });
     it('sends create request to storage', function() {
       var attrs, lastCall, promise, promise2, saved;
