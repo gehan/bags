@@ -100,6 +100,20 @@
       expect(changedAKey).toBe('internet');
       return expect(changed.bKey).toBe('test');
     });
+    it('fires change event only if attr has changed value', function() {
+      var changeSpy;
+      changeSpy = jasmine.createSpy('change');
+      m = new Model({
+        field: 'value'
+      });
+      m.addEvents({
+        change: changeSpy
+      });
+      m.set({
+        field: 'value'
+      });
+      return expect(changeSpy).wasNotCalled();
+    });
     it('sets defaults silently when initializing model', function() {
       var changeFired;
       Model.implement({
@@ -710,6 +724,27 @@
       });
       m.save();
       return expect(m.isDirty()).toBe(false);
+    });
+    it('only sets original value in dirty field after first set', function() {
+      m = new Model({
+        text: 'original text'
+      });
+      m.set({
+        text: 'altered text'
+      });
+      m.set({
+        text: 'different again text'
+      });
+      return expect(m._dirtyFields.text).toBe('original text');
+    });
+    it('only dirty if field is set to different value', function() {
+      m = new Model({
+        text: 'original text'
+      });
+      m.set({
+        text: 'original text'
+      });
+      return expect(m._dirtyFields.text).toBe(void 0);
     });
     it('it can reset unsaved field changes', function() {
       m = new Model({

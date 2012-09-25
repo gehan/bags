@@ -42,7 +42,7 @@
         }
       }).overloadGetter(),
       set: function(key, value, options) {
-        var attrs, k, v, _attrs;
+        var attrs, changed, curVal, k, newVal, v, _attrs;
         if (options == null) {
           options = {};
         }
@@ -69,12 +69,17 @@
           if (this._isCollection(key)) {
             this._addCollection(key, value, options);
           }
-          this._dirtyFields[key] = this._attributes[key];
+          curVal = JSON.encode(this._attributes[key]);
+          newVal = JSON.encode(value);
+          changed = curVal !== newVal;
+          if (!(this._dirtyFields[key] != null) && changed) {
+            this._dirtyFields[key] = this._attributes[key];
+          }
           this._attributes[key] = value;
           if (key === this.idField) {
             this.id = value;
           }
-          if (!options.silent) {
+          if (changed && !options.silent) {
             this.fireEvent("change", [key, value]);
             this.fireEvent("change:" + key, [value]);
           }
@@ -118,10 +123,13 @@
       isDirty: function() {
         return Object.getLength(this._dirtyFields) > 0;
       },
-      clearChanges: function() {
-        this.set(this._dirtyFields, {
-          silent: true
-        });
+      clearChanges: function(options) {
+        if (options == null) {
+          options = {
+            silent: true
+          };
+        }
+        this.set(this._dirtyFields, options);
         return this._clearDirtyFields();
       },
       toJSON: function() {

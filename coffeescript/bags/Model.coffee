@@ -196,12 +196,18 @@ new Class
             if @_isCollection key
                 @_addCollection key, value, options
 
-            @_dirtyFields[key] = @_attributes[key]
+            curVal = JSON.encode @_attributes[key]
+            newVal = JSON.encode value
+            changed = curVal isnt newVal
+
+            if not @_dirtyFields[key]? and changed
+                @_dirtyFields[key] = @_attributes[key]
 
             @_attributes[key] = value
             if key == @idField
                 @id = value
-            unless options.silent
+
+            if changed and not options.silent
                 @fireEvent "change", [key, value]
                 @fireEvent "change:#{key}", [value]
 
@@ -237,8 +243,8 @@ new Class
         Object.getLength(@_dirtyFields) > 0
 
     # Clear unsaved changes and restores model to last saved state
-    clearChanges: ->
-        @set @_dirtyFields, silent: true
+    clearChanges: (options={silent: true}) ->
+        @set @_dirtyFields, options
         @_clearDirtyFields()
 
     # Serialisation

@@ -77,6 +77,13 @@ describe "Model test", ->
         expect(changedAKey).toBe 'internet'
         expect(changed.bKey).toBe 'test'
 
+    it 'fires change event only if attr has changed value', ->
+        changeSpy = jasmine.createSpy 'change'
+        m = new Model field: 'value'
+        m.addEvents change: changeSpy
+        m.set field: 'value'
+        expect(changeSpy).wasNotCalled()
+
     it 'sets defaults silently when initializing model', ->
         Model.implement
             defaults:
@@ -562,6 +569,19 @@ describe "Model test", ->
 
         m.save()
         expect(m.isDirty()).toBe false
+
+    it 'only sets original value in dirty field after first set', ->
+        m = new Model text: 'original text'
+        m.set text: 'altered text'
+        m.set text: 'different again text'
+
+        expect(m._dirtyFields.text).toBe 'original text'
+
+    it 'only dirty if field is set to different value', ->
+        m = new Model text: 'original text'
+        m.set text: 'original text'
+
+        expect(m._dirtyFields.text).toBe undefined
 
     it 'it can reset unsaved field changes', ->
         m = new Model id: 4, name: 'gehan', gear: true
