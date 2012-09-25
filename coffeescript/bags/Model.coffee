@@ -189,6 +189,8 @@ new Class
                 return false
 
         for key, value of _attrs
+            if @_isCollection key, value
+                @_addCollection key, value, options
             @_attributes[key] = value
             if key == @idField
                 @id = value
@@ -201,11 +203,11 @@ new Class
             @properties[key].set.call this, value
         else
             if @_isCollection key, value
-                _value = @_addCollection key, value
+                _value = @_makeCollection key, value
             else
                 _value = @_makeValue key, value
 
-            @_validateField key, value, options
+            @_validateField key, _value, options
             _value
 
     _validateField: (key, value, options={}) ->
@@ -359,12 +361,13 @@ new Class
         type = @_getType key
         return type? and type.prototype and type.prototype.isCollection
 
-    _addCollection: (key, value, options={}) ->
+    _makeCollection: (key, value) ->
         collectionClass = @_getType key
-        collection = new collectionClass value, parentModel: @
+        new collectionClass value, parentModel: this
+
+    _addCollection: (key, collection, options={}) ->
         @collections[key] = collection
         @fireEvent 'addCollection', [key, collection] unless options.silent
-        collection
 
     _setInitial: (attributes={}) ->
         defaults = Object.map (Object.clone(@defaults)), (value, key) =>

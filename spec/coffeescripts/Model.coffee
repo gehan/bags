@@ -231,6 +231,8 @@ describe "Model test", ->
 
         expect(flatten mdl.get('subCollection').toJSON()).toBe(flatten values)
 
+        mdl.set 'subCollection', values
+
         expect(addedKey).toBe 'subCollection'
         expect(addedCollection).toBe mdl.get('subCollection')
 

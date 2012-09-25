@@ -290,6 +290,7 @@
       expect(instanceOf(mdl.collections.subCollection, Cll)).toBe(true);
       expect(instanceOf(mdl.get('subCollection'), Cll)).toBe(true);
       expect(flatten(mdl.get('subCollection').toJSON())).toBe(flatten(values));
+      mdl.set('subCollection', values);
       expect(addedKey).toBe('subCollection');
       return expect(addedCollection).toBe(mdl.get('subCollection'));
     });

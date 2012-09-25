@@ -65,6 +65,9 @@
         _results = [];
         for (key in _attrs) {
           value = _attrs[key];
+          if (this._isCollection(key, value)) {
+            this._addCollection(key, value, options);
+          }
           this._attributes[key] = value;
           if (key === this.idField) {
             this.id = value;
@@ -84,11 +87,11 @@
           return this.properties[key].set.call(this, value);
         } else {
           if (this._isCollection(key, value)) {
-            _value = this._addCollection(key, value);
+            _value = this._makeCollection(key, value);
           } else {
             _value = this._makeValue(key, value);
           }
-          this._validateField(key, value, options);
+          this._validateField(key, _value, options);
           return _value;
         }
       },
@@ -271,20 +274,21 @@
         type = this._getType(key);
         return (type != null) && type.prototype && type.prototype.isCollection;
       },
-      _addCollection: function(key, value, options) {
-        var collection, collectionClass;
+      _makeCollection: function(key, value) {
+        var collectionClass;
+        collectionClass = this._getType(key);
+        return new collectionClass(value, {
+          parentModel: this
+        });
+      },
+      _addCollection: function(key, collection, options) {
         if (options == null) {
           options = {};
         }
-        collectionClass = this._getType(key);
-        collection = new collectionClass(value, {
-          parentModel: this
-        });
         this.collections[key] = collection;
         if (!options.silent) {
-          this.fireEvent('addCollection', [key, collection]);
+          return this.fireEvent('addCollection', [key, collection]);
         }
-        return collection;
       },
       _setInitial: function(attributes) {
         var attrKeys, defaults,
