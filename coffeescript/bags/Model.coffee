@@ -192,6 +192,9 @@ new Class
         for key, value of _attrs
             if @_isCollection key, value
                 @_addCollection key, value, options
+
+            @_dirtyFields[key] = @_attributes[key]
+
             @_attributes[key] = value
             if key == @idField
                 @id = value
@@ -202,14 +205,14 @@ new Class
         return true
 
     _set: (key, value, options) ->
-        if @properties[key] and @properties[key].set?
-            @properties[key].set.call this, value
+        if @_isCollection key, value
+            _value = @_makeCollection key, value
         else
-            if @_isCollection key, value
-                _value = @_makeCollection key, value
-            else
-                _value = @_makeValue key, value
+            _value = @_makeValue key, value
 
+        if @properties[key] and @properties[key].set?
+            @properties[key].set.call this, _value, value
+        else
             @_validateField key, _value, options
             _value
 
@@ -225,6 +228,15 @@ new Class
 
     # Whether model is already stored or new
     isNew: -> not @id?
+
+    # Whether a model has unsaved changes or not
+    isDirty: ->
+        Object.getLength(@_dirtyFields) > 0
+
+    # Clear unsaved changes and restores model to last saved state
+    clearChanges: ->
+        @set @_dirtyFields, silent: true
+        @_clearDirtyFields()
 
     # Serialisation
     # -------------
@@ -268,9 +280,10 @@ new Class
 
         storageOptions = Object.merge {eventName: 'fetch'}, options
         promise = @storage 'read', null, storageOptions
-        promise.when (isSucess, data) =>
+        promise.when (isSuccess, data) =>
             if isSuccess
                 @set data, silent: true
+                @_clearDirtyFields()
                 @fireEvent 'fetch', [true] unless options.silent
 
     # Saves the model. Can be called simply as `save()` to store the model in
@@ -298,17 +311,21 @@ new Class
         if typeOf(key, 'object')
             options = Object.merge(options, value)
 
-        setAttrFn = @set.bind this, key, value, options if key?
-        setAttrFn() if options.dontWait and setAttrFn?
+        setAttrFn = =>
+            @set key, value, options if key?
+            @_clearDirtyFields()
+        setAttrFn() if options.dontWait
 
         storageMethod = if @isNew() then "create" else "update"
         storageOptions = Object.merge {eventName: 'save'}, options
         promise = @storage storageMethod, data, storageOptions
         promise.when (isSuccess, data) =>
             if isSuccess
-                setAttrFn() if not options.dontWait and setAttrFn?
+                setAttrFn() if not options.dontWait
                 model = data or {}
-                @set model, silent: true if @isNew()
+                if @isNew()
+                    @set model, silent: true
+                    @_clearDirtyFields()
 
     # Deletes the model from storage
     destroy: (options={}) ->
@@ -331,6 +348,7 @@ new Class
     # Private methods
     # ===============
     _attributes: {}
+    _dirtyFields: {}
 
     _makeValue: (key, value) ->
         type = @_getType key
@@ -384,6 +402,7 @@ new Class
 
         Object.merge attributes, defaults
         @set attributes, silent: true
+        @_clearDirtyFields()
 
     _getDefault: (key) ->
         def = @defaults[key]
@@ -407,9 +426,14 @@ new Class
             @_jsonValue value
 
     _jsonValue: (value) ->
-        if value and typeOf(value.toJSON) == 'function'
+        if value and instanceOf value, Date
+            value.format "%Y-%m-%dT%H:%M:%S.%LZ"
+        else if value and typeOf(value.toJSON) == 'function'
             value.toJSON()
         else
             value
+
+    _clearDirtyFields: ->
+        @_dirtyFields = {}
 
     isModel: true

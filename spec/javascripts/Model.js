@@ -594,7 +594,7 @@
       expect(errorLoginSpy).toHaveBeenCalledWith('fec', 'Login must be at least 4 characters');
       return expect(errorSpy).toHaveBeenCalledWith('login', 'fec', 'Login must be at least 4 characters');
     });
-    return it('doesnt set any values if any field validations fail', function() {
+    it('doesnt set any values if any field validations fail', function() {
       var result;
       m.fields = {
         collection: Collection
@@ -631,6 +631,128 @@
       expect(m.get('collection')).toBe(void 0);
       expect(m.collections.collection).toBe(void 0);
       return expect(result).toBe(false);
+    });
+    it('jsons dates with correct format, doesnt used own stupid internal method', function() {
+      var json;
+      m.fields = {
+        date: Date
+      };
+      m.set({
+        date: '2012-08-01 00:00:00'
+      });
+      json = m.toJSON();
+      return expect(json.date).toBe("2012-08-01T00:00:00.000Z");
+    });
+    it('tracks if model is dirty or clean', function() {
+      expect(m.isDirty()).toBe(false);
+      m.set({
+        name: 'mate'
+      });
+      return expect(m.isDirty()).toBe(true);
+    });
+    it('is clean when initialized', function() {
+      m = new Model({
+        name: 'internet',
+        gear: true
+      });
+      return expect(m.isDirty()).toBe(false);
+    });
+    it('is clean after fetch', function() {
+      var promise;
+      m = new Model({
+        id: 1
+      }, {
+        url: '/items'
+      });
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      promise.fulfill(true, {
+        id: 1,
+        text: 'yeah'
+      });
+      m.fetch();
+      return expect(m.isDirty()).toBe(false);
+    });
+    it('is clean after update', function() {
+      var promise;
+      m = new Model({
+        id: 1
+      }, {
+        url: '/items'
+      });
+      m.set({
+        text: 'yeah mate'
+      });
+      expect(m.isDirty()).toBe(true);
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      promise.fulfill(true, {
+        id: 1
+      });
+      m.save();
+      return expect(m.isDirty()).toBe(false);
+    });
+    it('is clean after save', function() {
+      var promise;
+      m = new Model({}, {
+        url: '/items'
+      });
+      m.set({
+        text: 'yeah mate'
+      });
+      expect(m.isDirty()).toBe(true);
+      promise = new Future();
+      spyOn(m, 'storage').andReturn(promise);
+      promise.fulfill(true, {
+        id: 1
+      });
+      m.save();
+      return expect(m.isDirty()).toBe(false);
+    });
+    it('it can reset unsaved field changes', function() {
+      m = new Model({
+        id: 4,
+        name: 'gehan',
+        gear: true
+      });
+      m.set({
+        name: 'fecker',
+        gear: false
+      });
+      m.clearChanges();
+      expect(m.get('name')).toBe('gehan');
+      return expect(m.get('gear')).toBe(true);
+    });
+    it('resets objects too', function() {
+      m = new Model({
+        id: 4,
+        myField: {
+          someProperty: 'internet',
+          someThing: 'webs'
+        }
+      });
+      m.set('myField', {
+        someProperty: 'webs',
+        someThings: 'feck'
+      });
+      m.clearChanges();
+      return expect(m.get('myField')).toBeObject({
+        someProperty: 'internet',
+        someThing: 'webs'
+      });
+    });
+    return it('provides dereferenced object on get, so updates dont affect model', function() {
+      var val;
+      m = new Model({
+        id: 4,
+        myField: {
+          someProperty: 'internet',
+          someThing: 'webs'
+        }
+      });
+      val = m.get('myField');
+      val.someThing = 'balls';
+      return expect(m.get('myField').someThing).toBe('webs');
     });
   });
 

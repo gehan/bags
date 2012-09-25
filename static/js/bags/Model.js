@@ -67,6 +67,7 @@
           if (this._isCollection(key, value)) {
             this._addCollection(key, value, options);
           }
+          this._dirtyFields[key] = this._attributes[key];
           this._attributes[key] = value;
           if (key === this.idField) {
             this.id = value;
@@ -80,14 +81,14 @@
       },
       _set: function(key, value, options) {
         var _value;
-        if (this.properties[key] && (this.properties[key].set != null)) {
-          return this.properties[key].set.call(this, value);
+        if (this._isCollection(key, value)) {
+          _value = this._makeCollection(key, value);
         } else {
-          if (this._isCollection(key, value)) {
-            _value = this._makeCollection(key, value);
-          } else {
-            _value = this._makeValue(key, value);
-          }
+          _value = this._makeValue(key, value);
+        }
+        if (this.properties[key] && (this.properties[key].set != null)) {
+          return this.properties[key].set.call(this, _value, value);
+        } else {
           this._validateField(key, _value, options);
           return _value;
         }
@@ -111,6 +112,15 @@
       },
       isNew: function() {
         return !(this.id != null);
+      },
+      isDirty: function() {
+        return Object.getLength(this._dirtyFields) > 0;
+      },
+      clearChanges: function() {
+        this.set(this._dirtyFields, {
+          silent: true
+        });
+        return this._clearDirtyFields();
       },
       toJSON: function() {
         var attrs, key, value, _ref;
@@ -136,11 +146,12 @@
           eventName: 'fetch'
         }, options);
         promise = this.storage('read', null, storageOptions);
-        return promise.when(function(isSucess, data) {
+        return promise.when(function(isSuccess, data) {
           if (isSuccess) {
             _this.set(data, {
               silent: true
             });
+            _this._clearDirtyFields();
             if (!options.silent) {
               return _this.fireEvent('fetch', [true]);
             }
@@ -172,10 +183,13 @@
         if (typeOf(key, 'object')) {
           options = Object.merge(options, value);
         }
-        if (key != null) {
-          setAttrFn = this.set.bind(this, key, value, options);
-        }
-        if (options.dontWait && (setAttrFn != null)) {
+        setAttrFn = function() {
+          if (key != null) {
+            _this.set(key, value, options);
+          }
+          return _this._clearDirtyFields();
+        };
+        if (options.dontWait) {
           setAttrFn();
         }
         storageMethod = this.isNew() ? "create" : "update";
@@ -186,14 +200,15 @@
         return promise.when(function(isSuccess, data) {
           var model;
           if (isSuccess) {
-            if (!options.dontWait && (setAttrFn != null)) {
+            if (!options.dontWait) {
               setAttrFn();
             }
             model = data || {};
             if (_this.isNew()) {
-              return _this.set(model, {
+              _this.set(model, {
                 silent: true
               });
+              return _this._clearDirtyFields();
             }
           }
         });
@@ -229,6 +244,7 @@
         });
       },
       _attributes: {},
+      _dirtyFields: {},
       _makeValue: function(key, value) {
         var item, type, _i, _len, _results;
         type = this._getType(key);
@@ -301,9 +317,10 @@
           return __indexOf.call(attrKeys, key) < 0;
         });
         Object.merge(attributes, defaults);
-        return this.set(attributes, {
+        this.set(attributes, {
           silent: true
         });
+        return this._clearDirtyFields();
       },
       _getDefault: function(key) {
         var def;
@@ -336,11 +353,16 @@
         }
       },
       _jsonValue: function(value) {
-        if (value && typeOf(value.toJSON) === 'function') {
+        if (value && instanceOf(value, Date)) {
+          return value.format("%Y-%m-%dT%H:%M:%S.%LZ");
+        } else if (value && typeOf(value.toJSON) === 'function') {
           return value.toJSON();
         } else {
           return value;
         }
+      },
+      _clearDirtyFields: function() {
+        return this._dirtyFields = {};
       },
       isModel: true
     });

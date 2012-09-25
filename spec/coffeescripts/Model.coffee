@@ -507,4 +507,87 @@ describe "Model test", ->
         expect(m.collections.collection).toBe undefined
         expect(result).toBe false
 
+    it 'jsons dates with correct format, doesnt used own stupid internal method', ->
+        m.fields =
+            date: Date
+        m.set
+            date: '2012-08-01 00:00:00'
+        json = m.toJSON()
+        expect(json.date).toBe "2012-08-01T00:00:00.000Z"
+
+    it 'tracks if model is dirty or clean', ->
+        expect(m.isDirty()).toBe false
+        m.set name: 'mate'
+        expect(m.isDirty()).toBe true
+
+    it 'is clean when initialized', ->
+        m = new Model
+            name: 'internet'
+            gear: true
+        expect(m.isDirty()).toBe false
+
+    it 'is clean after fetch', ->
+        m = new Model {id: 1}, url: '/items'
+
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
+        promise.fulfill true, id: 1, text: 'yeah'
+
+        m.fetch()
+        expect(m.isDirty()).toBe false
+
+    it 'is clean after update', ->
+        m = new Model {id: 1}, url: '/items'
+        m.set text: 'yeah mate'
+        expect(m.isDirty()).toBe true
+
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
+        promise.fulfill true, id: 1
+
+        m.save()
+        expect(m.isDirty()).toBe false
+
+    it 'is clean after save', ->
+        m = new Model {}, url: '/items'
+        m.set text: 'yeah mate'
+        expect(m.isDirty()).toBe true
+
+        promise = new Future()
+        spyOn(m, 'storage').andReturn promise
+        promise.fulfill true, id: 1
+
+        m.save()
+        expect(m.isDirty()).toBe false
+
+    it 'it can reset unsaved field changes', ->
+        m = new Model id: 4, name: 'gehan', gear: true
+        m.set name: 'fecker', gear: false
+        m.clearChanges()
+        expect(m.get 'name').toBe 'gehan'
+        expect(m.get 'gear').toBe true
+
+    it 'resets objects too', ->
+        m = new Model id: 4, myField: {
+            someProperty: 'internet'
+            someThing: 'webs'
+        }
+        m.set 'myField', {
+            someProperty: 'webs'
+            someThings: 'feck'
+        }
+        m.clearChanges()
+        expect(m.get 'myField').toBeObject {
+            someProperty: 'internet'
+            someThing: 'webs'
+        }
+
+    it 'provides dereferenced object on get, so updates dont affect model', ->
+        m = new Model id: 4, myField: {
+            someProperty: 'internet'
+            someThing: 'webs'
+        }
+        val = m.get 'myField'
+        val.someThing = 'balls'
+        expect(m.get('myField').someThing).toBe 'webs'
 
