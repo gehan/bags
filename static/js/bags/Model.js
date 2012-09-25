@@ -40,7 +40,7 @@
         }
       }).overloadGetter(),
       set: function(key, value, options) {
-        var attrs, k, v, _attrs, _results;
+        var attrs, k, v, _attrs;
         if (options == null) {
           options = {};
         }
@@ -62,7 +62,6 @@
             return false;
           }
         }
-        _results = [];
         for (key in _attrs) {
           value = _attrs[key];
           if (this._isCollection(key, value)) {
@@ -74,12 +73,10 @@
           }
           if (!options.silent) {
             this.fireEvent("change", [key, value]);
-            _results.push(this.fireEvent("change:" + key, [value]));
-          } else {
-            _results.push(void 0);
+            this.fireEvent("change:" + key, [value]);
           }
         }
-        return _results;
+        return true;
       },
       _set: function(key, value, options) {
         var _value;

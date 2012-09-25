@@ -479,5 +479,32 @@ describe "Model test", ->
             'Login must be at least 4 characters'
 
     it 'doesnt set any values if any field validations fail', ->
+        m.fields =
+            collection: Collection
+        m.validators =
+            login: (value) ->
+                if value.length < 4
+                    return 'Login must be at least 4 characters'
+                else
+                    return true
+
+        expect(m.get 'login').toBe undefined
+        expect(m.get 'field1').toBe undefined
+        expect(m.get 'field2').toBe undefined
+        expect(m.get 'collection').toBe undefined
+        expect(m.collections.collection).toBe undefined
+
+        result = m.set
+            login: 'int'
+            field1: 'feck'
+            field2: 'arse'
+            collection: [{id:1}, {id:2}]
+
+        expect(m.get 'login').toBe undefined
+        expect(m.get 'field1').toBe undefined
+        expect(m.get 'field2').toBe undefined
+        expect(m.get 'collection').toBe undefined
+        expect(m.collections.collection).toBe undefined
+        expect(result).toBe false
 
 

@@ -594,7 +594,44 @@
       expect(errorLoginSpy).toHaveBeenCalledWith('fec', 'Login must be at least 4 characters');
       return expect(errorSpy).toHaveBeenCalledWith('login', 'fec', 'Login must be at least 4 characters');
     });
-    return it('doesnt set any values if any field validations fail', function() {});
+    return it('doesnt set any values if any field validations fail', function() {
+      var result;
+      m.fields = {
+        collection: Collection
+      };
+      m.validators = {
+        login: function(value) {
+          if (value.length < 4) {
+            return 'Login must be at least 4 characters';
+          } else {
+            return true;
+          }
+        }
+      };
+      expect(m.get('login')).toBe(void 0);
+      expect(m.get('field1')).toBe(void 0);
+      expect(m.get('field2')).toBe(void 0);
+      expect(m.get('collection')).toBe(void 0);
+      expect(m.collections.collection).toBe(void 0);
+      result = m.set({
+        login: 'int',
+        field1: 'feck',
+        field2: 'arse',
+        collection: [
+          {
+            id: 1
+          }, {
+            id: 2
+          }
+        ]
+      });
+      expect(m.get('login')).toBe(void 0);
+      expect(m.get('field1')).toBe(void 0);
+      expect(m.get('field2')).toBe(void 0);
+      expect(m.get('collection')).toBe(void 0);
+      expect(m.collections.collection).toBe(void 0);
+      return expect(result).toBe(false);
+    });
   });
 
 }).call(this);

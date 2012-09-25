@@ -199,6 +199,8 @@ new Class
                 @fireEvent "change", [key, value]
                 @fireEvent "change:#{key}", [value]
 
+        return true
+
     _set: (key, value, options) ->
         if @properties[key] and @properties[key].set?
             @properties[key].set.call this, value
