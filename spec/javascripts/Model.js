@@ -573,7 +573,7 @@
       m.set('login', 'fec');
       return expect(m.get('login')).toBe(void 0);
     });
-    return it('fires events when validator fails', function() {
+    it('fires events when validator fails', function() {
       var errorLoginSpy, errorSpy;
       m.validators = {
         login: function(value) {
@@ -594,6 +594,7 @@
       expect(errorLoginSpy).toHaveBeenCalledWith('fec', 'Login must be at least 4 characters');
       return expect(errorSpy).toHaveBeenCalledWith('login', 'fec', 'Login must be at least 4 characters');
     });
+    return it('doesnt set any values if any field validations fail', function() {});
   });
 
 }).call(this);

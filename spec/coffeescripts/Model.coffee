@@ -478,6 +478,6 @@ describe "Model test", ->
         expect(errorSpy).toHaveBeenCalledWith 'login', 'fec',
             'Login must be at least 4 characters'
 
-
+    it 'doesnt set any values if any field validations fail', ->
 
 

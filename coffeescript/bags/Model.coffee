@@ -180,6 +180,7 @@ new Class
         else
             attrs = {}
             attrs[key] = value
+
         _attrs = {}
         try
             for k, v of attrs
