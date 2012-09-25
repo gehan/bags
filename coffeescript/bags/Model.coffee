@@ -2,7 +2,8 @@
 # your view code, along with concerns like persistance, and interacting
 # through the events fired when a model is updated to handle rendering.
 
-define ['require', 'bags/Storage'], (require, Storage) -> \
+define ['require', 'bags/Storage', 'bags/Exceptions'],
+(require, Storage, Exceptions) -> \
 
 new Class
     # Uses [Storage](Storage.coffee.html) for model storage
@@ -80,7 +81,7 @@ new Class
     #
     # e.g.
     #
-    #     validatos:
+    #     validators:
     #         email: (value) ->
     #             if value.indexOf '@' < 0
     #                 return 'Invalid email address'
@@ -172,27 +173,50 @@ new Class
     # For each field that's updated 2 `change` events are fired to notify any
     # listeners, unless `silent: true` is passed through as an option.
     set: (key, value, options={}) ->
+
         if typeOf(key) == 'object'
             attrs = key
-            opts = value or options
-            @_set k, v, opts for k, v of attrs
-            return
+            options = value or options
         else
-            @_set key, value, options
+            attrs = {}
+            attrs[key] = value
+        _attrs = {}
+        try
+            for k, v of attrs
+                _attrs[k] = @_set k, v, options
+        catch error
+            if instanceOf error, Exceptions.Validation
+                return false
 
-    _set: (key, value, options={}) ->
-        if @properties[key] and @properties[key].set?
-            @properties[key].set.call this, value
-        else if @_isCollection key, value
-            @_attributes[key] = @_addCollection key, value
-        else
-            @_attributes[key] = @_makeValue key, value
+        for key, value of _attrs
+            @_attributes[key] = value
             if key == @idField
                 @id = value
+            unless options.silent
+                @fireEvent "change", [key, value]
+                @fireEvent "change:#{key}", [value]
 
-        unless options.silent
-            @fireEvent "change", [key, value]
-            @fireEvent "change:#{key}", [value]
+    _set: (key, value, options) ->
+        if @properties[key] and @properties[key].set?
+            @properties[key].set.call this, value
+        else
+            if @_isCollection key, value
+                _value = @_addCollection key, value
+            else
+                _value = @_makeValue key, value
+
+            @_validateField key, value, options
+            _value
+
+    _validateField: (key, value, options={}) ->
+        if @validators and @validators[key]?
+            result = @validators[key].call this, value
+            if result isnt true
+                unless options.silent
+                    @fireEvent "error", [key, value, result]
+                    @fireEvent "error:#{key}", [value, result]
+                throw new Exceptions.Validation key, value, result
+        return true
 
     # Whether model is already stored or new
     isNew: -> not @id?

@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(['require', 'bags/Storage'], function(require, Storage) {
+  define(['require', 'bags/Storage', 'bags/Exceptions'], function(require, Storage, Exceptions) {
     return new Class({
       Implements: [Events, Options, Storage],
       fields: {},
@@ -40,39 +40,74 @@
         }
       }).overloadGetter(),
       set: function(key, value, options) {
-        var attrs, k, opts, v;
+        var attrs, k, v, _attrs, _results;
         if (options == null) {
           options = {};
         }
         if (typeOf(key) === 'object') {
           attrs = key;
-          opts = value || options;
+          options = value || options;
+        } else {
+          attrs = {};
+          attrs[key] = value;
+        }
+        _attrs = {};
+        try {
           for (k in attrs) {
             v = attrs[k];
-            this._set(k, v, opts);
+            _attrs[k] = this._set(k, v, options);
           }
-        } else {
-          return this._set(key, value, options);
+        } catch (error) {
+          if (instanceOf(error, Exceptions.Validation)) {
+            return false;
+          }
         }
-      },
-      _set: function(key, value, options) {
-        if (options == null) {
-          options = {};
-        }
-        if (this.properties[key] && (this.properties[key].set != null)) {
-          this.properties[key].set.call(this, value);
-        } else if (this._isCollection(key, value)) {
-          this._attributes[key] = this._addCollection(key, value);
-        } else {
-          this._attributes[key] = this._makeValue(key, value);
+        _results = [];
+        for (key in _attrs) {
+          value = _attrs[key];
+          this._attributes[key] = value;
           if (key === this.idField) {
             this.id = value;
           }
+          if (!options.silent) {
+            this.fireEvent("change", [key, value]);
+            _results.push(this.fireEvent("change:" + key, [value]));
+          } else {
+            _results.push(void 0);
+          }
         }
-        if (!options.silent) {
-          this.fireEvent("change", [key, value]);
-          return this.fireEvent("change:" + key, [value]);
+        return _results;
+      },
+      _set: function(key, value, options) {
+        var _value;
+        if (this.properties[key] && (this.properties[key].set != null)) {
+          return this.properties[key].set.call(this, value);
+        } else {
+          if (this._isCollection(key, value)) {
+            _value = this._addCollection(key, value);
+          } else {
+            _value = this._makeValue(key, value);
+          }
+          this._validateField(key, value, options);
+          return _value;
         }
+      },
+      _validateField: function(key, value, options) {
+        var result;
+        if (options == null) {
+          options = {};
+        }
+        if (this.validators && (this.validators[key] != null)) {
+          result = this.validators[key].call(this, value);
+          if (result !== true) {
+            if (!options.silent) {
+              this.fireEvent("error", [key, value, result]);
+              this.fireEvent("error:" + key, [value, result]);
+            }
+            throw new Exceptions.Validation(key, value, result);
+          }
+        }
+        return true;
       },
       isNew: function() {
         return !(this.id != null);

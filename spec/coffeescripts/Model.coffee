@@ -434,6 +434,48 @@ describe "Model test", ->
         expect(m.get 'firstName').toBe 'Gehan'
         expect(m.get 'lastName').toBe 'Gonsalkorale'
 
-    it 'allow validation when trying to set values', ->
+    it 'sets when validator passes', ->
+        m.validators =
+            login: (value) ->
+                if value.length < 4
+                    return 'Login must be at least 4 characters'
+                else
+                    return true
+
+        m.set 'login', 'fecker'
+        expect(m.get 'login').toBe 'fecker'
+
+    it 'rejects set when validator fails', ->
+        m.validators =
+            login: (value) ->
+                if value.length < 4
+                    return 'Login must be at least 4 characters'
+                else
+                    return true
+
+        m.set 'login', 'fec'
+        expect(m.get 'login').toBe undefined
+
+    it 'fires events when validator fails', ->
+        m.validators =
+            login: (value) ->
+                if value.length < 4
+                    return 'Login must be at least 4 characters'
+                else
+                    return true
+
+        errorSpy = jasmine.createSpy 'errorSpy'
+        errorLoginSpy = jasmine.createSpy 'errorLoginSpy'
+        m.addEvents
+            error: errorSpy
+            'error:login': errorLoginSpy
+        m.set 'login', 'fec'
+
+        expect(errorLoginSpy).toHaveBeenCalledWith 'fec',
+            'Login must be at least 4 characters'
+        expect(errorSpy).toHaveBeenCalledWith 'login', 'fec',
+            'Login must be at least 4 characters'
+
+
 
 

@@ -546,7 +546,53 @@
       expect(m.get('firstName')).toBe('Gehan');
       return expect(m.get('lastName')).toBe('Gonsalkorale');
     });
-    return it('allow validation when trying to set values', function() {});
+    it('sets when validator passes', function() {
+      m.validators = {
+        login: function(value) {
+          if (value.length < 4) {
+            return 'Login must be at least 4 characters';
+          } else {
+            return true;
+          }
+        }
+      };
+      m.set('login', 'fecker');
+      return expect(m.get('login')).toBe('fecker');
+    });
+    it('rejects set when validator fails', function() {
+      m.validators = {
+        login: function(value) {
+          if (value.length < 4) {
+            return 'Login must be at least 4 characters';
+          } else {
+            return true;
+          }
+        }
+      };
+      m.set('login', 'fec');
+      return expect(m.get('login')).toBe(void 0);
+    });
+    return it('fires events when validator fails', function() {
+      var errorLoginSpy, errorSpy;
+      m.validators = {
+        login: function(value) {
+          if (value.length < 4) {
+            return 'Login must be at least 4 characters';
+          } else {
+            return true;
+          }
+        }
+      };
+      errorSpy = jasmine.createSpy('errorSpy');
+      errorLoginSpy = jasmine.createSpy('errorLoginSpy');
+      m.addEvents({
+        error: errorSpy,
+        'error:login': errorLoginSpy
+      });
+      m.set('login', 'fec');
+      expect(errorLoginSpy).toHaveBeenCalledWith('fec', 'Login must be at least 4 characters');
+      return expect(errorSpy).toHaveBeenCalledWith('login', 'fec', 'Login must be at least 4 characters');
+    });
   });
 
 }).call(this);
