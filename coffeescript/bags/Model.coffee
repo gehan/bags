@@ -2,12 +2,28 @@
 # your view code, along with concerns like persistance, and interacting
 # through the events fired when a model is updated to handle rendering.
 
-define ['require', 'bags/Storage', 'bags/Exceptions'],
-(require, Storage, Exceptions) -> \
+`define(['require', 'bags/Storage', 'bags/Collection', 'bags/Exceptions'],
+function(require, Storage, Collection, Exceptions) {`
 
-new Class
+Class.Mutators.Collection = (collectionClass) ->
+    @extend
+        getCollection: ->
+            new collectionClass [],
+                url: @prototype.url
+
+oldExtends = Class.Mutators.Extends
+Class.Mutators.Extends = (parent) ->
+    if parent.prototype.Collection
+        console.log(instanceOf parent.prototype.Collection, Collection)
+        Class.Mutators.Collection.apply this, [parent.prototype.Collection]
+
+    oldExtends.apply this, arguments
+
+Model = new Class
     # Uses [Storage](Storage.coffee.html) for model storage
     Implements: [Events, Options, Storage]
+
+    Collection: Collection
 
     # Specfying field classes (optional)
     # ----------------------------------
@@ -476,3 +492,6 @@ new Class
         @_dirtyFields = {}
 
     isModel: true
+
+return Model
+`});`

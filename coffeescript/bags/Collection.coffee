@@ -1,7 +1,7 @@
 # Provides a simple collection class, which can be used to handle retrieval
 # and management of sets of [Model](Model.coffee.html)s
 
-define ['bags/Model', 'bags/Storage'], (Model, Storage) -> \
+define ['require', 'bags/Storage'], (require, Storage) -> \
 
 new Class
     # Extends the native javascript Array object so we get all the methods of
@@ -15,7 +15,7 @@ new Class
 
     # If using a custom Model then it needs to set here, as this class will
     # be used to create new instances after calling `fetch`
-    model: Model
+    #model: Model
 
     # If using default `Storage` class then you must set the URL here
     url: null
@@ -42,6 +42,9 @@ new Class
                 @[key] = options[key]
                 delete options[key]
         @setOptions options
+
+        if not @model
+            @model = require 'bags/Model'
 
         @add models, silent: true
         @

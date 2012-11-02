@@ -1,11 +1,10 @@
 (function() {
 
-  define(['bags/Model', 'bags/Storage'], function(Model, Storage) {
+  define(['require', 'bags/Storage'], function(require, Storage) {
     return new Class({
       Extends: Array,
       Implements: [Options, Events, Storage],
       options: {},
-      model: Model,
       url: null,
       initialize: function(models, options) {
         var key, _i, _len, _ref;
@@ -31,6 +30,9 @@
           }
         }
         this.setOptions(options);
+        if (!this.model) {
+          this.model = require('bags/Model');
+        }
         this.add(models, {
           silent: true
         });
