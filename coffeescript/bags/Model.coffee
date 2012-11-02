@@ -5,25 +5,30 @@
 `define(['require', 'bags/Storage', 'bags/Collection', 'bags/Exceptions'],
 function(require, Storage, Collection, Exceptions) {`
 
-Class.Mutators.Collection = (collectionClass) ->
+Class.Mutators.Collection = (collectionDef) ->
     @extend
+        $collection: collectionDef
         getCollection: ->
-            new collectionClass [],
+            copy = Object.clone collectionDef
+            col = new copy.class [],
                 url: @prototype.url
+            for key, value of copy when value != '$collection'
+                col[key] = value
+            return col
 
-oldExtends = Class.Mutators.Extends
+$extends = Class.Mutators.Extends
 Class.Mutators.Extends = (parent) ->
-    if parent.prototype.Collection
-        console.log(instanceOf parent.prototype.Collection, Collection)
-        Class.Mutators.Collection.apply this, [parent.prototype.Collection]
+    if parent.$collection
+        Class.Mutators.Collection.apply this, [parent.$collection]
 
-    oldExtends.apply this, arguments
+    $extends.apply this, arguments
 
 Model = new Class
     # Uses [Storage](Storage.coffee.html) for model storage
     Implements: [Events, Options, Storage]
 
-    Collection: Collection
+    Collection:
+        class: Collection
 
     # Specfying field classes (optional)
     # ----------------------------------

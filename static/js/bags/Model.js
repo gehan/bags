@@ -2,32 +2,43 @@
   define(['require', 'bags/Storage', 'bags/Collection', 'bags/Exceptions'],
 function(require, Storage, Collection, Exceptions) {;
 
-  var Model, oldExtends,
+  var $extends, Model,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  Class.Mutators.Collection = function(collectionClass) {
+  Class.Mutators.Collection = function(collectionDef) {
     return this.extend({
+      $collection: collectionDef,
       getCollection: function() {
-        return new collectionClass([], {
+        var col, copy, key, value;
+        copy = Object.clone(collectionDef);
+        col = new copy["class"]([], {
           url: this.prototype.url
         });
+        for (key in copy) {
+          value = copy[key];
+          if (value !== '$collection') {
+            col[key] = value;
+          }
+        }
+        return col;
       }
     });
   };
 
-  oldExtends = Class.Mutators.Extends;
+  $extends = Class.Mutators.Extends;
 
   Class.Mutators.Extends = function(parent) {
-    if (parent.prototype.Collection) {
-      console.log(instanceOf(parent.prototype.Collection, Collection));
-      Class.Mutators.Collection.apply(this, [parent.prototype.Collection]);
+    if (parent.$collection) {
+      Class.Mutators.Collection.apply(this, [parent.$collection]);
     }
-    return oldExtends.apply(this, arguments);
+    return $extends.apply(this, arguments);
   };
 
   Model = new Class({
     Implements: [Events, Options, Storage],
-    Collection: Collection,
+    Collection: {
+      "class": Collection
+    },
     fields: {},
     defaults: {},
     properties: {},

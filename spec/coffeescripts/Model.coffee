@@ -614,3 +614,50 @@ describe "Model test", ->
         val.someThing = 'balls'
         expect(m.get('myField').someThing).toBe 'webs'
 
+    it 'can create collection with Model.getCollection', ->
+        expect(instanceOf Model.getCollection(), Collection).toBe true
+
+    it 'when extending Model keeps Model.getCollection', ->
+        ModelDef = new Class
+            Extends: Model
+            url: 'internet'
+
+        col = ModelDef.getCollection()
+
+        expect(instanceOf ModelDef.getCollection(), Collection).toBe true
+        expect(col.url).toBe 'internet'
+
+    it 'allows overriding of Collection def in children', ->
+        Collection2 = new Class
+            Extends: Collection
+
+        ModelDef = new Class
+            Extends: Model
+            Collection:
+                class: Collection2
+
+        col1 = Model.getCollection()
+        col2 = ModelDef.getCollection()
+
+        expect(instanceOf col1, Collection2).toBe false
+        expect(instanceOf col2, Collection2).toBe true
+
+    it 'implements extra methods specified in Collection, copies objects', ->
+        ModelDef = new Class
+            Extends: Model
+            Collection:
+                class: Collection
+                sortByField: 'yourMum'
+                someObj:
+                    value1: 'internet'
+
+        col1 = ModelDef.getCollection()
+        col2 = ModelDef.getCollection()
+
+        expect(col1.sortByField).toBe 'yourMum'
+
+        expect(col1.someObj.value1).toBe col2.someObj.value1
+
+        col1.someObj.value1 = 'feck'
+
+        expect(col1.someObj.value1).toNotBe col2.someObj.value1
