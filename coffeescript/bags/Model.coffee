@@ -5,7 +5,11 @@
 `define(['require', 'bags/Storage', 'bags/Collection', 'bags/Exceptions'],
 function(require, Storage, Collection, Exceptions) {`
 
+# Provides Collection mutator to allow class level access to the model's
+# collection
 Class.Mutators.Collection = (collectionDef) ->
+    if @$collection
+        collectionDef = Object.merge @$collection, collectionDef
     @extend
         $collection: collectionDef
         getCollection: ->

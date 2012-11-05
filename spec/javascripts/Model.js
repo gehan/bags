@@ -820,7 +820,7 @@
       expect(instanceOf(col1, Collection2)).toBe(false);
       return expect(instanceOf(col2, Collection2)).toBe(true);
     });
-    return it('implements extra methods specified in Collection, copies objects', function() {
+    it('implements extra methods specified in Collection, copies objects', function() {
       var ModelDef, col1, col2;
       ModelDef = new Class({
         Extends: Model,
@@ -838,6 +838,30 @@
       expect(col1.someObj.value1).toBe(col2.someObj.value1);
       col1.someObj.value1 = 'feck';
       return expect(col1.someObj.value1).toNotBe(col2.someObj.value1);
+    });
+    return it('overrides parent Collection methods but keeps others', function() {
+      var Collection2, ModelDef, ModelDef2, col;
+      Collection2 = new Class({
+        Extends: Collection
+      });
+      ModelDef = new Class({
+        Extends: Model,
+        Collection: {
+          "class": Collection2,
+          internet: 'yes',
+          sortByField: 'yourMum'
+        }
+      });
+      ModelDef2 = new Class({
+        Extends: ModelDef,
+        Collection: {
+          sortByField: 'yourDad'
+        }
+      });
+      col = ModelDef2.getCollection();
+      expect(instanceOf(col, Collection2)).toBe(true);
+      expect(col.sortByField).toBe('yourDad');
+      return expect(col.internet).toBe('yes');
     });
   });
 

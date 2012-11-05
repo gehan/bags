@@ -6,6 +6,9 @@ function(require, Storage, Collection, Exceptions) {;
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Class.Mutators.Collection = function(collectionDef) {
+    if (this.$collection) {
+      collectionDef = Object.merge(this.$collection, collectionDef);
+    }
     return this.extend({
       $collection: collectionDef,
       getCollection: function() {

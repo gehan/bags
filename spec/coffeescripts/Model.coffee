@@ -661,3 +661,26 @@ describe "Model test", ->
         col1.someObj.value1 = 'feck'
 
         expect(col1.someObj.value1).toNotBe col2.someObj.value1
+
+    it 'overrides parent Collection methods but keeps others', ->
+        Collection2 = new Class
+            Extends: Collection
+
+        ModelDef = new Class
+            Extends: Model
+            Collection:
+                class: Collection2
+                internet: 'yes'
+                sortByField: 'yourMum'
+
+        ModelDef2 = new Class
+            Extends: ModelDef
+            Collection:
+                sortByField: 'yourDad'
+
+        col = ModelDef2.getCollection()
+
+        expect(instanceOf col, Collection2).toBe true
+        expect(col.sortByField).toBe 'yourDad'
+        expect(col.internet).toBe 'yes'
+
