@@ -334,7 +334,7 @@ Model = new Class
         if key?
             attrs = {}
             attrs[@idField] = @id if not @isNew()
-            toUpdate = new ModelClass attrs
+            toUpdate = new ModelClass attrs, ignoreDefaults: true
             toUpdate.set key, value, silent: true if key?
         else
             toUpdate = new ModelClass @toJSON()
@@ -356,9 +356,8 @@ Model = new Class
             if isSuccess
                 setAttrFn() if not options.dontWait
                 model = data or {}
-                if @isNew()
-                    @set model, silent: true
-                    @_clearDirtyFields()
+                @set model, silent: true
+                @_clearDirtyFields()
 
     # Deletes the model from storage
     destroy: (options={}) ->
@@ -429,8 +428,11 @@ Model = new Class
         @fireEvent 'addCollection', [key, collection] unless options.silent
 
     _setInitial: (attributes={}) ->
-        defaults = Object.map (Object.clone(@defaults)), (value, key) =>
-            @_getDefault key
+        unless @options.ignoreDefaults
+            defaults = Object.map (Object.clone(@defaults)), (value, key) =>
+                @_getDefault key
+        else
+            defaults = {}
 
         # Merge defaults into attributes like this to
         # keep references intact
@@ -459,12 +461,16 @@ Model = new Class
         else if _value and @_isModel key
             _value = new type _value
             _value._parent = this
-        else if typeOf(value) in ['object', 'date'] and value.constructor
+        else if typeOf(value) == 'date'
+            _value = Date.parse _value
+        else if typeOf(value) == 'object' and value.constructor
             _value = new value.constructor _value
         else if typeOf(value) == 'array'
             _value = _value.map (item, idx) ->
                 orig = value[0]
-                if typeOf(orig) in ['object', 'date'] and orig.constructor
+                if typeOf(orig) == 'date'
+                    Date.parse item
+                else if typeOf(orig) == 'object' and orig.constructor
                     new orig.constructor item
                 else
                     item

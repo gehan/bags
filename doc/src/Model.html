@@ -583,7 +583,7 @@ it.</p>
         <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
             <span class="nv">attrs = </span><span class="p">{}</span>
             <span class="nx">attrs</span><span class="p">[</span><span class="nx">@idField</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@id</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">@isNew</span><span class="p">()</span>
-            <span class="nv">toUpdate = </span><span class="k">new</span> <span class="nx">ModelClass</span> <span class="nx">attrs</span>
+            <span class="nv">toUpdate = </span><span class="k">new</span> <span class="nx">ModelClass</span> <span class="nx">attrs</span><span class="p">,</span> <span class="nv">ignoreDefaults: </span><span class="kc">true</span>
             <span class="nx">toUpdate</span><span class="p">.</span><span class="nx">set</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
         <span class="k">else</span>
             <span class="nv">toUpdate = </span><span class="k">new</span> <span class="nx">ModelClass</span> <span class="nx">@toJSON</span><span class="p">()</span>
@@ -605,9 +605,8 @@ it.</p>
             <span class="k">if</span> <span class="nx">isSuccess</span>
                 <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
                 <span class="nv">model = </span><span class="nx">data</span> <span class="o">or</span> <span class="p">{}</span>
-                <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
-                    <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-                    <span class="nx">@_clearDirtyFields</span><span class="p">()</span></pre></div>
+                <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+                <span class="nx">@_clearDirtyFields</span><span class="p">()</span></pre></div>
       </td>
     </tr>
     <tr id='section-27'>
@@ -693,8 +692,11 @@ it.</p>
         <span class="nx">@fireEvent</span> <span class="s">&#39;addCollection&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">collection</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
 
     <span class="nv">_setInitial: </span><span class="nf">(attributes={}) -&gt;</span>
-        <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">@defaults</span><span class="p">)),</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="nx">@_getDefault</span> <span class="nx">key</span></pre></div>
+        <span class="nx">unless</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">ignoreDefaults</span>
+            <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">@defaults</span><span class="p">)),</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="nx">@_getDefault</span> <span class="nx">key</span>
+        <span class="k">else</span>
+            <span class="nv">defaults = </span><span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-29'>
@@ -732,12 +734,16 @@ keep references intact</p>
         <span class="k">else</span> <span class="k">if</span> <span class="nx">_value</span> <span class="o">and</span> <span class="nx">@_isModel</span> <span class="nx">key</span>
             <span class="nv">_value = </span><span class="k">new</span> <span class="nx">type</span> <span class="nx">_value</span>
             <span class="nv">_value._parent = </span><span class="k">this</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="s">&#39;date&#39;</span><span class="p">]</span> <span class="o">and</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span>
+            <span class="nv">_value = </span><span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">_value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span>
             <span class="nv">_value = </span><span class="k">new</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span> <span class="nx">_value</span>
         <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span>
             <span class="nv">_value = </span><span class="nx">_value</span><span class="p">.</span><span class="nx">map</span> <span class="nf">(item, idx) -&gt;</span>
                 <span class="nv">orig = </span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;object&#39;</span><span class="p">,</span> <span class="s">&#39;date&#39;</span><span class="p">]</span> <span class="o">and</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span>
+                <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span>
+                    <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">item</span>
+                <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span>
                     <span class="k">new</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span> <span class="nx">item</span>
                 <span class="k">else</span>
                     <span class="nx">item</span>

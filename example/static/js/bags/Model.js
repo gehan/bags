@@ -217,7 +217,9 @@ function(require, Storage, Collection, Exceptions) {;
         if (!this.isNew()) {
           attrs[this.idField] = this.id;
         }
-        toUpdate = new ModelClass(attrs);
+        toUpdate = new ModelClass(attrs, {
+          ignoreDefaults: true
+        });
         if (key != null) {
           toUpdate.set(key, value, {
             silent: true
@@ -251,12 +253,10 @@ function(require, Storage, Collection, Exceptions) {;
             setAttrFn();
           }
           model = data || {};
-          if (_this.isNew()) {
-            _this.set(model, {
-              silent: true
-            });
-            return _this._clearDirtyFields();
-          }
+          _this.set(model, {
+            silent: true
+          });
+          return _this._clearDirtyFields();
         }
       });
     },
@@ -362,9 +362,13 @@ function(require, Storage, Collection, Exceptions) {;
       if (attributes == null) {
         attributes = {};
       }
-      defaults = Object.map(Object.clone(this.defaults), function(value, key) {
-        return _this._getDefault(key);
-      });
+      if (!this.options.ignoreDefaults) {
+        defaults = Object.map(Object.clone(this.defaults), function(value, key) {
+          return _this._getDefault(key);
+        });
+      } else {
+        defaults = {};
+      }
       attrKeys = Object.keys(attributes);
       defaults = Object.filter(defaults, function(value, key) {
         return __indexOf.call(attrKeys, key) < 0;
@@ -376,7 +380,7 @@ function(require, Storage, Collection, Exceptions) {;
       return this._clearDirtyFields();
     },
     _cloneField: function(key) {
-      var jsonValue, type, value, _ref, _value;
+      var jsonValue, type, value, _value;
       value = this._attributes[key];
       type = this._getType(key);
       jsonValue = this._jsonKeyValue(key, value);
@@ -392,13 +396,17 @@ function(require, Storage, Collection, Exceptions) {;
       } else if (_value && this._isModel(key)) {
         _value = new type(_value);
         _value._parent = this;
-      } else if (((_ref = typeOf(value)) === 'object' || _ref === 'date') && value.constructor) {
+      } else if (typeOf(value) === 'date') {
+        _value = Date.parse(_value);
+      } else if (typeOf(value) === 'object' && value.constructor) {
         _value = new value.constructor(_value);
       } else if (typeOf(value) === 'array') {
         _value = _value.map(function(item, idx) {
-          var orig, _ref1;
+          var orig;
           orig = value[0];
-          if (((_ref1 = typeOf(orig)) === 'object' || _ref1 === 'date') && orig.constructor) {
+          if (typeOf(orig) === 'date') {
+            return Date.parse(item);
+          } else if (typeOf(orig) === 'object' && orig.constructor) {
             return new orig.constructor(item);
           } else {
             return item;
