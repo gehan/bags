@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>Collection.coffee</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="Collection.html">Collection.coffee</a>
+          <a class="source" href="Exceptions.html">Exceptions.coffee</a>
+          <a class="source" href="Model.html">Model.coffee</a>
+          <a class="source" href="Router.html">Router.coffee</a>
+          <a class="source" href="Storage.html">Storage.coffee</a>
+          <a class="source" href="Template.html">Template.coffee</a>
+          <a class="source" href="View.html">View.coffee</a>
+          <a class="source" href="Views.html">Views.coffee</a>
+      </div>
+    </div>
+  </div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>Collection.coffee</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        <p>Provides a simple collection class, which can be used to handle retrieval
+and management of sets of <a href="Model.coffee.html">Model</a>s</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nx">define</span> <span class="p">[</span><span class="s">&#39;require&#39;</span><span class="p">,</span> <span class="s">&#39;bags/Storage&#39;</span><span class="p">],</span> <span class="nf">(require, Storage) -&gt;</span> <span class="o">\</span>
+
+<span class="k">new</span> <span class="nx">Class</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>Extends the native javascript Array object so we get all the methods of
+this class as well as the Mootools extensions.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">Extends: </span><span class="nb">Array</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>Uses <a href="Storage.coffee.html">Storage</a> for collection retrieval</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Options</span><span class="p">,</span> <span class="nx">Events</span><span class="p">,</span> <span class="nx">Storage</span><span class="p">]</span>
+
+    <span class="nv">options: </span><span class="p">{}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>If using a custom Model then it needs to set here, as this class will
+be used to create new instances after calling <code>fetch</code>
+model: Model</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>If using default <code>Storage</code> class then you must set the URL here</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">url: </span><span class="kc">null</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Using_the_Collection_class'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Using_the_Collection_class">&#182;</a>
+        </div>
+        <h1>Using the Collection class</h1>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-7">&#182;</a>
+        </div>
+        <p>You can initialise the collection with a set of existing models,
+e.g. if you bootstrap.</p>
+
+<p>If you want to set <code>@url</code> or <code>@model</code> on init then these can be passed in
+as <code>options</code></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">initialize: </span><span class="nf">(models=[], options={}) -&gt;</span>
+        <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span><span class="o">?</span>
+            <span class="vi">@parentModel =</span>
+                <span class="nv">id: </span><span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span><span class="p">.</span><span class="nx">id</span>
+                <span class="nv">klass: </span><span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span><span class="p">.</span><span class="nx">constructor</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-8">&#182;</a>
+        </div>
+        <p>Can&rsquo;t store actual instance otherwise browswers crash
+in some instances presumabley down to a circular reference</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="k">delete</span> <span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span>
+
+        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;model&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">,</span> <span class="s">&#39;sortField&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
+                <span class="nx">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+                <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+        <span class="nx">@setOptions</span> <span class="nx">options</span>
+
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">@model</span>
+            <span class="vi">@model = </span><span class="nx">require</span> <span class="s">&#39;bags/Model&#39;</span>
+
+        <span class="nx">@add</span> <span class="nx">models</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+        <span class="nx">@</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Collection_retrieval'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Collection_retrieval">&#182;</a>
+        </div>
+        <h2>Collection retrieval</h2>
+
+<p>The actual collection storage has been abstracted out to
+<a href="Storage.coffee.html">Storage</a>
+which should be read to learn about the various events fired during each
+operation and as well as how to handle to returned promise.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
+        <p>Use this method to fetch a collectin of models from the server.</p>
+
+<p>By default this will replace the current collection with the retrieved
+collection by calling <code>@reset</code>.</p>
+
+<p>If you wish to add to the collection rather than replace it then set
+<code>options.add=true</code> and <code>@add</code> will be called instead</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">fetch: </span><span class="nf">(filter={}, options={}) -&gt;</span>
+        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="nx">filter</span>
+        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="k">if</span> <span class="nx">isSuccess</span>
+                <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">add</span>
+                    <span class="nx">@add</span> <span class="nx">models</span><span class="p">,</span> <span class="nx">options</span>
+                <span class="k">else</span>
+                    <span class="nx">@reset</span> <span class="nx">models</span><span class="p">,</span> <span class="nx">options</span>
+                <span class="nx">@fireEvent</span> <span class="s">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-11">&#182;</a>
+        </div>
+        <p>This will replace the current collection with the models that are passed
+in, and fires a <code>reset</code> event at the end.</p>
+
+<p>If you call this without any options it will just empty the collection.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">reset: </span><span class="nf">(models, options={}) -&gt;</span>
+        <span class="nx">@_remove</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span> <span class="k">while</span> <span class="nv">model = </span><span class="nx">@pop</span><span class="p">()</span>
+        <span class="nx">@add</span> <span class="nx">models</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">models</span><span class="o">?</span>
+        <span class="nx">@fireEvent</span> <span class="s">&#39;reset&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">@</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-12">&#182;</a>
+        </div>
+        <p>Call to add a model or an array of models to the collection
+Fires an <code>add(model)</code> event</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">add: </span><span class="nf">(model, options={}) -&gt;</span>
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">@model</span><span class="o">?</span> <span class="k">then</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;Model not defined for collection&quot;</span>
+
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span>
+            <span class="nv">added = </span><span class="nx">@_add</span><span class="p">(</span><span class="nx">m</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="k">for</span> <span class="nx">m</span> <span class="k">in</span> <span class="nx">model</span>
+        <span class="k">else</span>
+            <span class="nv">added = </span><span class="nx">@_add</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span>
+
+        <span class="nx">@sortBy</span> <span class="nx">@sortField</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">@sortField</span><span class="o">?</span>
+
+        <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+            <span class="nx">@fireEvent</span> <span class="s">&#39;add&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">model</span><span class="p">]</span> <span class="k">for</span> <span class="nx">model</span> <span class="k">in</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span> <span class="nx">added</span>
+
+    <span class="nv">_add: </span><span class="nf">(model, options={}) -&gt;</span>
+        <span class="nv">model = </span><span class="nx">@_makeModel</span> <span class="nx">model</span>
+        <span class="nx">@push</span> <span class="nx">model</span>
+        <span class="nx">model</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-13'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-13">&#182;</a>
+        </div>
+        <p>Provides a shortcut to create a new model in the collection</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">create: </span><span class="nf">(attributes, options={}) -&gt;</span>
+        <span class="nv">model = </span><span class="nx">@_makeModel</span> <span class="nx">attributes</span>
+        <span class="nx">@add</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-14">&#182;</a>
+        </div>
+        <p>Get model with field matching value</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">get: </span><span class="nf">(field, value) -&gt;</span>
+        <span class="nv">obj = </span><span class="kc">null</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">@some</span> <span class="nf">(obj) -&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">field</span><span class="p">)</span> <span class="o">==</span> <span class="nx">value</span><span class="p">)</span>
+            <span class="nx">obj</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-15'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-15">&#182;</a>
+        </div>
+        <p>Sorts the collection like a normal array but also fires a <code>sort</code> event</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">sort: </span><span class="nf">(comparator=@comparator, options={}) -&gt;</span>
+        <span class="nx">@parent</span> <span class="nx">comparator</span>
+        <span class="nx">@fireEvent</span> <span class="s">&#39;sort&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+
+    <span class="nv">sortBy: </span><span class="nf">(field, options) -&gt;</span>
+        <span class="nx">@sort</span> <span class="nf">(a, b ) -&gt;</span>
+            <span class="nv">aVal = </span><span class="nx">a</span><span class="p">.</span><span class="nx">get</span> <span class="nx">field</span>
+            <span class="nv">bVal = </span><span class="nx">b</span><span class="p">.</span><span class="nx">get</span> <span class="nx">field</span>
+            <span class="nv">type = </span><span class="nx">typeOf</span> <span class="nx">aVal</span>
+            <span class="k">if</span> <span class="nx">type</span> <span class="o">==</span> <span class="s">&#39;number&#39;</span>
+                <span class="nx">aVal</span> <span class="o">-</span> <span class="nx">bVal</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">==</span> <span class="s">&#39;string&#39;</span>
+                <span class="nx">aVal</span><span class="p">.</span><span class="nx">localeCompare</span> <span class="nx">bVal</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span>
+                <span class="nx">bVal</span><span class="p">.</span><span class="nx">diff</span> <span class="nx">aVal</span><span class="p">,</span> <span class="s">&#39;ms&#39;</span>
+        <span class="p">,</span> <span class="nx">options</span>
+
+    <span class="nv">sortField: </span><span class="kc">null</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-16'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-16">&#182;</a>
+        </div>
+        <p>Set this to define a custom comparator for the <code>sort</code> function</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">comparator: </span><span class="nf">(a, b) -&gt;</span>
+        <span class="k">return</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">b</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-17'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-17">&#182;</a>
+        </div>
+        <p>Returns a JSON ready representation of the Collection. See
+<a href="Model.coffee.html">Model</a> for more information.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">toJSON: </span><span class="o">-&gt;</span>
+        <span class="nx">@invoke</span> <span class="s">&#39;toJSON&#39;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Private_methods'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Private_methods">&#182;</a>
+        </div>
+        <h1>Private methods</h1>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nv">_makeModel: </span><span class="nf">(model) -&gt;</span>
+        <span class="k">if</span> <span class="o">not</span> <span class="nx">instanceOf</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">@model</span>
+            <span class="nv">model = </span><span class="k">new</span> <span class="nx">@model</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">collection: </span><span class="k">this</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">model</span><span class="p">.</span><span class="nx">collection</span><span class="o">?</span>
+            <span class="nv">model.collection = </span><span class="k">this</span>
+        <span class="nx">model</span><span class="p">.</span><span class="nx">addEvents</span>
+            <span class="nv">destroy: </span><span class="o">=&gt;</span>
+                <span class="nx">@erase</span> <span class="nx">model</span>
+                <span class="nx">@fireEvent</span> <span class="s">&#39;remove&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">model</span><span class="p">]</span>
+        <span class="nx">model</span>
+
+    <span class="nv">_remove: </span><span class="nf">(model, options={}) -&gt;</span>
+        <span class="nx">model</span><span class="p">.</span><span class="nx">removeEvents</span> <span class="s">&#39;destroy&#39;</span>
+        <span class="nx">@erase</span> <span class="nx">model</span>
+        <span class="nx">@fireEvent</span> <span class="s">&#39;remove&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">model</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+
+    <span class="nv">isCollection: </span><span class="kc">true</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

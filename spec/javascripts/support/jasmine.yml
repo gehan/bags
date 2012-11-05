@@ -11,18 +11,19 @@
 #   - dist/**/*.js
 #
 src_files:
-    - lib/mootools-core-1.4.5.js
-    - lib/mootools-more-1.4.0.1.js
-    - lib/curl.js
-    - lib/futures.ender.js
-    - lib/ender.noconflict.js
-    - lib/behaviour/Element.Data.js
-    - lib/behaviour/Event.Mock.js
-    - lib/behaviour/BehaviorAPI.js
-    - lib/behaviour/Behavior.js
-    - lib/behaviour/Behavior.Startup.js
-    - lib/behaviour/Delegator.js
-    - lib/dust-full-0.3.0.min.js
+    - vendor/curl-env.js
+    - vendor/mootools-core-1.4.5.js
+    - vendor/mootools-more-1.4.0.1.js
+    - vendor/curl.js
+    - vendor/futures.ender.js
+    - vendor/ender.noconflict.js
+    - vendor/behaviour/Element.Data.js
+    - vendor/behaviour/Event.Mock.js
+    - vendor/behaviour/BehaviorAPI.js
+    - vendor/behaviour/Behavior.js
+    - vendor/behaviour/Behavior.Startup.js
+    - vendor/behaviour/Delegator.js
+    - vendor/dust-full-0.3.0.min.js
 #    - /**/*.js
 
 # stylesheets
@@ -71,7 +72,7 @@ spec_files: ['**/*.js']
 #
 # src_dir: public
 #
-src_dir: static/js
+src_dir: .
 
 # spec_dir
 #
