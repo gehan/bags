@@ -66,7 +66,7 @@ new Class
     # `options.add=true` and `@add` will be called instead
     fetch: (filter={}, options={}) ->
         promise = @storage 'read', filter
-        promise.when (isSuccess, data) =>
+        promise.when (isSuccess, models) =>
             if isSuccess
                 if options.add
                     @add models, options
