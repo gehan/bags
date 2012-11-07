@@ -100,7 +100,7 @@ new Class
         #
         #     path/1/#/path/2/ -> #/path/2/
         #
-        forceHTML4ToRoot: true
+        forceHTML4ToRoot: false
 
         # If you set a `viewClass` then this will be its container element
         el: null

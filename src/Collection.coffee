@@ -110,9 +110,8 @@ new Class
 
     # Get model with field matching value
     get: (field, value) ->
-        obj = null
-        if (@some (obj) -> obj.get(field) == value)
-            obj
+        for obj in this
+            return obj if obj.get(field) == value
 
     # Sorts the collection like a normal array but also fires a `sort` event
     sort: (comparator=@comparator, options={}) ->
@@ -127,7 +126,7 @@ new Class
             if type == 'number'
                 aVal - bVal
             else if type == 'string'
-                aVal.localeCompare bVal
+                aVal.toLowerCase().localeCompare bVal.toLowerCase()
             else if type == 'date'
                 bVal.diff aVal, 'ms'
         , options
