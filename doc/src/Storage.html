@@ -68,10 +68,10 @@ for this class</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="nv">_crudMap:</span>
-        <span class="nv">create: </span><span class="s">&#39;post&#39;</span>
-        <span class="nv">read: </span><span class="s">&#39;get&#39;</span>
-        <span class="nv">update: </span><span class="s">&#39;put&#39;</span>
-        <span class="k">delete</span><span class="o">:</span> <span class="s">&#39;delete&#39;</span></pre></div>
+        <span class="nv">create: </span><span class="s1">&#39;post&#39;</span>
+        <span class="nv">read: </span><span class="s1">&#39;get&#39;</span>
+        <span class="nv">update: </span><span class="s1">&#39;put&#39;</span>
+        <span class="k">delete</span><span class="o">:</span> <span class="s1">&#39;delete&#39;</span></pre></div>
       </td>
     </tr>
     <tr id='section-Operations'>
@@ -150,20 +150,20 @@ events or using the returned promise.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="nv">storage: </span><span class="nf">(operation, data, options={}) -&gt;</span>
-        <span class="nv">Future = </span><span class="nx">require</span> <span class="s">&#39;future&#39;</span>
+        <span class="nv">Future = </span><span class="nx">require</span> <span class="s1">&#39;future&#39;</span>
         <span class="nv">promise = </span><span class="k">new</span> <span class="nx">Future</span><span class="p">()</span>
 
         <span class="nv">method = </span><span class="nx">@_crudMap</span><span class="p">[</span><span class="nx">operation</span><span class="p">]</span>
 
         <span class="nv">fail = </span><span class="p">(</span><span class="nx">reason</span><span class="o">=</span><span class="kc">null</span><span class="p">)</span> <span class="o">=&gt;</span>
             <span class="nx">promise</span><span class="p">.</span><span class="nx">fulfill</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">reason</span>
-            <span class="nx">fireEvent</span> <span class="s">&quot;failure&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">reason</span><span class="p">]</span>
+            <span class="nx">fireEvent</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">reason</span><span class="p">]</span>
 
         <span class="nv">fireEvent = </span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="nv">eventName = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">options</span><span class="p">.</span><span class="nx">eventName</span> <span class="o">or</span> <span class="nx">operation</span><span class="si">}#{</span><span class="nx">event</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
+            <span class="nv">eventName = </span><span class="s2">&quot;#{options.eventName or operation}#{event.capitalize()}&quot;</span>
             <span class="nx">@fireEvent</span> <span class="nx">eventName</span><span class="p">,</span> <span class="nx">args</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
 
-        <span class="k">if</span> <span class="nx">operation</span> <span class="o">==</span> <span class="s">&#39;read&#39;</span>
+        <span class="k">if</span> <span class="nx">operation</span> <span class="o">==</span> <span class="s1">&#39;read&#39;</span>
             <span class="nv">requestData = </span><span class="nx">data</span>
         <span class="k">else</span> <span class="k">if</span> <span class="nx">data</span><span class="o">?</span>
             <span class="nv">requestData = model: </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">data</span>
@@ -175,14 +175,14 @@ events or using the returned promise.</p>
             <span class="nv">method: </span><span class="nx">method</span>
             <span class="nv">data: </span><span class="nx">requestData</span>
 
-            <span class="nv">onRequest: </span><span class="o">=&gt;</span> <span class="nx">fireEvent</span> <span class="s">&quot;start&quot;</span>
-            <span class="nv">onComplete: </span><span class="o">=&gt;</span> <span class="nx">fireEvent</span> <span class="s">&quot;complete&quot;</span>
+            <span class="nv">onRequest: </span><span class="o">=&gt;</span> <span class="nx">fireEvent</span> <span class="s2">&quot;start&quot;</span>
+            <span class="nv">onComplete: </span><span class="o">=&gt;</span> <span class="nx">fireEvent</span> <span class="s2">&quot;complete&quot;</span>
             <span class="nv">onFailure: </span><span class="p">(</span><span class="nx">xhr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">fail</span><span class="p">()</span>
             <span class="nv">onSuccess: </span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span>
                 <span class="k">if</span> <span class="nx">@isSuccess</span> <span class="nx">response</span>
                     <span class="nv">data = </span><span class="nx">@parseResponse</span> <span class="nx">response</span>
                     <span class="nx">promise</span><span class="p">.</span><span class="nx">fulfill</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">data</span>
-                    <span class="nx">fireEvent</span> <span class="s">&quot;success&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">data</span><span class="p">]</span>
+                    <span class="nx">fireEvent</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">data</span><span class="p">]</span>
                 <span class="k">else</span>
                     <span class="nv">reason = </span><span class="nx">@parseFailResponse</span> <span class="nx">response</span>
                     <span class="nx">fail</span> <span class="nx">reason</span>
@@ -281,20 +281,20 @@ the model is part of a collection.</p>
         <span class="k">if</span> <span class="o">not</span> <span class="nx">url</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@collection</span><span class="o">?</span>
             <span class="nv">url = </span><span class="nx">@collection</span><span class="p">.</span><span class="nx">url</span>
         <span class="k">if</span> <span class="o">not</span> <span class="nx">url</span><span class="o">?</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;No url can be found&quot;</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s2">&quot;No url can be found&quot;</span>
 
         <span class="k">if</span> <span class="nx">@isCollection</span>
-            <span class="s">&quot;</span><span class="si">#{</span><span class="nx">url</span><span class="si">}</span><span class="s">/&quot;</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">operation</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">]</span>
+            <span class="s2">&quot;#{url}/&quot;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">operation</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="s1">&#39;read&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;&quot;&quot;Model doesn&#39;t have an id, cannot perform</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s2">&quot;&quot;&quot;Model doesn&#39;t have an id, cannot perform</span>
 
-<span class="err">#</span><span class="s"> DIVIDER</span>
+<span class="s2"># DIVIDER</span>
 
 
-<span class="s">            &quot;</span><span class="si">#{</span><span class="nx">url</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@id</span><span class="si">}</span><span class="s">&quot;</span>
-<span class="s">        else</span>
-<span class="s">            url</span></pre></div>
+<span class="s2">            &quot;</span><span class="c1">#{url}/#{@id}&quot;</span>
+        <span class="k">else</span>
+            <span class="nx">url</span></pre></div>
       </td>
     </tr>
     <tr id='section-11'>

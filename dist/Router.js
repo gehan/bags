@@ -15,7 +15,7 @@
       subRouteEl: function() {},
       viewClass: null,
       options: {
-        forceHTML4ToRoot: true,
+        forceHTML4ToRoot: false,
         el: null
       },
       initialize: function(options) {

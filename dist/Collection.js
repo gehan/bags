@@ -48,7 +48,7 @@
           options = {};
         }
         promise = this.storage('read', filter);
-        return promise.when(function(isSuccess, data) {
+        return promise.when(function(isSuccess, models) {
           if (isSuccess) {
             if (options.add) {
               _this.add(models, options);
@@ -126,12 +126,12 @@
         return this.add(model, options);
       },
       get: function(field, value) {
-        var obj;
-        obj = null;
-        if (this.some(function(obj) {
-          return obj.get(field) === value;
-        })) {
-          return obj;
+        var obj, _i, _len;
+        for (_i = 0, _len = this.length; _i < _len; _i++) {
+          obj = this[_i];
+          if (obj.get(field) === value) {
+            return obj;
+          }
         }
       },
       sort: function(comparator, options) {
@@ -155,7 +155,7 @@
           if (type === 'number') {
             return aVal - bVal;
           } else if (type === 'string') {
-            return aVal.localeCompare(bVal);
+            return aVal.toLowerCase().localeCompare(bVal.toLowerCase());
           } else if (type === 'date') {
             return bVal.diff(aVal, 'ms');
           }
