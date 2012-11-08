@@ -3,7 +3,8 @@
 # through the events fired when a model is updated to handle rendering.
 
 `define(['require', 'bags/Storage', 'bags/Collection', 'bags/Exceptions',
-    'bags/Events'], function(require, Storage, Collection, Exceptions, Events) {`
+    'bags/Events'], function(require, Storage, Collection, Exceptions, Events)
+    {`
 
 # Provides Collection mutator to allow class level access to the model's
 # collection

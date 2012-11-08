@@ -329,12 +329,18 @@ Fires an <code>add(model)</code> event</p>
         <span class="k">else</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">collection?</span>
             <span class="n">model</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">this</span>
         <span class="n">model</span><span class="o">.</span><span class="n">addEvents</span>
+            <span class="n">any</span><span class="p">:</span> <span class="o">=&gt;</span>
+                <span class="vi">@_modelEvent</span> <span class="n">model</span><span class="p">,</span> <span class="n">arguments</span>
             <span class="n">destroy</span><span class="p">:</span> <span class="o">=&gt;</span>
                 <span class="vi">@erase</span> <span class="n">model</span>
                 <span class="vi">@fireEvent</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="o">[</span><span class="n">model</span><span class="o">]</span>
         <span class="n">model</span>
 
+    <span class="n">_modelEvent</span><span class="p">:</span> <span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="vi">@fireEvent</span> <span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="n">model</span><span class="p">,</span> <span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span>
+
     <span class="n">_remove</span><span class="p">:</span> <span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">removeEvents</span> <span class="s1">&#39;any&#39;</span>
         <span class="n">model</span><span class="o">.</span><span class="n">removeEvents</span> <span class="s1">&#39;destroy&#39;</span>
         <span class="vi">@erase</span> <span class="n">model</span>
         <span class="vi">@fireEvent</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="o">[</span><span class="n">model</span><span class="o">]</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>

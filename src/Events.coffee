@@ -1,6 +1,6 @@
 # Extends MooTools events to allow listening to any eventws
 
-`define(['bags/Exceptions'], function(Exceptions) {`
+`define(function() {`
 
 removeOn = (string) ->
     string.replace(/^on([A-Z])/, (full, first) ->

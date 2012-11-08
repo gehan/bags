@@ -1,5 +1,5 @@
 (function() {
-  define(['bags/Exceptions'], function(Exceptions) {;
+  define(function() {;
 
   var BagsEvents, removeOn;
 

@@ -178,6 +178,9 @@
           model.collection = this;
         }
         model.addEvents({
+          any: function() {
+            return _this._modelEvent(model, arguments);
+          },
           destroy: function() {
             _this.erase(model);
             return _this.fireEvent('remove', [model]);
@@ -185,10 +188,14 @@
         });
         return model;
       },
+      _modelEvent: function(model, args) {
+        return this.fireEvent(args[0], [model, args[1]]);
+      },
       _remove: function(model, options) {
         if (options == null) {
           options = {};
         }
+        model.removeEvents('any');
         model.removeEvents('destroy');
         this.erase(model);
         if (!options.silent) {

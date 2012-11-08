@@ -150,12 +150,18 @@ new Class
         else if not model.collection?
             model.collection = this
         model.addEvents
+            any: =>
+                @_modelEvent model, arguments
             destroy: =>
                 @erase model
                 @fireEvent 'remove', [model]
         model
 
+    _modelEvent: (model, args) ->
+        @fireEvent args[0], [model, args[1]]
+
     _remove: (model, options={}) ->
+        model.removeEvents 'any'
         model.removeEvents 'destroy'
         @erase model
         @fireEvent 'remove', [model] unless options.silent
