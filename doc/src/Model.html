@@ -13,6 +13,7 @@
     <div id="jump_wrapper">
       <div id="jump_page">
           <a class="source" href="Collection.html">Collection.coffee</a>
+          <a class="source" href="Events.html">Events.coffee</a>
           <a class="source" href="Exceptions.html">Exceptions.coffee</a>
           <a class="source" href="Model.html">Model.coffee</a>
           <a class="source" href="Router.html">Router.coffee</a>
@@ -41,8 +42,8 @@ your view code, along with concerns like persistance, and interacting
 through the events fired when a model is updated to handle rendering.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="o">`</span><span class="nx">define</span><span class="p">([</span><span class="s1">&#39;require&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Storage&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Collection&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Exceptions&#39;</span><span class="p">],</span>
-<span class="nx">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">Storage</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span> <span class="nx">Exceptions</span><span class="p">)</span> <span class="p">{</span><span class="o">`</span></pre></div>
+        <div class='highlight'><pre><span class="sb">`define([&#39;require&#39;, &#39;bags/Storage&#39;, &#39;bags/Collection&#39;, &#39;bags/Exceptions&#39;,</span>
+<span class="sb">    &#39;bags/Events&#39;], function(require, Storage, Collection, Exceptions, Events) {`</span></pre></div>
       </td>
     </tr>
     <tr id='section-2'>
@@ -54,27 +55,27 @@ through the events fired when a model is updated to handle rendering.</p>
 collection</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nv">Class.Mutators.Collection = </span><span class="nf">(collectionDef) -&gt;</span>
-    <span class="k">if</span> <span class="nx">@$collection</span>
-        <span class="nv">collectionDef = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{},</span> <span class="nx">@$collection</span><span class="p">,</span> <span class="nx">collectionDef</span>
-    <span class="nx">@extend</span>
-        <span class="nv">$collection: </span><span class="nx">collectionDef</span>
-        <span class="nv">getCollection: </span><span class="o">-&gt;</span>
-            <span class="nv">copy = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">collectionDef</span>
-            <span class="nv">col = </span><span class="k">new</span> <span class="nx">copy</span><span class="p">.</span><span class="k">class</span> <span class="p">[],</span>
-                <span class="nv">url: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">url</span>
-            <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">copy</span> <span class="k">when</span> <span class="nx">value</span> <span class="o">!=</span> <span class="s1">&#39;$collection&#39;</span>
-                <span class="nx">col</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
-            <span class="k">return</span> <span class="nx">col</span>
+        <div class='highlight'><pre><span class="no">Class</span><span class="o">.</span><span class="n">Mutators</span><span class="o">.</span><span class="n">Collection</span> <span class="o">=</span> <span class="p">(</span><span class="n">collectionDef</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="err">@</span><span class="vg">$collection</span>
+        <span class="n">collectionDef</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="p">{},</span> <span class="err">@</span><span class="vg">$collection</span><span class="p">,</span> <span class="n">collectionDef</span>
+    <span class="vi">@extend</span>
+        <span class="vg">$collection</span><span class="p">:</span> <span class="n">collectionDef</span>
+        <span class="n">getCollection</span><span class="p">:</span> <span class="o">-&gt;</span>
+            <span class="n">copy</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">clone</span> <span class="n">collectionDef</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="kp">new</span> <span class="n">copy</span><span class="o">.</span><span class="n">class</span> <span class="o">[]</span><span class="p">,</span>
+                <span class="n">url</span><span class="p">:</span> <span class="vi">@prototype</span><span class="o">.</span><span class="n">url</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="n">of</span> <span class="n">copy</span> <span class="k">when</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;$collection&#39;</span>
+                <span class="n">col</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">return</span> <span class="n">col</span>
 
-<span class="nv">$extends = </span><span class="nx">Class</span><span class="p">.</span><span class="nx">Mutators</span><span class="p">.</span><span class="nx">Extends</span>
-<span class="nv">Class.Mutators.Extends = </span><span class="nf">(parent) -&gt;</span>
-    <span class="k">if</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">$collection</span>
-        <span class="nx">Class</span><span class="p">.</span><span class="nx">Mutators</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="nx">parent</span><span class="p">.</span><span class="nx">$collection</span><span class="p">]</span>
+<span class="vg">$extends</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">Mutators</span><span class="o">.</span><span class="n">Extends</span>
+<span class="no">Class</span><span class="o">.</span><span class="n">Mutators</span><span class="o">.</span><span class="n">Extends</span> <span class="o">=</span> <span class="p">(</span><span class="n">parent</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="n">parent</span><span class="o">.</span><span class="vg">$collection</span>
+        <span class="no">Class</span><span class="o">.</span><span class="n">Mutators</span><span class="o">.</span><span class="n">Collection</span><span class="o">.</span><span class="n">apply</span> <span class="n">this</span><span class="p">,</span> <span class="o">[</span><span class="n">parent</span><span class="o">.</span><span class="vg">$collection</span><span class="o">]</span>
 
-    <span class="nx">$extends</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
+    <span class="vg">$extends</span><span class="o">.</span><span class="n">apply</span> <span class="n">this</span><span class="p">,</span> <span class="n">arguments</span>
 
-<span class="nv">Model = </span><span class="k">new</span> <span class="nx">Class</span></pre></div>
+<span class="no">Model</span> <span class="o">=</span> <span class="kp">new</span> <span class="no">Class</span></pre></div>
       </td>
     </tr>
     <tr id='section-3'>
@@ -85,10 +86,10 @@ collection</p>
         <p>Uses <a href="Storage.coffee.html">Storage</a> for model storage</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Events</span><span class="p">,</span> <span class="nx">Options</span><span class="p">,</span> <span class="nx">Storage</span><span class="p">]</span>
+        <div class='highlight'><pre>    <span class="no">Implements</span><span class="p">:</span> <span class="o">[</span><span class="no">Events</span><span class="p">,</span> <span class="no">Options</span><span class="p">,</span> <span class="no">Storage</span><span class="o">]</span>
 
-    <span class="nv">Collection:</span>
-        <span class="k">class</span><span class="o">:</span> <span class="nx">Collection</span></pre></div>
+    <span class="no">Collection</span><span class="p">:</span>
+        <span class="n">class</span><span class="p">:</span> <span class="no">Collection</span></pre></div>
       </td>
     </tr>
     <tr id='section-Specfying_field_classes_(optional)'>
@@ -130,7 +131,7 @@ class or a string which will be queries as window[string]</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">fields: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">fields</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-Field_defaults'>
@@ -159,7 +160,7 @@ definition above.</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">defaults: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">defaults</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-Custom_accessors'>
@@ -194,7 +195,7 @@ definition above.</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">properties: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">properties</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-Model_validation'>
@@ -228,7 +229,7 @@ return false or a string for an error message.</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">validators: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">validators</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-Model_id'>
@@ -251,7 +252,7 @@ return false or a string for an error message.</p>
 this field will not change it and will probably break your model</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">id: </span><span class="kc">null</span></pre></div>
+        <div class='highlight'><pre>    <span class="nb">id</span><span class="p">:</span> <span class="n">null</span></pre></div>
       </td>
     </tr>
     <tr id='section-13'>
@@ -265,7 +266,7 @@ field
 here</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">idField: </span><span class="s2">&quot;id&quot;</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">idField</span><span class="p">:</span> <span class="s2">&quot;id&quot;</span></pre></div>
       </td>
     </tr>
     <tr id='section-Using_&lt;a_href=&quot;Collection.coffee.html&quot;&gt;Collection&lt;/a&gt;_classes_as_fields'>
@@ -302,7 +303,7 @@ collection will be added to the <code>@collections</code> object and a
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">collections: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">collections</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-16'>
@@ -314,7 +315,7 @@ collection will be added to the <code>@collections</code> object and a
 the Model was create via a Collection then @url will be read from that.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">url: </span><span class="kc">null</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">url</span><span class="p">:</span> <span class="n">null</span></pre></div>
       </td>
     </tr>
     <tr id='section-Using_the_Model_class'>
@@ -343,13 +344,13 @@ would be taken from the associated collection.</p>
 <p>When a model is first instatiated no events are fired.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">initialize: </span><span class="nf">(attributes, options={}) -&gt;</span>
-        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;collection&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
-                <span class="err">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-                <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-        <span class="nx">@setOptions</span> <span class="nx">options</span>
-        <span class="nx">@_setInitial</span> <span class="nx">attributes</span>
+        <div class='highlight'><pre>    <span class="kp">initialize</span><span class="p">:</span> <span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="k">in</span> <span class="o">[</span><span class="s1">&#39;collection&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="o">]</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span><span class="p">?</span>
+                <span class="err">@</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+                <span class="n">delete</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+        <span class="vi">@setOptions</span> <span class="n">options</span>
+        <span class="vi">@_setInitial</span> <span class="n">attributes</span>
         <span class="err">@</span></pre></div>
       </td>
     </tr>
@@ -361,18 +362,18 @@ would be taken from the associated collection.</p>
         <p>Simple has, get methods</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">has: </span><span class="nf">(key) -&gt;</span>
-        <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
+        <div class='highlight'><pre>    <span class="n">has</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="vi">@_attributes</span><span class="o">[</span><span class="n">key</span><span class="o">]</span><span class="p">?</span>
 
-    <span class="nv">get: </span><span class="p">(</span><span class="nf">(key) -&gt;</span>
-        <span class="nv">_value = </span><span class="nx">@_cloneField</span> <span class="nx">key</span>
+    <span class="n">get</span><span class="p">:</span> <span class="p">((</span><span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">_value</span> <span class="o">=</span> <span class="vi">@_cloneField</span> <span class="n">key</span>
 
-        <span class="k">if</span> <span class="nx">@properties</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">and</span> <span class="nx">@properties</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">get</span>
-            <span class="nx">@properties</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">get</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">_value</span>
+        <span class="k">if</span> <span class="vi">@properties</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="ow">and</span> <span class="vi">@properties</span><span class="o">[</span><span class="n">key</span><span class="o">].</span><span class="n">get</span>
+            <span class="vi">@properties</span><span class="o">[</span><span class="n">key</span><span class="o">].</span><span class="n">get</span><span class="o">.</span><span class="n">call</span> <span class="n">this</span><span class="p">,</span> <span class="n">_value</span>
         <span class="k">else</span>
-            <span class="nx">_value</span>
+            <span class="n">_value</span>
 
-    <span class="p">).</span><span class="nx">overloadGetter</span><span class="p">()</span></pre></div>
+    <span class="p">)</span><span class="o">.</span><span class="n">overloadGetter</span><span class="p">()</span></pre></div>
       </td>
     </tr>
     <tr id='section-19'>
@@ -390,65 +391,65 @@ If the value is an Collection then it is also added to <code>@collection</code>.
 listeners, unless <code>silent: true</code> is passed through as an option.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">set: </span><span class="nf">(key, value, options={}) -&gt;</span>
+        <div class='highlight'><pre>    <span class="n">set</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
 
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
-            <span class="nv">attrs = </span><span class="nx">key</span>
-            <span class="nv">options = </span><span class="nx">value</span> <span class="o">or</span> <span class="nx">options</span>
+        <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">value</span> <span class="ow">or</span> <span class="n">options</span>
         <span class="k">else</span>
-            <span class="nv">attrs = </span><span class="p">{}</span>
-            <span class="nx">attrs</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">attrs</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
 
-        <span class="nv">_attrs = </span><span class="p">{}</span>
-        <span class="k">try</span>
-            <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">attrs</span>
-                <span class="nx">_attrs</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_set</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">options</span>
-        <span class="k">catch</span> <span class="nx">error</span>
-            <span class="k">if</span> <span class="nx">instanceOf</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">Exceptions</span><span class="p">.</span><span class="nx">Validation</span>
-                <span class="k">return</span> <span class="kc">false</span>
+        <span class="n">_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">try</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="n">of</span> <span class="n">attrs</span>
+                <span class="n">_attrs</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@_set</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">options</span>
+        <span class="kp">catch</span> <span class="n">error</span>
+            <span class="k">if</span> <span class="n">instanceOf</span> <span class="n">error</span><span class="p">,</span> <span class="no">Exceptions</span><span class="o">.</span><span class="n">Validation</span>
+                <span class="k">return</span> <span class="kp">false</span>
 
-        <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">_attrs</span>
-            <span class="k">if</span> <span class="nx">@_isCollection</span> <span class="nx">key</span>
-                <span class="nx">@_addCollection</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">options</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="n">of</span> <span class="n">_attrs</span>
+            <span class="k">if</span> <span class="vi">@_isCollection</span> <span class="n">key</span>
+                <span class="vi">@_addCollection</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">options</span>
 
-            <span class="nv">curVal = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-            <span class="nv">newVal = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">value</span>
-            <span class="nv">changed = </span><span class="nx">curVal</span> <span class="o">isnt</span> <span class="nx">newVal</span>
+            <span class="n">curVal</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">encode</span> <span class="vi">@_attributes</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+            <span class="n">newVal</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">encode</span> <span class="n">value</span>
+            <span class="n">changed</span> <span class="o">=</span> <span class="n">curVal</span> <span class="n">isnt</span> <span class="n">newVal</span>
 
-            <span class="k">if</span> <span class="o">not</span> <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span> <span class="o">and</span> <span class="nx">changed</span>
-                <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="vi">@_dirtyFields</span><span class="o">[</span><span class="n">key</span><span class="o">]</span><span class="p">?</span> <span class="ow">and</span> <span class="n">changed</span>
+                <span class="vi">@_dirtyFields</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@_attributes</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
 
-            <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
-            <span class="k">if</span> <span class="nx">key</span> <span class="o">==</span> <span class="nx">@idField</span>
-                <span class="vi">@id = </span><span class="nx">value</span>
+            <span class="vi">@_attributes</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="vi">@idField</span>
+                <span class="vi">@id</span> <span class="o">=</span> <span class="n">value</span>
 
-            <span class="k">if</span> <span class="nx">changed</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
-                <span class="nx">@fireEvent</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
-                <span class="nx">@fireEvent</span> <span class="s2">&quot;change:#{key}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">changed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
+                <span class="vi">@fireEvent</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="o">[</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">]</span>
+                <span class="vi">@fireEvent</span> <span class="s2">&quot;change:</span><span class="si">#{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">[</span><span class="n">value</span><span class="o">]</span>
 
-        <span class="k">return</span> <span class="kc">true</span>
+        <span class="k">return</span> <span class="kp">true</span>
 
-    <span class="nv">_set: </span><span class="nf">(key, value, options) -&gt;</span>
-        <span class="k">if</span> <span class="nx">@_isCollection</span> <span class="nx">key</span>
-            <span class="nv">_value = </span><span class="nx">@_makeCollection</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
+    <span class="n">_set</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="vi">@_isCollection</span> <span class="n">key</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="vi">@_makeCollection</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span>
         <span class="k">else</span>
-            <span class="nv">_value = </span><span class="nx">@_makeValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="vi">@_makeValue</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span>
 
-        <span class="k">if</span> <span class="nx">@properties</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">and</span> <span class="nx">@properties</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">set</span><span class="o">?</span>
-            <span class="nx">@properties</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">set</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">_value</span><span class="p">,</span> <span class="nx">value</span>
+        <span class="k">if</span> <span class="vi">@properties</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="ow">and</span> <span class="vi">@properties</span><span class="o">[</span><span class="n">key</span><span class="o">].</span><span class="n">set?</span>
+            <span class="vi">@properties</span><span class="o">[</span><span class="n">key</span><span class="o">].</span><span class="n">set</span><span class="o">.</span><span class="n">call</span> <span class="n">this</span><span class="p">,</span> <span class="n">_value</span><span class="p">,</span> <span class="n">value</span>
         <span class="k">else</span>
-            <span class="nx">@_validateField</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">_value</span><span class="p">,</span> <span class="nx">options</span>
-            <span class="nx">_value</span>
+            <span class="vi">@_validateField</span> <span class="n">key</span><span class="p">,</span> <span class="n">_value</span><span class="p">,</span> <span class="n">options</span>
+            <span class="n">_value</span>
 
-    <span class="nv">_validateField: </span><span class="nf">(key, value, options={}) -&gt;</span>
-        <span class="k">if</span> <span class="nx">@validators</span> <span class="o">and</span> <span class="nx">@validators</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
-            <span class="nv">result = </span><span class="nx">@validators</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">value</span>
-            <span class="k">if</span> <span class="nx">result</span> <span class="o">isnt</span> <span class="kc">true</span>
-                <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
-                    <span class="nx">@fireEvent</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">result</span><span class="p">]</span>
-                    <span class="nx">@fireEvent</span> <span class="s2">&quot;error:#{key}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">result</span><span class="p">]</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nx">Exceptions</span><span class="p">.</span><span class="nx">Validation</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">result</span>
-        <span class="k">return</span> <span class="kc">true</span></pre></div>
+    <span class="n">_validateField</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="vi">@validators</span> <span class="ow">and</span> <span class="vi">@validators</span><span class="o">[</span><span class="n">key</span><span class="o">]</span><span class="p">?</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="vi">@validators</span><span class="o">[</span><span class="n">key</span><span class="o">].</span><span class="n">call</span> <span class="n">this</span><span class="p">,</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="n">isnt</span> <span class="kp">true</span>
+                <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
+                    <span class="vi">@fireEvent</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="o">[</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">result</span><span class="o">]</span>
+                    <span class="vi">@fireEvent</span> <span class="s2">&quot;error:</span><span class="si">#{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">[</span><span class="n">value</span><span class="p">,</span> <span class="n">result</span><span class="o">]</span>
+                <span class="kp">throw</span> <span class="kp">new</span> <span class="no">Exceptions</span><span class="o">.</span><span class="n">Validation</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="kp">true</span></pre></div>
       </td>
     </tr>
     <tr id='section-20'>
@@ -459,7 +460,7 @@ listeners, unless <code>silent: true</code> is passed through as an option.</p>
         <p>Whether model is already stored or new</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">isNew: </span><span class="o">-&gt;</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">isNew</span><span class="p">:</span> <span class="o">-&gt;</span> <span class="ow">not</span> <span class="vi">@id</span><span class="p">?</span></pre></div>
       </td>
     </tr>
     <tr id='section-21'>
@@ -470,8 +471,8 @@ listeners, unless <code>silent: true</code> is passed through as an option.</p>
         <p>Whether a model has unsaved changes or not</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">isDirty: </span><span class="o">-&gt;</span>
-        <span class="nb">Object</span><span class="p">.</span><span class="nx">getLength</span><span class="p">(</span><span class="nx">@_dirtyFields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">isDirty</span><span class="p">:</span> <span class="o">-&gt;</span>
+        <span class="no">Object</span><span class="o">.</span><span class="n">getLength</span><span class="p">(</span><span class="vi">@_dirtyFields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></pre></div>
       </td>
     </tr>
     <tr id='section-22'>
@@ -482,9 +483,9 @@ listeners, unless <code>silent: true</code> is passed through as an option.</p>
         <p>Clear unsaved changes and restores model to last saved state</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">clearChanges: </span><span class="nf">(options={silent: true}) -&gt;</span>
-        <span class="nx">@set</span> <span class="nx">@_dirtyFields</span><span class="p">,</span> <span class="nx">options</span>
-        <span class="nx">@_clearDirtyFields</span><span class="p">()</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">clearChanges</span><span class="p">:</span> <span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="n">silent</span><span class="p">:</span> <span class="kp">true</span><span class="p">})</span> <span class="o">-&gt;</span>
+        <span class="vi">@set</span> <span class="vi">@_dirtyFields</span><span class="p">,</span> <span class="n">options</span>
+        <span class="vi">@_clearDirtyFields</span><span class="p">()</span></pre></div>
       </td>
     </tr>
     <tr id='section-Serialisation'>
@@ -517,11 +518,11 @@ any custom classes then serialisation of these can be handled in two ways</p>
   data</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">toJSON: </span><span class="o">-&gt;</span>
-        <span class="nv">attrs = </span><span class="p">{}</span>
-        <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">@_attributes</span>
-            <span class="nx">attrs</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_jsonKeyValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
-        <span class="k">return</span> <span class="nx">attrs</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">toJSON</span><span class="p">:</span> <span class="o">-&gt;</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="n">of</span> <span class="vi">@_attributes</span>
+            <span class="n">attrs</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@_jsonKeyValue</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">attrs</span></pre></div>
       </td>
     </tr>
     <tr id='section-Model_storage'>
@@ -549,16 +550,16 @@ operation and as well as how to handle to returned promise.</p>
 of the model.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">fetch: </span><span class="nf">(options={}) -&gt;</span>
-        <span class="k">return</span> <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
+        <div class='highlight'><pre>    <span class="n">fetch</span><span class="p">:</span> <span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="vi">@isNew</span><span class="p">()</span>
 
-        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s1">&#39;fetch&#39;</span><span class="p">},</span> <span class="nx">options</span>
-        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">storageOptions</span>
-        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="nx">@set</span> <span class="nx">data</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-                <span class="nx">@_clearDirtyFields</span><span class="p">()</span>
-                <span class="nx">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div>
+        <span class="n">storageOptions</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="p">{</span><span class="n">eventName</span><span class="p">:</span> <span class="s1">&#39;fetch&#39;</span><span class="p">},</span> <span class="n">options</span>
+        <span class="n">promise</span> <span class="o">=</span> <span class="vi">@storage</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="n">null</span><span class="p">,</span> <span class="n">storageOptions</span>
+        <span class="n">promise</span><span class="o">.</span><span class="n">when</span> <span class="p">(</span><span class="n">isSuccess</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="k">if</span> <span class="n">isSuccess</span>
+                <span class="vi">@set</span> <span class="n">data</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span>
+                <span class="vi">@_clearDirtyFields</span><span class="p">()</span>
+                <span class="vi">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="o">[</span><span class="kp">true</span><span class="o">]</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span></pre></div>
       </td>
     </tr>
     <tr id='section-26'>
@@ -578,35 +579,35 @@ This is for if you are assuming request success rather than waiting for
 it.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">save: </span><span class="nf">(key, value, options={}) -&gt;</span>
-        <span class="nv">ModelClass = </span><span class="nx">@$constructor</span>
-        <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
-            <span class="nv">attrs = </span><span class="p">{}</span>
-            <span class="nx">attrs</span><span class="p">[</span><span class="nx">@idField</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@id</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">@isNew</span><span class="p">()</span>
-            <span class="nv">toUpdate = </span><span class="k">new</span> <span class="nx">ModelClass</span> <span class="nx">attrs</span><span class="p">,</span> <span class="nv">ignoreDefaults: </span><span class="kc">true</span>
-            <span class="nx">toUpdate</span><span class="p">.</span><span class="nx">set</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
+        <div class='highlight'><pre>    <span class="n">save</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="no">ModelClass</span> <span class="o">=</span> <span class="err">@</span><span class="vg">$constructor</span>
+        <span class="k">if</span> <span class="n">key?</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">attrs</span><span class="o">[</span><span class="vi">@idField</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@id</span> <span class="k">if</span> <span class="ow">not</span> <span class="vi">@isNew</span><span class="p">()</span>
+            <span class="n">toUpdate</span> <span class="o">=</span> <span class="kp">new</span> <span class="no">ModelClass</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">ignoreDefaults</span><span class="p">:</span> <span class="kp">true</span>
+            <span class="n">toUpdate</span><span class="o">.</span><span class="n">set</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span> <span class="k">if</span> <span class="n">key?</span>
         <span class="k">else</span>
-            <span class="nv">toUpdate = </span><span class="k">new</span> <span class="nx">ModelClass</span> <span class="nx">@toJSON</span><span class="p">()</span>
+            <span class="n">toUpdate</span> <span class="o">=</span> <span class="kp">new</span> <span class="no">ModelClass</span> <span class="vi">@toJSON</span><span class="p">()</span>
 
-        <span class="nv">data = </span><span class="nx">toUpdate</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">toUpdate</span><span class="o">.</span><span class="n">toJSON</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span>
-            <span class="nv">options = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-        <span class="nv">setAttrFn = </span><span class="o">=&gt;</span>
-            <span class="nx">@set</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">options</span> <span class="k">if</span> <span class="nx">key</span><span class="o">?</span>
-            <span class="nx">@_clearDirtyFields</span><span class="p">()</span>
-        <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
+        <span class="n">setAttrFn</span> <span class="o">=</span> <span class="o">=&gt;</span>
+            <span class="vi">@set</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">options</span> <span class="k">if</span> <span class="n">key?</span>
+            <span class="vi">@_clearDirtyFields</span><span class="p">()</span>
+        <span class="n">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">dontWait</span>
 
-        <span class="nv">storageMethod = </span><span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span> <span class="k">then</span> <span class="s2">&quot;create&quot;</span> <span class="k">else</span> <span class="s2">&quot;update&quot;</span>
-        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s1">&#39;save&#39;</span><span class="p">},</span> <span class="nx">options</span>
-        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="nx">storageMethod</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">storageOptions</span>
-        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
-                <span class="nv">model = </span><span class="nx">data</span> <span class="o">or</span> <span class="p">{}</span>
-                <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-                <span class="nx">@_clearDirtyFields</span><span class="p">()</span></pre></div>
+        <span class="n">storageMethod</span> <span class="o">=</span> <span class="k">if</span> <span class="vi">@isNew</span><span class="p">()</span> <span class="k">then</span> <span class="s2">&quot;create&quot;</span> <span class="k">else</span> <span class="s2">&quot;update&quot;</span>
+        <span class="n">storageOptions</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="p">{</span><span class="n">eventName</span><span class="p">:</span> <span class="s1">&#39;save&#39;</span><span class="p">},</span> <span class="n">options</span>
+        <span class="n">promise</span> <span class="o">=</span> <span class="vi">@storage</span> <span class="n">storageMethod</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">storageOptions</span>
+        <span class="n">promise</span><span class="o">.</span><span class="n">when</span> <span class="p">(</span><span class="n">isSuccess</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="k">if</span> <span class="n">isSuccess</span>
+                <span class="n">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">dontWait</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">data</span> <span class="ow">or</span> <span class="p">{}</span>
+                <span class="vi">@set</span> <span class="n">model</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span>
+                <span class="vi">@_clearDirtyFields</span><span class="p">()</span></pre></div>
       </td>
     </tr>
     <tr id='section-27'>
@@ -617,22 +618,22 @@ it.</p>
         <p>Deletes the model from storage</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">destroy: </span><span class="nf">(options={}) -&gt;</span>
-        <span class="nv">fireEvent = </span><span class="o">=&gt;</span>
-            <span class="nx">@fireEvent</span> <span class="s1">&#39;destroy&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+        <div class='highlight'><pre>    <span class="n">destroy</span><span class="p">:</span> <span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">fireEvent</span> <span class="o">=</span> <span class="o">=&gt;</span>
+            <span class="vi">@fireEvent</span> <span class="s1">&#39;destroy&#39;</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
 
-        <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
-            <span class="nx">fireEvent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="vi">@isNew</span><span class="p">()</span>
+            <span class="n">fireEvent</span><span class="p">()</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
-            <span class="nx">fireEvent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">dontWait</span>
+            <span class="n">fireEvent</span><span class="p">()</span>
 
-        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s1">&#39;destroy&#39;</span><span class="p">},</span> <span class="nx">options</span>
-        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">storageOptions</span>
-        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="nx">fireEvent</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span></pre></div>
+        <span class="n">storageOptions</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="p">{</span><span class="n">eventName</span><span class="p">:</span> <span class="s1">&#39;destroy&#39;</span><span class="p">},</span> <span class="n">options</span>
+        <span class="n">promise</span> <span class="o">=</span> <span class="vi">@storage</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="n">null</span><span class="p">,</span> <span class="n">storageOptions</span>
+        <span class="n">promise</span><span class="o">.</span><span class="n">when</span> <span class="p">(</span><span class="n">isSuccess</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="k">if</span> <span class="n">isSuccess</span>
+                <span class="n">fireEvent</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">dontWait</span></pre></div>
       </td>
     </tr>
     <tr id='section-Private_methods'>
@@ -643,60 +644,60 @@ it.</p>
         <h1>Private methods</h1>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_attributes: </span><span class="p">{}</span>
-    <span class="nv">_dirtyFields: </span><span class="p">{}</span>
+        <div class='highlight'><pre>    <span class="n">_attributes</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="n">_dirtyFields</span><span class="p">:</span> <span class="p">{}</span>
 
-    <span class="nv">_makeValue: </span><span class="nf">(key, value) -&gt;</span>
-        <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
-            <span class="p">(</span><span class="nx">@_makeValue</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="k">for</span> <span class="nx">item</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">type</span>
-            <span class="nx">value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">String</span>
-            <span class="nb">String</span> <span class="nx">value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">Number</span>
-            <span class="nb">Number</span><span class="p">.</span><span class="nx">from</span> <span class="nx">value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">is</span> <span class="nb">Date</span>
-            <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">isModel</span>
-            <span class="nv">value = </span><span class="nx">value</span> <span class="o">or</span> <span class="p">{}</span>
-            <span class="nv">val = </span><span class="k">new</span> <span class="nx">type</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
-            <span class="nv">val._parent = </span><span class="err">@</span>
-            <span class="nx">val</span>
+    <span class="n">_makeValue</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="vi">@_getType</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+            <span class="p">(</span><span class="vi">@_makeValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="k">in</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">type</span>
+            <span class="n">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="n">is</span> <span class="nb">String</span>
+            <span class="nb">String</span> <span class="n">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="n">is</span> <span class="no">Number</span>
+            <span class="no">Number</span><span class="o">.</span><span class="n">from</span> <span class="n">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="n">is</span> <span class="no">Date</span>
+            <span class="no">Date</span><span class="o">.</span><span class="n">parse</span> <span class="n">value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">type</span><span class="o">.</span><span class="n">prototype</span> <span class="ow">and</span> <span class="n">type</span><span class="o">.</span><span class="n">prototype</span><span class="o">.</span><span class="n">isModel</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="kp">new</span> <span class="n">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">val</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="err">@</span>
+            <span class="n">val</span>
         <span class="k">else</span>
-            <span class="k">new</span> <span class="nx">type</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+            <span class="kp">new</span> <span class="n">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="nv">_getType: </span><span class="nf">(name) -&gt;</span>
-        <span class="nv">type = </span><span class="nx">@fields</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
-            <span class="nx">type</span><span class="p">()</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span>  <span class="s2">&quot;string&quot;</span>
-            <span class="nb">window</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span>
+    <span class="n">_getType</span><span class="p">:</span> <span class="p">(</span><span class="nb">name</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="vi">@fields</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span>
+        <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">type</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
+            <span class="n">type</span><span class="p">()</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">type</span><span class="p">)</span> <span class="o">==</span>  <span class="s2">&quot;string&quot;</span>
+            <span class="n">window</span><span class="o">[</span><span class="n">type</span><span class="o">]</span>
         <span class="k">else</span>
-            <span class="nx">type</span>
+            <span class="n">type</span>
 
-    <span class="nv">_isCollection: </span><span class="nf">(key) -&gt;</span>
-        <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
-        <span class="k">return</span> <span class="nx">type</span><span class="o">?</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">isCollection</span>
+    <span class="n">_isCollection</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="vi">@_getType</span> <span class="n">key</span>
+        <span class="k">return</span> <span class="n">type?</span> <span class="ow">and</span> <span class="n">type</span><span class="o">.</span><span class="n">prototype</span> <span class="ow">and</span> <span class="n">type</span><span class="o">.</span><span class="n">prototype</span><span class="o">.</span><span class="n">isCollection</span>
 
-    <span class="nv">_isModel: </span><span class="nf">(key) -&gt;</span>
-        <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
-        <span class="k">return</span> <span class="nx">type</span><span class="o">?</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">isModel</span>
+    <span class="n">_isModel</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="vi">@_getType</span> <span class="n">key</span>
+        <span class="k">return</span> <span class="n">type?</span> <span class="ow">and</span> <span class="n">type</span><span class="o">.</span><span class="n">prototype</span> <span class="ow">and</span> <span class="n">type</span><span class="o">.</span><span class="n">prototype</span><span class="o">.</span><span class="n">isModel</span>
 
-    <span class="nv">_makeCollection: </span><span class="nf">(key, value) -&gt;</span>
-        <span class="nv">collectionClass = </span><span class="nx">@_getType</span> <span class="nx">key</span>
-        <span class="k">new</span> <span class="nx">collectionClass</span> <span class="nx">value</span><span class="p">,</span> <span class="nv">parentModel: </span><span class="k">this</span>
+    <span class="n">_makeCollection</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">collectionClass</span> <span class="o">=</span> <span class="vi">@_getType</span> <span class="n">key</span>
+        <span class="kp">new</span> <span class="n">collectionClass</span> <span class="n">value</span><span class="p">,</span> <span class="n">parentModel</span><span class="p">:</span> <span class="n">this</span>
 
-    <span class="nv">_addCollection: </span><span class="nf">(key, collection, options={}) -&gt;</span>
-        <span class="nx">@collections</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">collection</span>
-        <span class="nx">@fireEvent</span> <span class="s1">&#39;addCollection&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">collection</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+    <span class="n">_addCollection</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="vi">@collections</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="vi">@fireEvent</span> <span class="s1">&#39;addCollection&#39;</span><span class="p">,</span> <span class="o">[</span><span class="n">key</span><span class="p">,</span> <span class="n">collection</span><span class="o">]</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
 
-    <span class="nv">_setInitial: </span><span class="nf">(attributes={}) -&gt;</span>
-        <span class="nx">unless</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">ignoreDefaults</span>
-            <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">@defaults</span><span class="p">)),</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span>
-                <span class="nx">@_getDefault</span> <span class="nx">key</span>
+    <span class="n">_setInitial</span><span class="p">:</span> <span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="k">unless</span> <span class="vi">@options</span><span class="o">.</span><span class="n">ignoreDefaults</span>
+            <span class="n">defaults</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="no">Object</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="vi">@defaults</span><span class="p">)),</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="vi">@_getDefault</span> <span class="n">key</span>
         <span class="k">else</span>
-            <span class="nv">defaults = </span><span class="p">{}</span></pre></div>
+            <span class="n">defaults</span> <span class="o">=</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-29'>
@@ -709,80 +710,80 @@ keep references intact</p>
 
       </td>
       <td class=code>
-        <div class='highlight'><pre>        <span class="nv">attrKeys = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">attributes</span>
-        <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nf">(value, key) -&gt;</span>
-            <span class="nx">key</span> <span class="o">not</span> <span class="k">in</span> <span class="nx">attrKeys</span>
+        <div class='highlight'><pre>        <span class="n">attrKeys</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">keys</span> <span class="n">attributes</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">filter</span> <span class="n">defaults</span><span class="p">,</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+            <span class="n">key</span> <span class="ow">not</span> <span class="k">in</span> <span class="n">attrKeys</span>
 
-        <span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">attributes</span><span class="p">,</span> <span class="nx">defaults</span>
-        <span class="nx">@set</span> <span class="nx">attributes</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-        <span class="nx">@_clearDirtyFields</span><span class="p">()</span>
+        <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">defaults</span>
+        <span class="vi">@set</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span>
+        <span class="vi">@_clearDirtyFields</span><span class="p">()</span>
 
-    <span class="nv">_cloneField: </span><span class="nf">(key) -&gt;</span>
-        <span class="nv">value = </span><span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-        <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
-        <span class="nv">jsonValue = </span><span class="nx">@_jsonKeyValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
+    <span class="n">_cloneField</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="vi">@_attributes</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="vi">@_getType</span> <span class="n">key</span>
+        <span class="n">jsonValue</span> <span class="o">=</span> <span class="vi">@_jsonKeyValue</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span>
 
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
-            <span class="nv">_value = </span><span class="nx">jsonValue</span><span class="p">.</span><span class="nx">clone</span><span class="p">()</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
-            <span class="nv">_value = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">jsonValue</span>
+        <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="n">jsonValue</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">clone</span> <span class="n">jsonValue</span>
         <span class="k">else</span>
-            <span class="nv">_value = </span><span class="nx">jsonValue</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="n">jsonValue</span>
 
-        <span class="k">if</span> <span class="nx">_value</span> <span class="o">and</span> <span class="nx">@_isCollection</span> <span class="nx">key</span>
-            <span class="nv">_value = </span><span class="k">new</span> <span class="nx">type</span> <span class="nx">_value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">_value</span> <span class="o">and</span> <span class="nx">@_isModel</span> <span class="nx">key</span>
-            <span class="nv">_value = </span><span class="k">new</span> <span class="nx">type</span> <span class="nx">_value</span>
-            <span class="nv">_value._parent = </span><span class="k">this</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
-            <span class="nv">_value = </span><span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">_value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span>
-            <span class="nv">_value = </span><span class="k">new</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span> <span class="nx">_value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
-            <span class="nv">_value = </span><span class="nx">_value</span><span class="p">.</span><span class="nx">map</span> <span class="nf">(item, idx) -&gt;</span>
-                <span class="nv">orig = </span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
-                    <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">item</span>
-                <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span>
-                    <span class="k">new</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span> <span class="nx">item</span>
+        <span class="k">if</span> <span class="n">_value</span> <span class="ow">and</span> <span class="vi">@_isCollection</span> <span class="n">key</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="kp">new</span> <span class="n">type</span> <span class="n">_value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">_value</span> <span class="ow">and</span> <span class="vi">@_isModel</span> <span class="n">key</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="kp">new</span> <span class="n">type</span> <span class="n">_value</span>
+            <span class="n">_value</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">this</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">parse</span> <span class="n">_value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">constructor</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="kp">new</span> <span class="n">value</span><span class="o">.</span><span class="n">constructor</span> <span class="n">_value</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="n">_value</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span> <span class="o">-&gt;</span>
+                <span class="n">orig</span> <span class="o">=</span> <span class="n">value</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+                <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
+                    <span class="no">Date</span><span class="o">.</span><span class="n">parse</span> <span class="n">item</span>
+                <span class="k">else</span> <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="ow">and</span> <span class="n">orig</span><span class="o">.</span><span class="n">constructor</span>
+                    <span class="kp">new</span> <span class="n">orig</span><span class="o">.</span><span class="n">constructor</span> <span class="n">item</span>
                 <span class="k">else</span>
-                    <span class="nx">item</span>
-        <span class="nx">_value</span>
+                    <span class="n">item</span>
+        <span class="n">_value</span>
 
-    <span class="nv">_getDefault: </span><span class="nf">(key) -&gt;</span>
-        <span class="nv">def = </span><span class="nx">@defaults</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">def</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
-            <span class="nx">def</span><span class="p">.</span><span class="nx">call</span> <span class="err">@</span>
+    <span class="n">_getDefault</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">def</span> <span class="o">=</span> <span class="vi">@defaults</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+        <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">def</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
+            <span class="k">def</span><span class="o">.</span><span class="n">call</span> <span class="err">@</span>
         <span class="k">else</span>
-            <span class="nx">def</span>
+            <span class="k">def</span>
 
-    <span class="nv">_isSuccess: </span><span class="nf">(response) -&gt;</span>
-        <span class="nx">response</span><span class="p">.</span><span class="nx">success</span> <span class="o">is</span> <span class="kc">true</span>
+    <span class="nf">_isSuccess</span><span class="p">:</span> <span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">success</span> <span class="n">is</span> <span class="kp">true</span>
 
-    <span class="nv">_jsonKeyValue: </span><span class="nf">(key, value) -&gt;</span>
-        <span class="nv">jsonFn = </span><span class="s2">&quot;json#{key.capitalize()}&quot;</span>
-        <span class="k">if</span> <span class="err">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">]</span><span class="o">?</span>
-            <span class="err">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">](</span><span class="nx">value</span><span class="p">)</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
-            <span class="p">(</span><span class="nx">@_jsonValue</span> <span class="nx">v</span> <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span>
+    <span class="n">_jsonKeyValue</span><span class="p">:</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">jsonFn</span> <span class="o">=</span> <span class="s2">&quot;json</span><span class="si">#{</span><span class="n">key</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="err">@</span><span class="o">[</span><span class="n">jsonFn</span><span class="o">]</span><span class="p">?</span>
+            <span class="err">@</span><span class="o">[</span><span class="n">jsonFn</span><span class="o">]</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+            <span class="p">(</span><span class="vi">@_jsonValue</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="k">in</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">else</span>
-            <span class="nx">@_jsonValue</span> <span class="nx">value</span>
+            <span class="vi">@_jsonValue</span> <span class="n">value</span>
 
-    <span class="nv">_jsonValue: </span><span class="nf">(value) -&gt;</span>
-        <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">instanceOf</span> <span class="nx">value</span><span class="p">,</span> <span class="nb">Date</span>
-            <span class="nx">value</span><span class="p">.</span><span class="nx">format</span> <span class="s2">&quot;%Y-%m-%dT%H:%M:%S.%LZ&quot;</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
-            <span class="nx">value</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span>
+    <span class="n">_jsonValue</span><span class="p">:</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">instanceOf</span> <span class="n">value</span><span class="p">,</span> <span class="no">Date</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">format</span> <span class="s2">&quot;%Y-%m-%dT%H:%M:%S.%LZ&quot;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">toJSON</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">toJSON</span><span class="p">()</span>
         <span class="k">else</span>
-            <span class="nx">value</span>
+            <span class="n">value</span>
 
-    <span class="nv">_clearDirtyFields: </span><span class="o">-&gt;</span>
-        <span class="vi">@_dirtyFields = </span><span class="p">{}</span>
+    <span class="n">_clearDirtyFields</span><span class="p">:</span> <span class="o">-&gt;</span>
+        <span class="vi">@_dirtyFields</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="nv">isModel: </span><span class="kc">true</span>
+    <span class="n">isModel</span><span class="p">:</span> <span class="kp">true</span>
 
-<span class="k">return</span> <span class="nx">Model</span>
-<span class="o">`</span><span class="p">});</span><span class="o">`</span></pre></div>
+<span class="k">return</span> <span class="no">Model</span>
+<span class="sb">`});`</span></pre></div>
       </td>
     </tr>
   </table>

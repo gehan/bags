@@ -13,6 +13,7 @@
     <div id="jump_wrapper">
       <div id="jump_page">
           <a class="source" href="Collection.html">Collection.coffee</a>
+          <a class="source" href="Events.html">Events.coffee</a>
           <a class="source" href="Exceptions.html">Exceptions.coffee</a>
           <a class="source" href="Model.html">Model.coffee</a>
           <a class="source" href="Router.html">Router.coffee</a>
@@ -40,9 +41,9 @@
 and management of sets of <a href="Model.coffee.html">Model</a>s</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nx">define</span> <span class="p">[</span><span class="s1">&#39;require&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Storage&#39;</span><span class="p">],</span> <span class="nf">(require, Storage) -&gt;</span> <span class="o">\</span>
+        <div class='highlight'><pre><span class="n">define</span> <span class="o">[</span><span class="s1">&#39;require&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Storage&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Events&#39;</span><span class="o">]</span><span class="p">,</span> <span class="p">(</span><span class="nb">require</span><span class="p">,</span> <span class="no">Storage</span><span class="p">,</span> <span class="no">Events</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">\</span>
 
-<span class="k">new</span> <span class="nx">Class</span></pre></div>
+<span class="kp">new</span> <span class="no">Class</span></pre></div>
       </td>
     </tr>
     <tr id='section-2'>
@@ -54,7 +55,7 @@ and management of sets of <a href="Model.coffee.html">Model</a>s</p>
 this class as well as the Mootools extensions.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">Extends: </span><span class="nb">Array</span></pre></div>
+        <div class='highlight'><pre>    <span class="no">Extends</span><span class="p">:</span> <span class="nb">Array</span></pre></div>
       </td>
     </tr>
     <tr id='section-3'>
@@ -65,9 +66,9 @@ this class as well as the Mootools extensions.</p>
         <p>Uses <a href="Storage.coffee.html">Storage</a> for collection retrieval</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Options</span><span class="p">,</span> <span class="nx">Events</span><span class="p">,</span> <span class="nx">Storage</span><span class="p">]</span>
+        <div class='highlight'><pre>    <span class="no">Implements</span><span class="p">:</span> <span class="o">[</span><span class="no">Options</span><span class="p">,</span> <span class="no">Events</span><span class="p">,</span> <span class="no">Storage</span><span class="o">]</span>
 
-    <span class="nv">options: </span><span class="p">{}</span></pre></div>
+    <span class="n">options</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-4'>
@@ -91,7 +92,7 @@ model: Model</p>
         <p>If using default <code>Storage</code> class then you must set the URL here</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">url: </span><span class="kc">null</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">url</span><span class="p">:</span> <span class="n">null</span></pre></div>
       </td>
     </tr>
     <tr id='section-Using_the_Collection_class'>
@@ -117,11 +118,11 @@ e.g. if you bootstrap.</p>
 as <code>options</code></p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">initialize: </span><span class="nf">(models=[], options={}) -&gt;</span>
-        <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span><span class="o">?</span>
-            <span class="vi">@parentModel =</span>
-                <span class="nv">id: </span><span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span><span class="p">.</span><span class="nx">id</span>
-                <span class="nv">klass: </span><span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span><span class="p">.</span><span class="nx">constructor</span></pre></div>
+        <div class='highlight'><pre>    <span class="kp">initialize</span><span class="p">:</span> <span class="p">(</span><span class="n">models</span><span class="o">=[]</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">parentModel?</span>
+            <span class="vi">@parentModel</span> <span class="o">=</span>
+                <span class="nb">id</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">parentModel</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">klass</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">parentModel</span><span class="o">.</span><span class="n">constructor</span></pre></div>
       </td>
     </tr>
     <tr id='section-8'>
@@ -133,18 +134,18 @@ as <code>options</code></p>
 in some instances presumabley down to a circular reference</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="k">delete</span> <span class="nx">options</span><span class="p">.</span><span class="nx">parentModel</span>
+        <div class='highlight'><pre>            <span class="n">delete</span> <span class="n">options</span><span class="o">.</span><span class="n">parentModel</span>
 
-        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;sortField&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
-                <span class="err">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-                <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-        <span class="nx">@setOptions</span> <span class="nx">options</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="k">in</span> <span class="o">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;sortField&#39;</span><span class="o">]</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span><span class="p">?</span>
+                <span class="err">@</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+                <span class="n">delete</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+        <span class="vi">@setOptions</span> <span class="n">options</span>
 
-        <span class="k">if</span> <span class="o">not</span> <span class="nx">@model</span>
-            <span class="vi">@model = </span><span class="nx">require</span> <span class="s1">&#39;bags/Model&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="vi">@model</span>
+            <span class="vi">@model</span> <span class="o">=</span> <span class="nb">require</span> <span class="s1">&#39;bags/Model&#39;</span>
 
-        <span class="nx">@add</span> <span class="nx">models</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+        <span class="vi">@add</span> <span class="n">models</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span>
         <span class="err">@</span></pre></div>
       </td>
     </tr>
@@ -178,15 +179,15 @@ collection by calling <code>@reset</code>.</p>
 <code>options.add=true</code> and <code>@add</code> will be called instead</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">fetch: </span><span class="nf">(filter={}, options={}) -&gt;</span>
-        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="nx">filter</span>
-        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">add</span>
-                    <span class="nx">@add</span> <span class="nx">models</span><span class="p">,</span> <span class="nx">options</span>
+        <div class='highlight'><pre>    <span class="n">fetch</span><span class="p">:</span> <span class="p">(</span><span class="n">filter</span><span class="o">=</span><span class="p">{},</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">promise</span> <span class="o">=</span> <span class="vi">@storage</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="n">filter</span>
+        <span class="n">promise</span><span class="o">.</span><span class="n">when</span> <span class="p">(</span><span class="n">isSuccess</span><span class="p">,</span> <span class="n">models</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="k">if</span> <span class="n">isSuccess</span>
+                <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">add</span>
+                    <span class="vi">@add</span> <span class="n">models</span><span class="p">,</span> <span class="n">options</span>
                 <span class="k">else</span>
-                    <span class="nx">@reset</span> <span class="nx">models</span><span class="p">,</span> <span class="nx">options</span>
-                <span class="nx">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div>
+                    <span class="vi">@reset</span> <span class="n">models</span><span class="p">,</span> <span class="n">options</span>
+                <span class="vi">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="o">[</span><span class="kp">true</span><span class="o">]</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span></pre></div>
       </td>
     </tr>
     <tr id='section-11'>
@@ -200,10 +201,10 @@ in, and fires a <code>reset</code> event at the end.</p>
 <p>If you call this without any options it will just empty the collection.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">reset: </span><span class="nf">(models, options={}) -&gt;</span>
-        <span class="nx">@_remove</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span> <span class="k">while</span> <span class="nv">model = </span><span class="nx">@pop</span><span class="p">()</span>
-        <span class="nx">@add</span> <span class="nx">models</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">models</span><span class="o">?</span>
-        <span class="nx">@fireEvent</span> <span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="p">[</span><span class="err">@</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">reset</span><span class="p">:</span> <span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="vi">@_remove</span> <span class="n">model</span><span class="p">,</span> <span class="n">options</span> <span class="k">while</span> <span class="n">model</span> <span class="o">=</span> <span class="vi">@pop</span><span class="p">()</span>
+        <span class="vi">@add</span> <span class="n">models</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span> <span class="k">if</span> <span class="n">models?</span>
+        <span class="vi">@fireEvent</span> <span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="o">[</span><span class="err">@</span><span class="o">]</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span></pre></div>
       </td>
     </tr>
     <tr id='section-12'>
@@ -215,23 +216,23 @@ in, and fires a <code>reset</code> event at the end.</p>
 Fires an <code>add(model)</code> event</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">add: </span><span class="nf">(model, options={}) -&gt;</span>
-        <span class="k">if</span> <span class="o">not</span> <span class="nx">@model</span><span class="o">?</span> <span class="k">then</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s2">&quot;Model not defined for collection&quot;</span>
+        <div class='highlight'><pre>    <span class="n">add</span><span class="p">:</span> <span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="vi">@model</span><span class="p">?</span> <span class="k">then</span> <span class="kp">throw</span> <span class="kp">new</span> <span class="no">Error</span> <span class="s2">&quot;Model not defined for collection&quot;</span>
 
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
-            <span class="nv">added = </span><span class="nx">@_add</span><span class="p">(</span><span class="nx">m</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="k">for</span> <span class="nx">m</span> <span class="k">in</span> <span class="nx">model</span>
+        <span class="k">if</span> <span class="n">typeOf</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+            <span class="n">added</span> <span class="o">=</span> <span class="vi">@_add</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="k">in</span> <span class="n">model</span>
         <span class="k">else</span>
-            <span class="nv">added = </span><span class="nx">@_add</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span>
+            <span class="n">added</span> <span class="o">=</span> <span class="vi">@_add</span> <span class="n">model</span><span class="p">,</span> <span class="n">options</span>
 
-        <span class="nx">@sortBy</span> <span class="nx">@sortField</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">@sortField</span><span class="o">?</span>
+        <span class="vi">@sortBy</span> <span class="vi">@sortField</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span> <span class="k">if</span> <span class="vi">@sortField</span><span class="p">?</span>
 
-        <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
-            <span class="nx">@fireEvent</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">model</span><span class="p">]</span> <span class="k">for</span> <span class="nx">model</span> <span class="k">in</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span> <span class="nx">added</span>
+        <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
+            <span class="vi">@fireEvent</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="o">[</span><span class="n">model</span><span class="o">]</span> <span class="k">for</span> <span class="n">model</span> <span class="k">in</span> <span class="nb">Array</span><span class="o">.</span><span class="n">from</span> <span class="n">added</span>
 
-    <span class="nv">_add: </span><span class="nf">(model, options={}) -&gt;</span>
-        <span class="nv">model = </span><span class="nx">@_makeModel</span> <span class="nx">model</span>
-        <span class="nx">@push</span> <span class="nx">model</span>
-        <span class="nx">model</span></pre></div>
+    <span class="n">_add</span><span class="p">:</span> <span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="vi">@_makeModel</span> <span class="n">model</span>
+        <span class="vi">@push</span> <span class="n">model</span>
+        <span class="n">model</span></pre></div>
       </td>
     </tr>
     <tr id='section-13'>
@@ -242,9 +243,9 @@ Fires an <code>add(model)</code> event</p>
         <p>Provides a shortcut to create a new model in the collection</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">create: </span><span class="nf">(attributes, options={}) -&gt;</span>
-        <span class="nv">model = </span><span class="nx">@_makeModel</span> <span class="nx">attributes</span>
-        <span class="nx">@add</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">create</span><span class="p">:</span> <span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="vi">@_makeModel</span> <span class="n">attributes</span>
+        <span class="vi">@add</span> <span class="n">model</span><span class="p">,</span> <span class="n">options</span></pre></div>
       </td>
     </tr>
     <tr id='section-14'>
@@ -255,9 +256,9 @@ Fires an <code>add(model)</code> event</p>
         <p>Get model with field matching value</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">get: </span><span class="nf">(field, value) -&gt;</span>
-        <span class="k">for</span> <span class="nx">obj</span> <span class="k">in</span> <span class="k">this</span>
-            <span class="k">return</span> <span class="nx">obj</span> <span class="k">if</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">field</span><span class="p">)</span> <span class="o">==</span> <span class="nx">value</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">get</span><span class="p">:</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="k">in</span> <span class="n">this</span>
+            <span class="k">return</span> <span class="n">obj</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">==</span> <span class="n">value</span></pre></div>
       </td>
     </tr>
     <tr id='section-15'>
@@ -268,24 +269,24 @@ Fires an <code>add(model)</code> event</p>
         <p>Sorts the collection like a normal array but also fires a <code>sort</code> event</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">sort: </span><span class="nf">(comparator=@comparator, options={}) -&gt;</span>
-        <span class="nx">@parent</span> <span class="nx">comparator</span>
-        <span class="nx">@fireEvent</span> <span class="s1">&#39;sort&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+        <div class='highlight'><pre>    <span class="n">sort</span><span class="p">:</span> <span class="p">(</span><span class="n">comparator</span><span class="o">=</span><span class="vi">@comparator</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="vi">@parent</span> <span class="n">comparator</span>
+        <span class="vi">@fireEvent</span> <span class="s1">&#39;sort&#39;</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
 
-    <span class="nv">sortBy: </span><span class="nf">(field, options) -&gt;</span>
-        <span class="nx">@sort</span> <span class="nf">(a, b ) -&gt;</span>
-            <span class="nv">aVal = </span><span class="nx">a</span><span class="p">.</span><span class="nx">get</span> <span class="nx">field</span>
-            <span class="nv">bVal = </span><span class="nx">b</span><span class="p">.</span><span class="nx">get</span> <span class="nx">field</span>
-            <span class="nv">type = </span><span class="nx">typeOf</span> <span class="nx">aVal</span>
-            <span class="k">if</span> <span class="nx">type</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span>
-                <span class="nx">aVal</span> <span class="o">-</span> <span class="nx">bVal</span>
-            <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span>
-                <span class="nx">aVal</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">localeCompare</span> <span class="nx">bVal</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
-            <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
-                <span class="nx">bVal</span><span class="p">.</span><span class="nx">diff</span> <span class="nx">aVal</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span>
-        <span class="p">,</span> <span class="nx">options</span>
+    <span class="n">sortBy</span><span class="p">:</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="vi">@sort</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">)</span> <span class="o">-&gt;</span>
+            <span class="n">aVal</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span> <span class="n">field</span>
+            <span class="n">bVal</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">get</span> <span class="n">field</span>
+            <span class="n">type</span> <span class="o">=</span> <span class="n">typeOf</span> <span class="n">aVal</span>
+            <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span>
+                <span class="n">aVal</span> <span class="o">-</span> <span class="n">bVal</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span>
+                <span class="n">aVal</span><span class="o">.</span><span class="n">toLowerCase</span><span class="p">()</span><span class="o">.</span><span class="n">localeCompare</span> <span class="n">bVal</span><span class="o">.</span><span class="n">toLowerCase</span><span class="p">()</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
+                <span class="n">bVal</span><span class="o">.</span><span class="n">diff</span> <span class="n">aVal</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span>
+        <span class="p">,</span> <span class="n">options</span>
 
-    <span class="nv">sortField: </span><span class="kc">null</span></pre></div>
+    <span class="n">sortField</span><span class="p">:</span> <span class="n">null</span></pre></div>
       </td>
     </tr>
     <tr id='section-16'>
@@ -296,8 +297,8 @@ Fires an <code>add(model)</code> event</p>
         <p>Set this to define a custom comparator for the <code>sort</code> function</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">comparator: </span><span class="nf">(a, b) -&gt;</span>
-        <span class="k">return</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">b</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">comparator</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span></pre></div>
       </td>
     </tr>
     <tr id='section-17'>
@@ -309,8 +310,8 @@ Fires an <code>add(model)</code> event</p>
 <a href="Model.coffee.html">Model</a> for more information.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">toJSON: </span><span class="o">-&gt;</span>
-        <span class="nx">@invoke</span> <span class="s1">&#39;toJSON&#39;</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">toJSON</span><span class="p">:</span> <span class="o">-&gt;</span>
+        <span class="vi">@invoke</span> <span class="s1">&#39;toJSON&#39;</span></pre></div>
       </td>
     </tr>
     <tr id='section-Private_methods'>
@@ -322,23 +323,23 @@ Fires an <code>add(model)</code> event</p>
 
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_makeModel: </span><span class="nf">(model) -&gt;</span>
-        <span class="k">if</span> <span class="o">not</span> <span class="nx">instanceOf</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">@model</span>
-            <span class="nv">model = </span><span class="k">new</span> <span class="nx">@model</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">collection: </span><span class="k">this</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">model</span><span class="p">.</span><span class="nx">collection</span><span class="o">?</span>
-            <span class="nv">model.collection = </span><span class="k">this</span>
-        <span class="nx">model</span><span class="p">.</span><span class="nx">addEvents</span>
-            <span class="nv">destroy: </span><span class="o">=&gt;</span>
-                <span class="nx">@erase</span> <span class="nx">model</span>
-                <span class="nx">@fireEvent</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">model</span><span class="p">]</span>
-        <span class="nx">model</span>
+        <div class='highlight'><pre>    <span class="n">_makeModel</span><span class="p">:</span> <span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instanceOf</span> <span class="n">model</span><span class="p">,</span> <span class="vi">@model</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="kp">new</span> <span class="vi">@model</span> <span class="n">model</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">this</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">collection?</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">this</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">addEvents</span>
+            <span class="n">destroy</span><span class="p">:</span> <span class="o">=&gt;</span>
+                <span class="vi">@erase</span> <span class="n">model</span>
+                <span class="vi">@fireEvent</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="o">[</span><span class="n">model</span><span class="o">]</span>
+        <span class="n">model</span>
 
-    <span class="nv">_remove: </span><span class="nf">(model, options={}) -&gt;</span>
-        <span class="nx">model</span><span class="p">.</span><span class="nx">removeEvents</span> <span class="s1">&#39;destroy&#39;</span>
-        <span class="nx">@erase</span> <span class="nx">model</span>
-        <span class="nx">@fireEvent</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">model</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+    <span class="n">_remove</span><span class="p">:</span> <span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">removeEvents</span> <span class="s1">&#39;destroy&#39;</span>
+        <span class="vi">@erase</span> <span class="n">model</span>
+        <span class="vi">@fireEvent</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="o">[</span><span class="n">model</span><span class="o">]</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
 
-    <span class="nv">isCollection: </span><span class="kc">true</span></pre></div>
+    <span class="n">isCollection</span><span class="p">:</span> <span class="kp">true</span></pre></div>
       </td>
     </tr>
   </table>

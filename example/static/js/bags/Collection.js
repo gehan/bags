@@ -1,6 +1,6 @@
 (function() {
 
-  define(['require', 'bags/Storage'], function(require, Storage) {
+  define(['require', 'bags/Storage', 'bags/Events'], function(require, Storage, Events) {
     return new Class({
       Extends: Array,
       Implements: [Options, Events, Storage],

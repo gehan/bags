@@ -13,6 +13,7 @@
     <div id="jump_wrapper">
       <div id="jump_page">
           <a class="source" href="Collection.html">Collection.coffee</a>
+          <a class="source" href="Events.html">Events.coffee</a>
           <a class="source" href="Exceptions.html">Exceptions.coffee</a>
           <a class="source" href="Model.html">Model.coffee</a>
           <a class="source" href="Router.html">Router.coffee</a>
@@ -40,11 +41,11 @@
 and event delegation.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nx">define</span> <span class="p">[</span><span class="s1">&#39;bags/Template&#39;</span><span class="p">],</span> <span class="nf">(Template) -&gt;</span> <span class="o">\</span>
+        <div class='highlight'><pre><span class="n">define</span> <span class="o">[</span><span class="s1">&#39;bags/Template&#39;</span><span class="o">]</span><span class="p">,</span> <span class="p">(</span><span class="no">Template</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">\</span>
 
-<span class="k">new</span> <span class="nx">Class</span>
-    <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Options</span><span class="p">,</span> <span class="nx">Events</span><span class="p">,</span> <span class="nx">Template</span><span class="p">]</span>
-    <span class="nv">Binds: </span><span class="p">[</span><span class="s1">&#39;destroy&#39;</span><span class="p">]</span></pre></div>
+<span class="kp">new</span> <span class="no">Class</span>
+    <span class="no">Implements</span><span class="p">:</span> <span class="o">[</span><span class="no">Options</span><span class="p">,</span> <span class="no">Events</span><span class="p">,</span> <span class="no">Template</span><span class="o">]</span>
+    <span class="no">Binds</span><span class="p">:</span> <span class="o">[</span><span class="s1">&#39;destroy&#39;</span><span class="o">]</span></pre></div>
       </td>
     </tr>
     <tr id='section-2'>
@@ -55,7 +56,7 @@ and event delegation.</p>
         <p>Dust.js template name to be used for rendering this view</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">template: </span><span class="kc">null</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">template</span><span class="p">:</span> <span class="n">null</span></pre></div>
       </td>
     </tr>
     <tr id='section-3'>
@@ -70,7 +71,7 @@ and event delegation.</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">events: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">events</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-4'>
@@ -81,7 +82,7 @@ and event delegation.</p>
         <p>Reference to the rendered view element</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">el: </span><span class="kc">null</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">el</span><span class="p">:</span> <span class="n">null</span></pre></div>
       </td>
     </tr>
     <tr id='section-5'>
@@ -94,7 +95,7 @@ listen to the <code>destroy</code> event and destroy this view if the model is
 ever removed.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">model: </span><span class="kc">null</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">model</span><span class="p">:</span> <span class="n">null</span></pre></div>
       </td>
     </tr>
     <tr id='section-6'>
@@ -106,7 +107,7 @@ ever removed.</p>
 as a model</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">data: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">data</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-7'>
@@ -118,7 +119,7 @@ as a model</p>
 existing mode/data attributes for template display only</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">parsers: </span><span class="p">{}</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">parsers</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-8'>
@@ -130,9 +131,9 @@ existing mode/data attributes for template display only</p>
 element</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">options:</span>
-        <span class="nv">injectTo: </span><span class="kc">null</span>
-        <span class="nv">autoDestroyModel: </span><span class="kc">false</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">options</span><span class="p">:</span>
+        <span class="n">injectTo</span><span class="p">:</span> <span class="n">null</span>
+        <span class="n">autoDestroyModel</span><span class="p">:</span> <span class="kp">false</span></pre></div>
       </td>
     </tr>
     <tr id='section-9'>
@@ -149,18 +150,18 @@ to the object root. If <code>el</code> is specified then this element itself wil
 be the view.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">initialize: </span><span class="nf">(options={}) -&gt;</span>
-        <span class="nx">@loadAllTemplates</span><span class="p">()</span>
-        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;el&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
-                <span class="err">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-                <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-        <span class="nx">@setOptions</span> <span class="nx">options</span>
-        <span class="k">if</span> <span class="nx">@model</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">autoDestroyModel</span>
-            <span class="nx">@model</span><span class="p">.</span><span class="nx">addEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
-        <span class="nx">@render</span> <span class="nx">options</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-        <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">injectTo</span><span class="o">?</span>
-            <span class="nx">@inject</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">injectTo</span>
+        <div class='highlight'><pre>    <span class="kp">initialize</span><span class="p">:</span> <span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="vi">@loadAllTemplates</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="k">in</span> <span class="o">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;el&#39;</span><span class="o">]</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span><span class="p">?</span>
+                <span class="err">@</span><span class="o">[</span><span class="n">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+                <span class="n">delete</span> <span class="n">options</span><span class="o">[</span><span class="n">key</span><span class="o">]</span>
+        <span class="vi">@setOptions</span> <span class="n">options</span>
+        <span class="k">if</span> <span class="vi">@model</span><span class="p">?</span> <span class="ow">and</span> <span class="vi">@options</span><span class="o">.</span><span class="n">autoDestroyModel</span>
+            <span class="vi">@model</span><span class="o">.</span><span class="n">addEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="vi">@destroy</span>
+        <span class="vi">@render</span> <span class="n">options</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="kp">true</span>
+        <span class="k">if</span> <span class="vi">@options</span><span class="o">.</span><span class="n">injectTo?</span>
+            <span class="vi">@inject</span> <span class="vi">@options</span><span class="o">.</span><span class="n">injectTo</span>
         <span class="err">@</span></pre></div>
       </td>
     </tr>
@@ -180,23 +181,23 @@ fired on <code>document</code></p></li>
 </ul>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">render: </span><span class="nf">(data={}, options={}) -&gt;</span>
-        <span class="nv">el = </span><span class="nx">@_render</span> <span class="nx">data</span>
-        <span class="nx">el</span><span class="p">.</span><span class="nx">store</span> <span class="s1">&#39;view&#39;</span><span class="p">,</span> <span class="err">@</span>
+        <div class='highlight'><pre>    <span class="n">render</span><span class="p">:</span> <span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{},</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="vi">@_render</span> <span class="n">data</span>
+        <span class="n">el</span><span class="o">.</span><span class="n">store</span> <span class="s1">&#39;view&#39;</span><span class="p">,</span> <span class="err">@</span>
 
-        <span class="k">if</span> <span class="o">not</span> <span class="nx">@el</span><span class="o">?</span>
-            <span class="vi">@el = </span><span class="nx">el</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="vi">@el</span><span class="p">?</span>
+            <span class="vi">@el</span> <span class="o">=</span> <span class="n">el</span>
         <span class="k">else</span>
-            <span class="nx">@_replaceCurrentEl</span> <span class="nx">el</span>
+            <span class="vi">@_replaceCurrentEl</span> <span class="n">el</span>
 
-        <span class="vi">@refs = </span><span class="nx">@getRefs</span> <span class="nx">el</span>
-        <span class="nx">@delegateEvents</span> <span class="nx">@el</span><span class="p">,</span> <span class="nx">@events</span>
+        <span class="vi">@refs</span> <span class="o">=</span> <span class="vi">@getRefs</span> <span class="n">el</span>
+        <span class="vi">@delegateEvents</span> <span class="vi">@el</span><span class="p">,</span> <span class="vi">@events</span>
 
-        <span class="nv">container = </span><span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">el</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getParent</span><span class="p">()</span>
-        <span class="nx">@_checkDomUpdate</span> <span class="nx">container</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">from</span><span class="p">(</span><span class="n">el</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">getParent</span><span class="p">()</span>
+        <span class="vi">@_checkDomUpdate</span> <span class="n">container</span>
 
-        <span class="nx">@fireEvent</span> <span class="s1">&#39;render&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
-        <span class="nx">el</span></pre></div>
+        <span class="vi">@fireEvent</span> <span class="s1">&#39;render&#39;</span> <span class="k">unless</span> <span class="n">options</span><span class="o">.</span><span class="n">silent</span>
+        <span class="n">el</span></pre></div>
       </td>
     </tr>
     <tr id='section-11'>
@@ -209,8 +210,8 @@ for passing into the template. By default this calls <code>model.toJSON</code> b
 can be overridden.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">parseForDisplay: </span><span class="nf">(model) -&gt;</span>
-        <span class="nx">@model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">parseForDisplay</span><span class="p">:</span> <span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="vi">@model</span><span class="o">.</span><span class="n">toJSON</span><span class="p">()</span></pre></div>
       </td>
     </tr>
     <tr id='section-12'>
@@ -248,17 +249,17 @@ they are updated without disturbing the other refs</p></li>
 </ul>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">rerender: </span><span class="nf">(refs, data={}) -&gt;</span>
-        <span class="nv">el = </span><span class="nx">@_render</span> <span class="nx">data</span>
-        <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">refs</span><span class="p">).</span><span class="nx">each</span> <span class="p">(</span><span class="nx">ref</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="nv">replaceThis = </span><span class="nx">@refs</span><span class="p">[</span><span class="nx">ref</span><span class="p">]</span>
-            <span class="k">if</span> <span class="o">not</span> <span class="nx">replaceThis</span>
-                <span class="k">throw</span> <span class="s2">&quot;Cannot find ref #{ref} in template #{@template}&quot;</span>
-            <span class="nv">newEl = </span><span class="nx">@getRefs</span><span class="p">(</span><span class="nx">el</span><span class="p">)[</span><span class="nx">ref</span><span class="p">]</span>
-            <span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">@refs</span><span class="p">,</span> <span class="nx">@getRefs</span><span class="p">(</span><span class="nx">newEl</span><span class="p">)</span>
-            <span class="nx">@refs</span><span class="p">[</span><span class="nx">ref</span><span class="p">].</span><span class="nx">replaces</span> <span class="nx">replaceThis</span>
+        <div class='highlight'><pre>    <span class="n">rerender</span><span class="p">:</span> <span class="p">(</span><span class="n">refs</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="vi">@_render</span> <span class="n">data</span>
+        <span class="nb">Array</span><span class="o">.</span><span class="n">from</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="n">replaceThis</span> <span class="o">=</span> <span class="vi">@refs</span><span class="o">[</span><span class="n">ref</span><span class="o">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">replaceThis</span>
+                <span class="kp">throw</span> <span class="s2">&quot;Cannot find ref </span><span class="si">#{</span><span class="n">ref</span><span class="si">}</span><span class="s2"> in template </span><span class="si">#{</span><span class="vi">@template</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">newEl</span> <span class="o">=</span> <span class="vi">@getRefs</span><span class="p">(</span><span class="n">el</span><span class="p">)</span><span class="o">[</span><span class="n">ref</span><span class="o">]</span>
+            <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="vi">@refs</span><span class="p">,</span> <span class="vi">@getRefs</span><span class="p">(</span><span class="n">newEl</span><span class="p">)</span>
+            <span class="vi">@refs</span><span class="o">[</span><span class="n">ref</span><span class="o">].</span><span class="n">replaces</span> <span class="n">replaceThis</span>
 
-            <span class="nx">@_checkDomUpdate</span> <span class="nx">newEl</span><span class="p">.</span><span class="nx">getParent</span><span class="p">()</span></pre></div>
+            <span class="vi">@_checkDomUpdate</span> <span class="n">newEl</span><span class="o">.</span><span class="n">getParent</span><span class="p">()</span></pre></div>
       </td>
     </tr>
     <tr id='section-13'>
@@ -270,30 +271,30 @@ they are updated without disturbing the other refs</p></li>
 <code>document</code> if necessary.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">inject: </span><span class="nf">(container, el=@el) -&gt;</span>
-        <span class="nx">el</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">container</span>
-        <span class="nx">@_checkDomUpdate</span> <span class="nx">container</span>
+        <div class='highlight'><pre>    <span class="n">inject</span><span class="p">:</span> <span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">el</span><span class="o">=</span><span class="vi">@el</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">el</span><span class="o">.</span><span class="n">inject</span> <span class="n">container</span>
+        <span class="vi">@_checkDomUpdate</span> <span class="n">container</span>
 
-    <span class="nv">getElement: </span><span class="o">-&gt;</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">getElement</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@el</span><span class="p">,</span> <span class="nx">arguments</span>
-    <span class="nv">getElements: </span><span class="o">-&gt;</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">getElements</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@el</span><span class="p">,</span> <span class="nx">arguments</span>
+    <span class="n">getElement</span><span class="p">:</span> <span class="o">-&gt;</span> <span class="vi">@el</span><span class="o">.</span><span class="n">getElement</span><span class="o">.</span><span class="n">apply</span> <span class="vi">@el</span><span class="p">,</span> <span class="n">arguments</span>
+    <span class="n">getElements</span><span class="p">:</span> <span class="o">-&gt;</span> <span class="vi">@el</span><span class="o">.</span><span class="n">getElements</span><span class="o">.</span><span class="n">apply</span> <span class="vi">@el</span><span class="p">,</span> <span class="n">arguments</span>
 
-    <span class="nv">getViews: </span><span class="nf">(el) -&gt;</span>
-        <span class="nv">els = </span><span class="nx">el</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()</span>
-        <span class="nx">els</span><span class="p">.</span><span class="nx">retrieve</span><span class="p">(</span><span class="s1">&#39;view&#39;</span><span class="p">)</span>
+    <span class="n">getViews</span><span class="p">:</span> <span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">els</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">getChildren</span><span class="p">()</span>
+        <span class="n">els</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="s1">&#39;view&#39;</span><span class="p">)</span>
 
-    <span class="nv">reorderViews: </span><span class="nf">(collection, rootEl) -&gt;</span>
-        <span class="nv">views = </span><span class="nx">@getViews</span> <span class="nx">rootEl</span>
-        <span class="k">for</span> <span class="nx">view</span> <span class="k">in</span> <span class="nx">views</span>
+    <span class="n">reorderViews</span><span class="p">:</span> <span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">rootEl</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="vi">@getViews</span> <span class="n">rootEl</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="k">in</span> <span class="n">views</span>
 
-            <span class="nv">dummy = </span><span class="k">new</span> <span class="nx">Element</span> <span class="s1">&#39;div&#39;</span>
-            <span class="nv">current = </span><span class="nx">$</span><span class="p">(</span><span class="nx">view</span><span class="p">)</span>
-            <span class="nv">desiredIndex = </span><span class="nx">collection</span><span class="p">.</span><span class="nx">indexOf</span> <span class="nx">view</span><span class="p">.</span><span class="nx">model</span>
-            <span class="nv">swap = </span><span class="nx">rootEl</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()[</span><span class="nx">desiredIndex</span><span class="p">]</span>
+            <span class="n">dummy</span> <span class="o">=</span> <span class="kp">new</span> <span class="no">Element</span> <span class="s1">&#39;div&#39;</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="err">$</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+            <span class="n">desiredIndex</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">indexOf</span> <span class="n">view</span><span class="o">.</span><span class="n">model</span>
+            <span class="n">swap</span> <span class="o">=</span> <span class="n">rootEl</span><span class="o">.</span><span class="n">getChildren</span><span class="p">()</span><span class="o">[</span><span class="n">desiredIndex</span><span class="o">]</span>
 
-            <span class="nx">dummy</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">current</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
-            <span class="nx">current</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">swap</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
-            <span class="nx">swap</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">dummy</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
-            <span class="nx">dummy</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span></pre></div>
+            <span class="n">dummy</span><span class="o">.</span><span class="n">inject</span> <span class="n">current</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
+            <span class="n">current</span><span class="o">.</span><span class="n">inject</span> <span class="n">swap</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
+            <span class="n">swap</span><span class="o">.</span><span class="n">inject</span> <span class="n">dummy</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
+            <span class="n">dummy</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></pre></div>
       </td>
     </tr>
     <tr id='section-14'>
@@ -305,18 +306,18 @@ they are updated without disturbing the other refs</p></li>
 inside it by calling their <code>destroy</code> methods</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">destroyViews: </span><span class="nf">(el) -&gt;</span>
-        <span class="nv">views = </span><span class="nx">@getViews</span><span class="p">(</span><span class="nx">el</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">if</span> <span class="nx">views</span> <span class="o">is</span> <span class="kc">null</span>
-        <span class="nx">views</span><span class="p">.</span><span class="nx">invoke</span> <span class="s1">&#39;destroy&#39;</span>
+        <div class='highlight'><pre>    <span class="n">destroyViews</span><span class="p">:</span> <span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="vi">@getViews</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">if</span> <span class="n">views</span> <span class="n">is</span> <span class="n">null</span>
+        <span class="n">views</span><span class="o">.</span><span class="n">invoke</span> <span class="s1">&#39;destroy&#39;</span>
 
-    <span class="nv">destroy: </span><span class="o">-&gt;</span>
-        <span class="k">if</span> <span class="nx">@model</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">autoDestroyModel</span>
-            <span class="nx">@model</span><span class="p">.</span><span class="nx">removeEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
-        <span class="nx">@el</span><span class="p">.</span><span class="nx">eliminate</span> <span class="s1">&#39;view&#39;</span>
-        <span class="nx">@el</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
+    <span class="n">destroy</span><span class="p">:</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="vi">@model</span><span class="p">?</span> <span class="ow">and</span> <span class="vi">@options</span><span class="o">.</span><span class="n">autoDestroyModel</span>
+            <span class="vi">@model</span><span class="o">.</span><span class="n">removeEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="vi">@destroy</span>
+        <span class="vi">@el</span><span class="o">.</span><span class="n">eliminate</span> <span class="s1">&#39;view&#39;</span>
+        <span class="vi">@el</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
 
-    <span class="nv">toElement: </span><span class="o">-&gt;</span> <span class="nx">@el</span></pre></div>
+    <span class="n">toElement</span><span class="p">:</span> <span class="o">-&gt;</span> <span class="vi">@el</span></pre></div>
       </td>
     </tr>
     <tr id='section-Private_methods'>
@@ -339,24 +340,24 @@ inside it by calling their <code>destroy</code> methods</p>
 to update the references and iterate through array if needed.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_replaceCurrentEl: </span><span class="nf">(el) -&gt;</span>
-        <span class="k">if</span> <span class="o">not</span> <span class="nx">instanceOf</span> <span class="nx">el</span><span class="p">,</span> <span class="nb">Array</span>
-            <span class="vi">@el = </span><span class="nx">el</span><span class="p">.</span><span class="nx">replaces</span> <span class="nx">@el</span>
+        <div class='highlight'><pre>    <span class="n">_replaceCurrentEl</span><span class="p">:</span> <span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instanceOf</span> <span class="n">el</span><span class="p">,</span> <span class="nb">Array</span>
+            <span class="vi">@el</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">replaces</span> <span class="vi">@el</span>
         <span class="k">else</span>
-            <span class="nx">@el</span><span class="p">.</span><span class="nx">each</span> <span class="p">(</span><span class="nx">currentEl</span><span class="p">,</span> <span class="nx">idx</span><span class="p">)</span> <span class="o">=&gt;</span>
-                <span class="nx">@el</span><span class="p">[</span><span class="nx">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nx">el</span><span class="p">[</span><span class="nx">idx</span><span class="p">].</span><span class="nx">replaces</span> <span class="nx">currentEl</span>
+            <span class="vi">@el</span><span class="o">.</span><span class="n">each</span> <span class="p">(</span><span class="n">currentEl</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span> <span class="o">=&gt;</span>
+                <span class="vi">@el</span><span class="o">[</span><span class="n">idx</span><span class="o">]</span> <span class="o">=</span> <span class="n">el</span><span class="o">[</span><span class="n">idx</span><span class="o">].</span><span class="n">replaces</span> <span class="n">currentEl</span>
 
-    <span class="nv">_render: </span><span class="nf">(data={}) -&gt;</span>
-        <span class="nv">data = </span><span class="nx">@_getTemplateData</span> <span class="nx">data</span>
-        <span class="nv">el = </span><span class="nx">@renderTemplate</span> <span class="nx">@template</span><span class="p">,</span> <span class="nx">data</span>
+    <span class="n">_render</span><span class="p">:</span> <span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="vi">@_getTemplateData</span> <span class="n">data</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="vi">@renderTemplate</span> <span class="vi">@template</span><span class="p">,</span> <span class="n">data</span>
 
-    <span class="nv">_getTemplateData: </span><span class="nf">(data={}) -&gt;</span>
-        <span class="nv">data = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">@data</span><span class="p">,</span> <span class="nx">data</span>
-        <span class="k">if</span> <span class="nx">@model</span><span class="o">?</span>
-            <span class="nv">data = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{},</span> <span class="nx">@parseForDisplay</span><span class="p">(</span><span class="nx">@model</span><span class="p">),</span> <span class="nx">data</span>
-        <span class="k">for</span> <span class="nx">fieldName</span><span class="p">,</span> <span class="nx">parser</span> <span class="k">of</span> <span class="nx">@parsers</span>
-            <span class="nx">data</span><span class="p">[</span><span class="nx">fieldName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">data</span>
-        <span class="nx">data</span></pre></div>
+    <span class="n">_getTemplateData</span><span class="p">:</span> <span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="vi">@data</span><span class="p">,</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="vi">@model</span><span class="p">?</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">merge</span> <span class="p">{},</span> <span class="vi">@parseForDisplay</span><span class="p">(</span><span class="vi">@model</span><span class="p">),</span> <span class="n">data</span>
+        <span class="k">for</span> <span class="n">fieldName</span><span class="p">,</span> <span class="n">parser</span> <span class="n">of</span> <span class="vi">@parsers</span>
+            <span class="n">data</span><span class="o">[</span><span class="n">fieldName</span><span class="o">]</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">call</span> <span class="n">this</span><span class="p">,</span> <span class="n">data</span>
+        <span class="n">data</span></pre></div>
       </td>
     </tr>
     <tr id='section-17'>
@@ -369,15 +370,15 @@ within the DOM or not, if so fire <code>domupdated</code> on <code>document</cod
 
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_checkDomUpdate: </span><span class="nf">(container) -&gt;</span>
-        <span class="nv">inDom = </span><span class="kc">false</span>
-        <span class="nv">parent = </span><span class="nx">container</span>
-        <span class="k">if</span> <span class="nx">parent</span> <span class="o">==</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span>
-            <span class="nv">inDom = </span><span class="kc">true</span>
-        <span class="k">while</span> <span class="nv">parent = </span><span class="nx">$</span><span class="p">(</span><span class="nx">parent</span><span class="p">).</span><span class="nx">getParent</span><span class="p">()</span>
-            <span class="nv">inDom = </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">parent</span> <span class="o">==</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span>
-        <span class="k">if</span> <span class="nx">inDom</span>
-            <span class="nb">document</span><span class="p">.</span><span class="nx">fireEvent</span> <span class="s1">&#39;domupdated&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">container</span><span class="p">]</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">_checkDomUpdate</span><span class="p">:</span> <span class="p">(</span><span class="n">container</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">inDom</span> <span class="o">=</span> <span class="kp">false</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">container</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="o">==</span> <span class="n">document</span><span class="o">.</span><span class="n">body</span>
+            <span class="n">inDom</span> <span class="o">=</span> <span class="kp">true</span>
+        <span class="k">while</span> <span class="n">parent</span> <span class="o">=</span> <span class="err">$</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">getParent</span><span class="p">()</span>
+            <span class="n">inDom</span> <span class="o">=</span> <span class="kp">true</span> <span class="k">if</span> <span class="n">parent</span> <span class="o">==</span> <span class="n">document</span><span class="o">.</span><span class="n">body</span>
+        <span class="k">if</span> <span class="n">inDom</span>
+            <span class="n">document</span><span class="o">.</span><span class="n">fireEvent</span> <span class="s1">&#39;domupdated&#39;</span><span class="p">,</span> <span class="o">[</span><span class="n">container</span><span class="o">]</span></pre></div>
       </td>
     </tr>
   </table>

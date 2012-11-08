@@ -40,11 +40,11 @@
 tracking and event delegation.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nx">define</span> <span class="o">-&gt;</span> <span class="o">\</span>
+        <div class='highlight'><pre><span class="n">define</span> <span class="o">-&gt;</span> <span class="p">\</span>
 
-<span class="k">new</span> <span class="nx">Class</span>
-    <span class="nv">TEMPLATES: </span><span class="p">{}</span>
-    <span class="nv">refs: </span><span class="p">{}</span></pre></div>
+<span class="kp">new</span> <span class="no">Class</span>
+    <span class="no">TEMPLATES</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="n">refs</span><span class="p">:</span> <span class="p">{}</span></pre></div>
       </td>
     </tr>
     <tr id='section-Template_Rendering'>
@@ -83,15 +83,15 @@ see <code>delegateEvents</code> for syntax.</p></li>
 </ul>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">renderTemplate: </span><span class="nf">(templateName, data={}, events=null) -&gt;</span>
-        <span class="nv">rendered = </span><span class="nx">@_renderDustTemplate</span> <span class="nx">templateName</span><span class="p">,</span> <span class="nx">data</span>
-        <span class="nv">els = </span><span class="nx">Elements</span><span class="p">.</span><span class="nx">from</span> <span class="nx">rendered</span>
-        <span class="nx">@delegateEvents</span> <span class="nx">els</span><span class="p">,</span> <span class="nx">events</span> <span class="k">if</span> <span class="nx">events</span><span class="o">?</span>
+        <div class='highlight'><pre>    <span class="n">renderTemplate</span><span class="p">:</span> <span class="p">(</span><span class="n">templateName</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{},</span> <span class="n">events</span><span class="o">=</span><span class="n">null</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">rendered</span> <span class="o">=</span> <span class="vi">@_renderDustTemplate</span> <span class="n">templateName</span><span class="p">,</span> <span class="n">data</span>
+        <span class="n">els</span> <span class="o">=</span> <span class="no">Elements</span><span class="o">.</span><span class="n">from</span> <span class="n">rendered</span>
+        <span class="vi">@delegateEvents</span> <span class="n">els</span><span class="p">,</span> <span class="n">events</span> <span class="k">if</span> <span class="n">events?</span>
 
-        <span class="k">if</span> <span class="nx">els</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span>
-            <span class="nx">els</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">els</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">els</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
         <span class="k">else</span>
-            <span class="nx">els</span></pre></div>
+            <span class="n">els</span></pre></div>
       </td>
     </tr>
     <tr id='section-4'>
@@ -133,9 +133,9 @@ expected to be in the dust cache already when called.</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">loadAllTemplates: </span><span class="o">-&gt;</span>
-        <span class="nx">@_loadTemplate</span><span class="p">(</span><span class="nx">k</span><span class="p">)</span> <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">@TEMPLATES</span>
-        <span class="nx">@_loadTemplate</span><span class="p">(</span><span class="nx">k</span><span class="p">)</span> <span class="k">for</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">$$</span><span class="p">(</span><span class="s1">&#39;script[type=text/html]&#39;</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">)</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">loadAllTemplates</span><span class="p">:</span> <span class="o">-&gt;</span>
+        <span class="vi">@_loadTemplate</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="n">of</span> <span class="vi">@TEMPLATES</span>
+        <span class="vi">@_loadTemplate</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="k">in</span> <span class="vg">$$</span><span class="p">(</span><span class="s1">&#39;script[type=text/html]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">)</span></pre></div>
       </td>
     </tr>
     <tr id='section-5'>
@@ -160,18 +160,18 @@ expected to be in the dust cache already when called.</p>
 of the elements by default if you wish.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">delegateEvents: </span><span class="nf">(els, events, stopPropagation=false,</span>
-<span class="nf">            preventDefault=false) -&gt;</span>
+        <div class='highlight'><pre>    <span class="n">delegateEvents</span><span class="p">:</span> <span class="p">(</span><span class="n">els</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">stopPropagation</span><span class="o">=</span><span class="kp">false</span><span class="p">,</span>
+            <span class="n">preventDefault</span><span class="o">=</span><span class="kp">false</span><span class="p">)</span> <span class="o">-&gt;</span>
 
-        <span class="nv">els = </span><span class="nb">Array</span><span class="p">.</span><span class="nx">from</span> <span class="nx">els</span>
-        <span class="k">for</span> <span class="nx">eventKey</span><span class="p">,</span> <span class="nx">fnName</span> <span class="k">of</span> <span class="nx">events</span>
-            <span class="nv">boundFn = </span><span class="nf">(fnName, event, target) -&gt;</span>
-                <span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">()</span> <span class="k">if</span> <span class="nx">stopPropagation</span>
-                <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span> <span class="k">if</span> <span class="nx">preventDefault</span>
-                <span class="err">@</span><span class="p">[</span><span class="nx">fnName</span><span class="p">]</span> <span class="nx">event</span><span class="p">,</span> <span class="nx">target</span>
-            <span class="nv">boundFn = </span><span class="nx">boundFn</span><span class="p">.</span><span class="nx">bind</span> <span class="err">@</span><span class="p">,</span> <span class="nx">fnName</span>
-            <span class="k">for</span> <span class="nx">node</span> <span class="k">in</span> <span class="nx">els</span>
-                <span class="nx">@_addDelegatedEvent</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">eventKey</span><span class="p">,</span> <span class="nx">boundFn</span></pre></div>
+        <span class="n">els</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">from</span> <span class="n">els</span>
+        <span class="k">for</span> <span class="n">eventKey</span><span class="p">,</span> <span class="n">fnName</span> <span class="n">of</span> <span class="n">events</span>
+            <span class="n">boundFn</span> <span class="o">=</span> <span class="p">(</span><span class="n">fnName</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">-&gt;</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">stopPropagation</span><span class="p">()</span> <span class="k">if</span> <span class="n">stopPropagation</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">preventDefault</span><span class="p">()</span> <span class="k">if</span> <span class="n">preventDefault</span>
+                <span class="err">@</span><span class="o">[</span><span class="n">fnName</span><span class="o">]</span> <span class="n">event</span><span class="p">,</span> <span class="n">target</span>
+            <span class="n">boundFn</span> <span class="o">=</span> <span class="n">boundFn</span><span class="o">.</span><span class="n">bind</span> <span class="err">@</span><span class="p">,</span> <span class="n">fnName</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="k">in</span> <span class="n">els</span>
+                <span class="vi">@_addDelegatedEvent</span> <span class="n">node</span><span class="p">,</span> <span class="n">eventKey</span><span class="p">,</span> <span class="n">boundFn</span></pre></div>
       </td>
     </tr>
     <tr id='section-6'>
@@ -198,20 +198,20 @@ references back into an object.</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">getRefs: </span><span class="nf">(els, ref=null) -&gt;</span>
-        <span class="nv">refs = </span><span class="p">{}</span>
-        <span class="k">for</span> <span class="nx">el</span> <span class="k">in</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span> <span class="nx">els</span>
-            <span class="nv">elRefName = </span><span class="nx">el</span><span class="p">.</span><span class="nx">get</span> <span class="s1">&#39;ref&#39;</span>
-            <span class="k">return</span> <span class="nx">el</span> <span class="k">if</span> <span class="nx">ref</span> <span class="o">and</span> <span class="nx">elRefName</span> <span class="o">==</span> <span class="nx">ref</span>
-            <span class="nx">refs</span><span class="p">[</span><span class="nx">elRefName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">el</span> <span class="k">if</span> <span class="nx">elRefName</span>
+        <div class='highlight'><pre>    <span class="n">getRefs</span><span class="p">:</span> <span class="p">(</span><span class="n">els</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">null</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">refs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">el</span> <span class="k">in</span> <span class="nb">Array</span><span class="o">.</span><span class="n">from</span> <span class="n">els</span>
+            <span class="n">elRefName</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">get</span> <span class="s1">&#39;ref&#39;</span>
+            <span class="k">return</span> <span class="n">el</span> <span class="k">if</span> <span class="n">ref</span> <span class="ow">and</span> <span class="n">elRefName</span> <span class="o">==</span> <span class="n">ref</span>
+            <span class="n">refs</span><span class="o">[</span><span class="n">elRefName</span><span class="o">]</span> <span class="o">=</span> <span class="n">el</span> <span class="k">if</span> <span class="n">elRefName</span>
 
-            <span class="k">for</span> <span class="nx">refEl</span> <span class="k">in</span> <span class="nx">el</span><span class="p">.</span><span class="nx">getElements</span> <span class="s2">&quot;*[ref]&quot;</span>
-                <span class="nv">refName = </span><span class="nx">refEl</span><span class="p">.</span><span class="nx">get</span> <span class="s1">&#39;ref&#39;</span>
-                <span class="k">return</span> <span class="nx">refEl</span> <span class="k">if</span> <span class="nx">ref</span> <span class="o">and</span> <span class="nx">refName</span> <span class="o">==</span> <span class="nx">ref</span>
+            <span class="k">for</span> <span class="n">refEl</span> <span class="k">in</span> <span class="n">el</span><span class="o">.</span><span class="n">getElements</span> <span class="s2">&quot;*[ref]&quot;</span>
+                <span class="n">refName</span> <span class="o">=</span> <span class="n">refEl</span><span class="o">.</span><span class="n">get</span> <span class="s1">&#39;ref&#39;</span>
+                <span class="k">return</span> <span class="n">refEl</span> <span class="k">if</span> <span class="n">ref</span> <span class="ow">and</span> <span class="n">refName</span> <span class="o">==</span> <span class="n">ref</span>
 
-                <span class="nx">refs</span><span class="p">[</span><span class="nx">refName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">refEl</span>
+                <span class="n">refs</span><span class="o">[</span><span class="n">refName</span><span class="o">]</span> <span class="o">=</span> <span class="n">refEl</span>
 
-        <span class="k">return</span> <span class="nx">refs</span></pre></div>
+        <span class="k">return</span> <span class="n">refs</span></pre></div>
       </td>
     </tr>
     <tr id='section-7'>
@@ -223,7 +223,7 @@ references back into an object.</p>
 meaningful name.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">getRef: </span><span class="nf">(el, ref) -&gt;</span> <span class="nx">@getRefs</span> <span class="nx">el</span><span class="p">,</span> <span class="nx">ref</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">getRef</span><span class="p">:</span> <span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="vi">@getRefs</span> <span class="n">el</span><span class="p">,</span> <span class="n">ref</span></pre></div>
       </td>
     </tr>
     <tr id='section-Private_methods'>
@@ -255,16 +255,16 @@ with a <code>#let</code> statement</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_renderDustTemplate: </span><span class="nf">(templateName, data={}) -&gt;</span>
-        <span class="nx">@_loadTemplate</span> <span class="nx">templateName</span>
-        <span class="nv">data = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">data</span>
-        <span class="nv">data.let = </span><span class="nx">data</span> <span class="o">or</span> <span class="mi">0</span>
-        <span class="nv">data.iter = </span><span class="nf">(chk, ctx, bodies) -&gt;</span>
-            <span class="nv">obj = </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">current</span><span class="p">()</span>
-            <span class="k">for</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">k</span> <span class="k">of</span> <span class="nx">obj</span>
-                <span class="nv">chk = </span><span class="nx">chk</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">bodies</span><span class="p">.</span><span class="nx">block</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span><span class="nv">key: </span><span class="nx">r</span><span class="p">,</span> <span class="nv">value: </span><span class="nx">k</span><span class="p">}))</span>
-            <span class="nx">chk</span>
-        <span class="nv">rendered = </span><span class="s2">&quot;&quot;</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">_renderDustTemplate</span><span class="p">:</span> <span class="p">(</span><span class="n">templateName</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span>
+        <span class="vi">@_loadTemplate</span> <span class="n">templateName</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">clone</span> <span class="n">data</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">let</span> <span class="o">=</span> <span class="n">data</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="p">(</span><span class="n">chk</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">bodies</span><span class="p">)</span> <span class="o">-&gt;</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">k</span> <span class="n">of</span> <span class="n">obj</span>
+                <span class="n">chk</span> <span class="o">=</span> <span class="n">chk</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">bodies</span><span class="o">.</span><span class="n">block</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">r</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">k</span><span class="p">}))</span>
+            <span class="n">chk</span>
+        <span class="n">rendered</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></pre></div>
       </td>
     </tr>
     <tr id='section-10'>
@@ -275,11 +275,11 @@ with a <code>#let</code> statement</p>
         <p>add custom filter to capitalise strings in dust</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>        <span class="nv">dust.filters.c = </span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">value</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">()</span>
-        <span class="nx">dust</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">templateName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nf">(err, out) -&gt;</span>
-            <span class="nv">rendered = </span><span class="nx">out</span>
+        <div class='highlight'><pre>        <span class="n">dust</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">value</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="n">dust</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">templateName</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span> <span class="o">-&gt;</span>
+            <span class="n">rendered</span> <span class="o">=</span> <span class="n">out</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="nx">rendered</span></pre></div>
+        <span class="k">return</span> <span class="n">rendered</span></pre></div>
       </td>
     </tr>
     <tr id='section-11'>
@@ -291,10 +291,10 @@ with a <code>#let</code> statement</p>
 cache</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_loadTemplate: </span><span class="nf">(templateName) -&gt;</span>
-        <span class="k">if</span> <span class="o">not</span> <span class="nx">dust</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">templateName</span><span class="p">]</span><span class="o">?</span>
-            <span class="nv">compiled = </span><span class="nx">dust</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">@_getTemplate</span><span class="p">(</span><span class="nx">templateName</span><span class="p">),</span> <span class="nx">templateName</span>
-            <span class="nx">dust</span><span class="p">.</span><span class="nx">loadSource</span> <span class="nx">compiled</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">_loadTemplate</span><span class="p">:</span> <span class="p">(</span><span class="n">templateName</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dust</span><span class="o">.</span><span class="n">cache</span><span class="o">[</span><span class="n">templateName</span><span class="o">]</span><span class="p">?</span>
+            <span class="n">compiled</span> <span class="o">=</span> <span class="n">dust</span><span class="o">.</span><span class="n">compile</span> <span class="vi">@_getTemplate</span><span class="p">(</span><span class="n">templateName</span><span class="p">),</span> <span class="n">templateName</span>
+            <span class="n">dust</span><span class="o">.</span><span class="n">loadSource</span> <span class="n">compiled</span></pre></div>
       </td>
     </tr>
     <tr id='section-12'>
@@ -314,12 +314,12 @@ cache</p>
 </code></pre>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_getTemplate: </span><span class="nf">(templateName) -&gt;</span>
-        <span class="nv">template = </span><span class="nx">@TEMPLATES</span><span class="p">[</span><span class="nx">templateName</span><span class="p">]</span> <span class="k">if</span> <span class="nx">@TEMPLATES</span><span class="o">?</span>
-        <span class="k">return</span> <span class="nx">template</span> <span class="k">if</span> <span class="nx">template</span><span class="o">?</span>
-        <span class="nv">template = </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElement</span> <span class="s2">&quot;script[template=#{templateName}]&quot;</span>
-        <span class="k">return</span> <span class="nx">template</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;html&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nx">template</span><span class="o">?</span>
-        <span class="k">throw</span> <span class="s2">&quot;Cannot find template #{templateName}&quot;</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">_getTemplate</span><span class="p">:</span> <span class="p">(</span><span class="n">templateName</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="vi">@TEMPLATES</span><span class="o">[</span><span class="n">templateName</span><span class="o">]</span> <span class="k">if</span> <span class="vi">@TEMPLATES</span><span class="p">?</span>
+        <span class="k">return</span> <span class="n">template</span> <span class="k">if</span> <span class="n">template?</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">getElement</span> <span class="s2">&quot;script[template=</span><span class="si">#{</span><span class="n">templateName</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;html&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">template?</span>
+        <span class="kp">throw</span> <span class="s2">&quot;Cannot find template </span><span class="si">#{</span><span class="n">templateName</span><span class="si">}</span><span class="s2">&quot;</span></pre></div>
       </td>
     </tr>
     <tr id='section-13'>
@@ -343,10 +343,10 @@ cache</p>
 
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="nv">_addDelegatedEvent: </span><span class="nf">(el, eventKey, fn) -&gt;</span>
-        <span class="nv">eventKey = </span><span class="nx">eventKey</span><span class="p">.</span><span class="nx">split</span> <span class="s2">&quot;:&quot;</span>
-        <span class="nv">mtEvent = </span><span class="s2">&quot;#{eventKey[0]}:relay(#{eventKey[1]})&quot;</span>
-        <span class="nx">el</span><span class="p">.</span><span class="nx">addEvent</span> <span class="nx">mtEvent</span><span class="p">,</span> <span class="nx">fn</span></pre></div>
+        <div class='highlight'><pre>    <span class="n">_addDelegatedEvent</span><span class="p">:</span> <span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">eventKey</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="n">eventKey</span> <span class="o">=</span> <span class="n">eventKey</span><span class="o">.</span><span class="n">split</span> <span class="s2">&quot;:&quot;</span>
+        <span class="n">mtEvent</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">eventKey</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">:relay(</span><span class="si">#{</span><span class="n">eventKey</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">el</span><span class="o">.</span><span class="n">addEvent</span> <span class="n">mtEvent</span><span class="p">,</span> <span class="n">fn</span></pre></div>
       </td>
     </tr>
   </table>

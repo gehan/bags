@@ -1,6 +1,6 @@
 (function() {
-  define(['require', 'bags/Storage', 'bags/Collection', 'bags/Exceptions'],
-function(require, Storage, Collection, Exceptions) {;
+  define(['require', 'bags/Storage', 'bags/Collection', 'bags/Exceptions',
+    'bags/Events'], function(require, Storage, Collection, Exceptions, Events) {;
 
   var $extends, Model,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
