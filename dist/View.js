@@ -12,10 +12,12 @@
       parsers: {},
       options: {
         injectTo: null,
-        autoDestroyModel: false
+        autoDestroyModel: false,
+        useKnockout: false
       },
       initialize: function(options) {
-        var key, _i, _len, _ref;
+        var key, _i, _len, _ref,
+          _this = this;
         if (options == null) {
           options = {};
         }
@@ -35,6 +37,11 @@
         this.render(options.data, {
           silent: true
         });
+        if (this.options.useKnockout && (this.model != null)) {
+          this.model.addEvent('change', function(field, value) {
+            return _this.viewModel[field](value);
+          });
+        }
         if (this.options.injectTo != null) {
           this.inject(this.options.injectTo);
         }
@@ -150,12 +157,25 @@
         }
       },
       _render: function(data) {
-        var el;
+        var el, field, value, _ref;
         if (data == null) {
           data = {};
         }
         data = this._getTemplateData(data);
-        return el = this.renderTemplate(this.template, data);
+        el = this.renderTemplate(this.template, data);
+        if (this.options.useKnockout) {
+          this.vm = Object.clone(data);
+          _ref = this.viewModel;
+          for (field in _ref) {
+            value = _ref[field];
+            this.viewModel[field] = ko.observable(value);
+          }
+          this.feck = function() {
+            return console.log(arguments);
+          };
+          ko.applyBindings(this, el);
+        }
+        return el;
       },
       _getTemplateData: function(data) {
         var fieldName, parser, _ref;

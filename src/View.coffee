@@ -37,6 +37,7 @@ new Class
     options:
         injectTo: null
         autoDestroyModel: false
+        useKnockout: false
 
     # On class initialisation any dust templates present will be loaded, the
     # view will be rendered and injected into the passed in container if
@@ -55,6 +56,9 @@ new Class
         if @model? and @options.autoDestroyModel
             @model.addEvent 'destroy', @destroy
         @render options.data, silent: true
+        if @options.useKnockout and @model?
+            @model.addEvent 'change', (field, value) =>
+                @viewModel[field](value)
         if @options.injectTo?
             @inject @options.injectTo
         @
@@ -188,6 +192,15 @@ new Class
     _render: (data={}) ->
         data = @_getTemplateData data
         el = @renderTemplate @template, data
+
+        if @options.useKnockout
+            @vm = Object.clone data
+            for field, value of @viewModel
+                @viewModel[field] = ko.observable(value)
+            @feck = ->
+                console.log arguments
+            ko.applyBindings this, el
+        el
 
     _getTemplateData: (data={}) ->
         data = Object.merge @data, data

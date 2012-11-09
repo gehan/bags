@@ -11,6 +11,7 @@
 #   - dist/**/*.js
 #
 src_files:
+    - vendor/knockout-2.2.0.js
     - vendor/curl-env.js
     - vendor/mootools-core-1.4.5.js
     - vendor/mootools-more-1.4.0.1.js

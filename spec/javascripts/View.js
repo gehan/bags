@@ -1,12 +1,15 @@
 (function() {
-  var View, done, flatten;
+  var Model, View, done, flatten;
 
   View = null;
 
+  Model = null;
+
   done = false;
 
-  curl(['bags/View'], function(_View) {
+  curl(['bags/View', 'bags/Model'], function(_View, _Model) {
     View = _View;
+    Model = _Model;
     return done = true;
   });
 
@@ -134,7 +137,7 @@
       expect(ano).toBe(v.refs.no);
       return expect($(v).innerHTML).toBe("<li ref=\"hello\">interface</li>" + "<li ref=\"yes\">interface</li><li ref=\"no\">No</li>");
     });
-    return it('allows customer parse functions for display', function() {
+    it('allows customer parse functions for display', function() {
       var data;
       v.parsers = {
         fullName: function(data) {
@@ -147,6 +150,27 @@
       };
       data = v._getTemplateData();
       return expect(data.fullName).toBe('Gehan Gonsalkorale');
+    });
+    return it('does the binding friend', function() {
+      var MyView;
+      window.model = new Model({
+        id: 5,
+        name: 'gehan',
+        feck: 'arse'
+      });
+      MyView = new Class({
+        Extends: View,
+        TEMPLATES: {
+          tests: "<div>\n    <i data-bind=\"text: vm.id\"></i>: <span data-bind=\"text: vm.name\"></span>\n    <p data-bind=\"click: feck\">click here</p>\n</div>"
+        },
+        template: 'tests'
+      });
+      window.view = new MyView({
+        model: model,
+        useKnockout: true
+      });
+      view.inject(document.body);
+      return expect(true).toBe(true);
     });
   });
 

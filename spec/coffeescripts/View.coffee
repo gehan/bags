@@ -1,8 +1,10 @@
 View = null
+Model = null
 
 done = false
-curl ['bags/View'], (_View) ->
+curl ['bags/View', 'bags/Model'], (_View, _Model) ->
     View = _View
+    Model = _Model
     done = true
 
 flatten = (obj) ->
@@ -137,4 +139,30 @@ describe "View test", ->
             lastName: 'Gonsalkorale'
         data = v._getTemplateData()
         expect(data.fullName).toBe 'Gehan Gonsalkorale'
+
+    it ('does the binding friend'), ->
+        window.model = new Model
+            id: 5
+            name: 'gehan'
+            feck: 'arse'
+
+        MyView = new Class
+            Extends: View
+            TEMPLATES:
+                tests: """
+                <div>
+                    <i data-bind="text: vm.id"></i>: <span data-bind="text: vm.name"></span>
+                    <p data-bind="click: feck">click here</p>
+                </div>
+                """
+
+            template: 'tests'
+
+        window.view = new MyView
+            model: model
+            useKnockout: true
+
+        view.inject document.body
+
+        expect(true).toBe true
 
