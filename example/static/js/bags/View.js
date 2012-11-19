@@ -12,7 +12,7 @@
       parsers: {},
       options: {
         injectTo: null,
-        autoDestroyModel: true
+        autoDestroyModel: false
       },
       initialize: function(options) {
         var key, _i, _len, _ref;
@@ -122,7 +122,12 @@
         return _results;
       },
       destroyViews: function(el) {
-        return this.getViews(el).invoke('destroy');
+        var views;
+        views = this.getViews(el);
+        if (views === null) {
+          return;
+        }
+        return views.invoke('destroy');
       },
       destroy: function() {
         if ((this.model != null) && this.options.autoDestroyModel) {

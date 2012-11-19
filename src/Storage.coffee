@@ -1,21 +1,21 @@
 # Provides prersistent model storage via AJAX. You can create alternative
 # Storage classes and implement these in your model to use other methods like
 # HTML5 local storage.
-define -> \
+`define(['bags/Events'], function(Events){`
 
-new Class
+# Storage uses CRUD functions, and this is mapped to it's HTTP counterparts
+# for this class
+_crudMap =
+    create: 'post'
+    read: 'get'
+    update: 'put'
+    delete: 'delete'
+
+Storage = new Class
     Implements: [Events]
 
     # Model storage
     # =============
-
-    # Storage uses CRUD functions, and this is mapped to it's HTTP counterparts
-    # for this class
-    _crudMap:
-        create: 'post'
-        read: 'get'
-        update: 'put'
-        delete: 'delete'
 
     # To perform storage functions, the [Model](Model.coffee.html) class will
     # call this method and pass simply the operation being performed and any
@@ -85,7 +85,7 @@ new Class
     storage: (operation, data, options={}) ->
         deferred = Q.defer()
 
-        method = @_crudMap[operation]
+        method = _crudMap[operation]
 
         fail = (reason=null) =>
             deferred.reject reason
@@ -173,3 +173,6 @@ new Class
             "#{url}/#{@id}"
         else
             url
+
+return Storage
+`})`

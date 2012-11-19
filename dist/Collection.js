@@ -1,6 +1,6 @@
 (function() {
 
-  define(['require', 'bags/Storage'], function(require, Storage) {
+  define(['require', 'bags/Storage', 'bags/Events'], function(require, Storage, Events) {
     return new Class({
       Extends: Array,
       Implements: [Options, Events, Storage],
@@ -48,7 +48,7 @@
           options = {};
         }
         promise = this.storage('read', filter);
-        promise.then(function(data) {
+        promise.then(function(models) {
           if (options.add) {
             _this.add(models, options);
           } else {
@@ -125,12 +125,12 @@
         return this.add(model, options);
       },
       get: function(field, value) {
-        var obj;
-        obj = null;
-        if (this.some(function(obj) {
-          return obj.get(field) === value;
-        })) {
-          return obj;
+        var obj, _i, _len;
+        for (_i = 0, _len = this.length; _i < _len; _i++) {
+          obj = this[_i];
+          if (obj.get(field) === value) {
+            return obj;
+          }
         }
       },
       sort: function(comparator, options) {
@@ -154,7 +154,7 @@
           if (type === 'number') {
             return aVal - bVal;
           } else if (type === 'string') {
-            return aVal.localeCompare(bVal);
+            return aVal.toLowerCase().localeCompare(bVal.toLowerCase());
           } else if (type === 'date') {
             return bVal.diff(aVal, 'ms');
           }
@@ -177,6 +177,9 @@
           model.collection = this;
         }
         model.addEvents({
+          any: function() {
+            return _this._modelEvent(model, arguments);
+          },
           destroy: function() {
             _this.erase(model);
             return _this.fireEvent('remove', [model]);
@@ -184,10 +187,14 @@
         });
         return model;
       },
+      _modelEvent: function(model, args) {
+        return this.fireEvent(args[0], [model, args[1]]);
+      },
       _remove: function(model, options) {
         if (options == null) {
           options = {};
         }
+        model.removeEvents('any');
         model.removeEvents('destroy');
         this.erase(model);
         if (!options.silent) {

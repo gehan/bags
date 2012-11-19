@@ -18,6 +18,7 @@ define ['bags/View'], (View) ->
 
         _createModelView: (model) ->
             view = new @modelView
+                autoDestroyModel: true
                 model: model
                 injectTo: @listEl
                 onRender: =>

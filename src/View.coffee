@@ -36,7 +36,7 @@ new Class
     # element
     options:
         injectTo: null
-        autoDestroyModel: true
+        autoDestroyModel: false
 
     # On class initialisation any dust templates present will be loaded, the
     # view will be rendered and injected into the passed in container if
@@ -161,7 +161,9 @@ new Class
     # Very handy method for emptying an element and killing all the views
     # inside it by calling their `destroy` methods
     destroyViews: (el) ->
-        @getViews(el).invoke 'destroy'
+        views = @getViews(el)
+        return if views is null
+        views.invoke 'destroy'
 
     destroy: ->
         if @model? and @options.autoDestroyModel

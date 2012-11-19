@@ -31,6 +31,7 @@
           var view,
             _this = this;
           return view = new this.modelView({
+            autoDestroyModel: true,
             model: model,
             injectTo: this.listEl,
             onRender: function() {

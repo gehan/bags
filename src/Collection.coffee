@@ -1,7 +1,7 @@
 # Provides a simple collection class, which can be used to handle retrieval
 # and management of sets of [Model](Model.coffee.html)s
 
-define ['require', 'bags/Storage'], (require, Storage) -> \
+define ['require', 'bags/Storage', 'bags/Events'], (require, Storage, Events) -> \
 
 new Class
     # Extends the native javascript Array object so we get all the methods of
@@ -66,7 +66,7 @@ new Class
     # `options.add=true` and `@add` will be called instead
     fetch: (filter={}, options={}) ->
         promise = @storage 'read', filter
-        promise.then (data) =>
+        promise.then (models) =>
             if options.add
                 @add models, options
             else
@@ -110,9 +110,8 @@ new Class
 
     # Get model with field matching value
     get: (field, value) ->
-        obj = null
-        if (@some (obj) -> obj.get(field) == value)
-            obj
+        for obj in this
+            return obj if obj.get(field) == value
 
     # Sorts the collection like a normal array but also fires a `sort` event
     sort: (comparator=@comparator, options={}) ->
@@ -127,7 +126,7 @@ new Class
             if type == 'number'
                 aVal - bVal
             else if type == 'string'
-                aVal.localeCompare bVal
+                aVal.toLowerCase().localeCompare bVal.toLowerCase()
             else if type == 'date'
                 bVal.diff aVal, 'ms'
         , options
@@ -151,12 +150,18 @@ new Class
         else if not model.collection?
             model.collection = this
         model.addEvents
+            any: =>
+                 @_modelEvent model, arguments
             destroy: =>
                 @erase model
                 @fireEvent 'remove', [model]
         model
 
-    _remove: (model, options={}) ->
+    _modelEvent: (model, args) ->
+        @fireEvent args[0], [model, args[1]]
+
+     _remove: (model, options={}) ->
+        model.removeEvents 'any'
         model.removeEvents 'destroy'
         @erase model
         @fireEvent 'remove', [model] unless options.silent
