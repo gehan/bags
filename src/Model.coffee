@@ -313,11 +313,11 @@ Model = new Class
 
         storageOptions = Object.merge {eventName: 'fetch'}, options
         promise = @storage 'read', null, storageOptions
-        promise.when (isSuccess, data) =>
-            if isSuccess
-                @set data, silent: true
-                @_clearDirtyFields()
-                @fireEvent 'fetch', [true] unless options.silent
+        promise.then (data) =>
+            @set data, silent: true
+            @_clearDirtyFields()
+            @fireEvent 'fetch', [true] unless options.silent
+        promise
 
     # Saves the model. Can be called simply as `save()` to store the model in
     # its current state or you can specificy only certain values to update and
@@ -352,12 +352,12 @@ Model = new Class
         storageMethod = if @isNew() then "create" else "update"
         storageOptions = Object.merge {eventName: 'save'}, options
         promise = @storage storageMethod, data, storageOptions
-        promise.when (isSuccess, data) =>
-            if isSuccess
-                setAttrFn() if not options.dontWait
-                model = data or {}
-                @set model, silent: true
-                @_clearDirtyFields()
+        promise.then (data) =>
+            setAttrFn() if not options.dontWait
+            model = data or {}
+            @set model, silent: true
+            @_clearDirtyFields()
+        promise
 
     # Deletes the model from storage
     destroy: (options={}) ->
@@ -373,9 +373,9 @@ Model = new Class
 
         storageOptions = Object.merge {eventName: 'destroy'}, options
         promise = @storage 'delete', null, storageOptions
-        promise.when (isSuccess, data) =>
-            if isSuccess
-                fireEvent() if not options.dontWait
+        promise.then (data) =>
+            fireEvent() if not options.dontWait
+        promise
 
     # Private methods
     # ===============

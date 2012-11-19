@@ -40,11 +40,11 @@
 and event delegation.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="nx">define</span> <span class="p">[</span><span class="s">&#39;bags/Template&#39;</span><span class="p">],</span> <span class="nf">(Template) -&gt;</span> <span class="o">\</span>
+        <div class='highlight'><pre><span class="nx">define</span> <span class="p">[</span><span class="s1">&#39;bags/Template&#39;</span><span class="p">],</span> <span class="nf">(Template) -&gt;</span> <span class="o">\</span>
 
 <span class="k">new</span> <span class="nx">Class</span>
     <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Options</span><span class="p">,</span> <span class="nx">Events</span><span class="p">,</span> <span class="nx">Template</span><span class="p">]</span>
-    <span class="nv">Binds: </span><span class="p">[</span><span class="s">&#39;destroy&#39;</span><span class="p">]</span></pre></div>
+    <span class="nv">Binds: </span><span class="p">[</span><span class="s1">&#39;destroy&#39;</span><span class="p">]</span></pre></div>
       </td>
     </tr>
     <tr id='section-2'>
@@ -151,17 +151,17 @@ be the view.</p>
       <td class=code>
         <div class='highlight'><pre>    <span class="nv">initialize: </span><span class="nf">(options={}) -&gt;</span>
         <span class="nx">@loadAllTemplates</span><span class="p">()</span>
-        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;model&#39;</span><span class="p">,</span> <span class="s">&#39;el&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;el&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
-                <span class="nx">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+                <span class="err">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
                 <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
         <span class="nx">@setOptions</span> <span class="nx">options</span>
         <span class="k">if</span> <span class="nx">@model</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">autoDestroyModel</span>
-            <span class="nx">@model</span><span class="p">.</span><span class="nx">addEvent</span> <span class="s">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
+            <span class="nx">@model</span><span class="p">.</span><span class="nx">addEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
         <span class="nx">@render</span> <span class="nx">options</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
         <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">injectTo</span><span class="o">?</span>
             <span class="nx">@inject</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">injectTo</span>
-        <span class="nx">@</span></pre></div>
+        <span class="err">@</span></pre></div>
       </td>
     </tr>
     <tr id='section-10'>
@@ -182,7 +182,7 @@ fired on <code>document</code></p></li>
       <td class=code>
         <div class='highlight'><pre>    <span class="nv">render: </span><span class="nf">(data={}, options={}) -&gt;</span>
         <span class="nv">el = </span><span class="nx">@_render</span> <span class="nx">data</span>
-        <span class="nx">el</span><span class="p">.</span><span class="nx">store</span> <span class="s">&#39;view&#39;</span><span class="p">,</span> <span class="nx">@</span>
+        <span class="nx">el</span><span class="p">.</span><span class="nx">store</span> <span class="s1">&#39;view&#39;</span><span class="p">,</span> <span class="err">@</span>
 
         <span class="k">if</span> <span class="o">not</span> <span class="nx">@el</span><span class="o">?</span>
             <span class="vi">@el = </span><span class="nx">el</span>
@@ -195,7 +195,7 @@ fired on <code>document</code></p></li>
         <span class="nv">container = </span><span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">el</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getParent</span><span class="p">()</span>
         <span class="nx">@_checkDomUpdate</span> <span class="nx">container</span>
 
-        <span class="nx">@fireEvent</span> <span class="s">&#39;render&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+        <span class="nx">@fireEvent</span> <span class="s1">&#39;render&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
         <span class="nx">el</span></pre></div>
       </td>
     </tr>
@@ -253,7 +253,7 @@ they are updated without disturbing the other refs</p></li>
         <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">refs</span><span class="p">).</span><span class="nx">each</span> <span class="p">(</span><span class="nx">ref</span><span class="p">)</span> <span class="o">=&gt;</span>
             <span class="nv">replaceThis = </span><span class="nx">@refs</span><span class="p">[</span><span class="nx">ref</span><span class="p">]</span>
             <span class="k">if</span> <span class="o">not</span> <span class="nx">replaceThis</span>
-                <span class="k">throw</span> <span class="s">&quot;Cannot find ref </span><span class="si">#{</span><span class="nx">ref</span><span class="si">}</span><span class="s"> in template </span><span class="si">#{</span><span class="nx">@template</span><span class="si">}</span><span class="s">&quot;</span>
+                <span class="k">throw</span> <span class="s2">&quot;Cannot find ref #{ref} in template #{@template}&quot;</span>
             <span class="nv">newEl = </span><span class="nx">@getRefs</span><span class="p">(</span><span class="nx">el</span><span class="p">)[</span><span class="nx">ref</span><span class="p">]</span>
             <span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">@refs</span><span class="p">,</span> <span class="nx">@getRefs</span><span class="p">(</span><span class="nx">newEl</span><span class="p">)</span>
             <span class="nx">@refs</span><span class="p">[</span><span class="nx">ref</span><span class="p">].</span><span class="nx">replaces</span> <span class="nx">replaceThis</span>
@@ -279,20 +279,20 @@ they are updated without disturbing the other refs</p></li>
 
     <span class="nv">getViews: </span><span class="nf">(el) -&gt;</span>
         <span class="nv">els = </span><span class="nx">el</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()</span>
-        <span class="nx">els</span><span class="p">.</span><span class="nx">retrieve</span><span class="p">(</span><span class="s">&#39;view&#39;</span><span class="p">)</span>
+        <span class="nx">els</span><span class="p">.</span><span class="nx">retrieve</span><span class="p">(</span><span class="s1">&#39;view&#39;</span><span class="p">)</span>
 
     <span class="nv">reorderViews: </span><span class="nf">(collection, rootEl) -&gt;</span>
         <span class="nv">views = </span><span class="nx">@getViews</span> <span class="nx">rootEl</span>
         <span class="k">for</span> <span class="nx">view</span> <span class="k">in</span> <span class="nx">views</span>
 
-            <span class="nv">dummy = </span><span class="k">new</span> <span class="nx">Element</span> <span class="s">&#39;div&#39;</span>
+            <span class="nv">dummy = </span><span class="k">new</span> <span class="nx">Element</span> <span class="s1">&#39;div&#39;</span>
             <span class="nv">current = </span><span class="nx">$</span><span class="p">(</span><span class="nx">view</span><span class="p">)</span>
             <span class="nv">desiredIndex = </span><span class="nx">collection</span><span class="p">.</span><span class="nx">indexOf</span> <span class="nx">view</span><span class="p">.</span><span class="nx">model</span>
             <span class="nv">swap = </span><span class="nx">rootEl</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()[</span><span class="nx">desiredIndex</span><span class="p">]</span>
 
-            <span class="nx">dummy</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">current</span><span class="p">,</span> <span class="s">&#39;before&#39;</span>
-            <span class="nx">current</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">swap</span><span class="p">,</span> <span class="s">&#39;before&#39;</span>
-            <span class="nx">swap</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">dummy</span><span class="p">,</span> <span class="s">&#39;before&#39;</span>
+            <span class="nx">dummy</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">current</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
+            <span class="nx">current</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">swap</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
+            <span class="nx">swap</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">dummy</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
             <span class="nx">dummy</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span></pre></div>
       </td>
     </tr>
@@ -306,12 +306,12 @@ inside it by calling their <code>destroy</code> methods</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="nv">destroyViews: </span><span class="nf">(el) -&gt;</span>
-        <span class="nx">@getViews</span><span class="p">(</span><span class="nx">el</span><span class="p">).</span><span class="nx">invoke</span> <span class="s">&#39;destroy&#39;</span>
+        <span class="nx">@getViews</span><span class="p">(</span><span class="nx">el</span><span class="p">).</span><span class="nx">invoke</span> <span class="s1">&#39;destroy&#39;</span>
 
     <span class="nv">destroy: </span><span class="o">-&gt;</span>
         <span class="k">if</span> <span class="nx">@model</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">autoDestroyModel</span>
-            <span class="nx">@model</span><span class="p">.</span><span class="nx">removeEvent</span> <span class="s">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
-        <span class="nx">@el</span><span class="p">.</span><span class="nx">eliminate</span> <span class="s">&#39;view&#39;</span>
+            <span class="nx">@model</span><span class="p">.</span><span class="nx">removeEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
+        <span class="nx">@el</span><span class="p">.</span><span class="nx">eliminate</span> <span class="s1">&#39;view&#39;</span>
         <span class="nx">@el</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
 
     <span class="nv">toElement: </span><span class="o">-&gt;</span> <span class="nx">@el</span></pre></div>
@@ -375,7 +375,7 @@ within the DOM or not, if so fire <code>domupdated</code> on <code>document</cod
         <span class="k">while</span> <span class="nv">parent = </span><span class="nx">$</span><span class="p">(</span><span class="nx">parent</span><span class="p">).</span><span class="nx">getParent</span><span class="p">()</span>
             <span class="nv">inDom = </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">parent</span> <span class="o">==</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span>
         <span class="k">if</span> <span class="nx">inDom</span>
-            <span class="nb">document</span><span class="p">.</span><span class="nx">fireEvent</span> <span class="s">&#39;domupdated&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">container</span><span class="p">]</span></pre></div>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">fireEvent</span> <span class="s1">&#39;domupdated&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">container</span><span class="p">]</span></pre></div>
       </td>
     </tr>
   </table>

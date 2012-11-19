@@ -79,18 +79,6 @@
       url = s._getUrl('read');
       return expect(url).toBe('/items/');
     });
-    it('sets request methods correctly', function() {
-      var promise;
-      s.id = 1;
-      promise = s.storage('read');
-      expect(promise.request.options.method).toBe('get');
-      promise = s.storage('create');
-      expect(promise.request.options.method).toBe('post');
-      promise = s.storage('delete');
-      expect(promise.request.options.method).toBe('delete');
-      promise = s.storage('update');
-      return expect(promise.request.options.method).toBe('put');
-    });
     it('sends data across to server as json', function() {
       var model, req;
       model = {
@@ -124,7 +112,7 @@
       return expect(lastCall).toBe(response.responseText);
     });
     it('executes success callback if passed through', function() {
-      var lastCall, promise, response, success;
+      var promise, response, success;
       response = {
         status: 200,
         responseText: flatten({
@@ -138,14 +126,18 @@
       success = jasmine.createSpy('succes cb');
       s.isCollection = true;
       promise = s.storage('read');
-      promise.when(function(isSuccess, ret) {
-        if (isSuccess) {
-          return success(ret);
-        }
+      promise.then(function(ret) {
+        return success(ret);
       });
-      lastCall = success.mostRecentCall.args[0];
-      return expect(lastCall).toBeObject({
-        id: 2
+      waitsFor(function() {
+        return success.wasCalled === true;
+      });
+      return runs(function() {
+        var lastCall;
+        lastCall = success.mostRecentCall.args[0];
+        return expect(lastCall).toBeObject({
+          id: 2
+        });
       });
     });
     it('executes failure callback if passed through', function() {
@@ -161,12 +153,15 @@
       fail = jasmine.createSpy('fail cb');
       s.isCollection = true;
       promise = s.storage('read');
-      promise.when(function(isSuccess, ret) {
-        if (!isSuccess) {
-          return fail(ret);
-        }
+      promise.then((function() {}), function(reason) {
+        return fail(reason);
       });
-      return expect(fail).toHaveBeenCalledWith('its rubbish');
+      waitsFor(function() {
+        return fail.wasCalled === true;
+      });
+      return runs(function() {
+        return expect(fail).toHaveBeenCalledWith('its rubbish');
+      });
     });
     it('fires off events when request starts/completes/succeeds', function() {
       var completeSpy, readSpy, successSpy;

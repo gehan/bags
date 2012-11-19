@@ -193,17 +193,16 @@ function(require, Storage, Collection, Exceptions) {;
         eventName: 'fetch'
       }, options);
       promise = this.storage('read', null, storageOptions);
-      return promise.when(function(isSuccess, data) {
-        if (isSuccess) {
-          _this.set(data, {
-            silent: true
-          });
-          _this._clearDirtyFields();
-          if (!options.silent) {
-            return _this.fireEvent('fetch', [true]);
-          }
+      promise.then(function(data) {
+        _this.set(data, {
+          silent: true
+        });
+        _this._clearDirtyFields();
+        if (!options.silent) {
+          return _this.fireEvent('fetch', [true]);
         }
       });
+      return promise;
     },
     save: function(key, value, options) {
       var ModelClass, attrs, data, promise, setAttrFn, storageMethod, storageOptions, toUpdate,
@@ -246,19 +245,18 @@ function(require, Storage, Collection, Exceptions) {;
         eventName: 'save'
       }, options);
       promise = this.storage(storageMethod, data, storageOptions);
-      return promise.when(function(isSuccess, data) {
+      promise.then(function(data) {
         var model;
-        if (isSuccess) {
-          if (!options.dontWait) {
-            setAttrFn();
-          }
-          model = data || {};
-          _this.set(model, {
-            silent: true
-          });
-          return _this._clearDirtyFields();
+        if (!options.dontWait) {
+          setAttrFn();
         }
+        model = data || {};
+        _this.set(model, {
+          silent: true
+        });
+        return _this._clearDirtyFields();
       });
+      return promise;
     },
     destroy: function(options) {
       var fireEvent, promise, storageOptions,
@@ -282,13 +280,12 @@ function(require, Storage, Collection, Exceptions) {;
         eventName: 'destroy'
       }, options);
       promise = this.storage('delete', null, storageOptions);
-      return promise.when(function(isSuccess, data) {
-        if (isSuccess) {
-          if (!options.dontWait) {
-            return fireEvent();
-          }
+      promise.then(function(data) {
+        if (!options.dontWait) {
+          return fireEvent();
         }
       });
+      return promise;
     },
     _attributes: {},
     _dirtyFields: {},

@@ -9,8 +9,6 @@ curl ['bags/Model', 'bags/Collection'], (_Model, _Collection) ->
     Collection = _Collection
     done = true
 
-Future = require 'future'
-
 flatten = (obj) ->
     JSON.encode obj
 
@@ -255,20 +253,21 @@ describe "Model test", ->
 
         expect(m.isNew()).toBe true
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
         saved = false
-        promise2 = m.save()
-        promise2.when (isSuccess, ret) ->
-            saved = true if isSuccess
+        m.save().then (ret) -> saved = true
+        deferred.resolve id: 2
 
-        promise.fulfill true, id: 2
+        waitsFor ->
+            saved == true
 
-        expect(saved).toBe true
-        lastCall = m.storage.mostRecentCall.args
-        expect(lastCall).toBeObject(['create', attrs, eventName: 'save' ])
-        expect(m.id).toBe 2
+        runs ->
+            expect(saved).toBe true
+            lastCall = m.storage.mostRecentCall.args
+            expect(lastCall).toBeObject(['create', attrs, eventName: 'save' ])
+            expect(m.id).toBe 2
 
     it 'sends update request to storage', ->
         attrs =
@@ -280,8 +279,8 @@ describe "Model test", ->
 
         expect(m.isNew()).toBe false
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
         promise2 = m.save()
 
@@ -330,8 +329,8 @@ describe "Model test", ->
     it 'save accepts values, but keeps id if existing model', ->
         m.set id: 1
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
         promise2 = m.save internet: 'yes'
 
@@ -371,34 +370,35 @@ describe "Model test", ->
     it 'save accepts callback for success', ->
         success = jasmine.createSpy 'success callback'
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
-        promise2 = m.save()
-        promise2.when (isSuccess, data) ->
-            success(data) if isSuccess
+        m.save().then success
 
-        promise.fulfill true, id: 3
+        deferred.resolve id: 3
 
-        expect(success).toHaveBeenCalled()
-        calledWith = flatten(success.mostRecentCall.args)
-        expect(calledWith).toBe flatten([id: 3])
+        waitsFor ->
+            success.wasCalled == true
+
+        runs ->
+            expect(success).toHaveBeenCalled()
+            calledWith = flatten(success.mostRecentCall.args)
+            expect(calledWith).toBe flatten([id: 3])
 
     it 'save accepts callback for failure', ->
         fail = jasmine.createSpy 'fail callback'
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
-        m.save()
+        m.save().then (->), fail
+        deferred.reject 'shiit'
 
-        promise2 = m.save()
-        promise2.when (isSuccess, data) ->
-            fail(data) unless isSuccess
+        waitsFor ->
+            fail.wasCalled == true
 
-        promise.fulfill false
-
-        expect(fail).toHaveBeenCalled()
+        runs ->
+            expect(fail).toHaveBeenCalledWith 'shiit'
 
     it 'destroy send delete request to server', ->
         success = jasmine.createSpy 'success callback'
@@ -407,20 +407,21 @@ describe "Model test", ->
         m.id = 1
         m.addEvent 'destroy', destroy
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
-        promise2 = m.destroy()
-        promise2.when (isSuccess) ->
-            success() if isSuccess
+        m.destroy().then success
+        deferred.resolve 'yeah mate'
 
-        promise2.fulfill true
+        waitsFor ->
+            success.wasCalled == true
 
-        lastCall = m.storage.mostRecentCall.args
-        expect(lastCall).toBeObject(['delete', null, eventName: 'destroy' ])
+        runs ->
+            lastCall = m.storage.mostRecentCall.args
+            expect(lastCall).toBeObject(['delete', null, eventName: 'destroy' ])
 
-        expect(success).toHaveBeenCalled()
-        expect(destroy).toHaveBeenCalled()
+            expect(success).toHaveBeenCalled()
+            expect(destroy).toHaveBeenCalled()
 
     it 'allows custom get methods', ->
         m.properties =
@@ -537,38 +538,51 @@ describe "Model test", ->
         expect(m.isDirty()).toBe false
 
     it 'is clean after fetch', ->
+        success = jasmine.createSpy()
         m = new Model {id: 1}, url: '/items'
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
-        promise.fulfill true, id: 1, text: 'yeah'
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
+        deferred.resolve id: 1, text: 'yeah'
 
-        m.fetch()
+        m.fetch().then success
         expect(m.isDirty()).toBe false
 
     it 'is clean after update', ->
+        success = jasmine.createSpy()
         m = new Model {id: 1}, url: '/items'
         m.set text: 'yeah mate'
         expect(m.isDirty()).toBe true
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
-        promise.fulfill true, id: 1
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
-        m.save()
-        expect(m.isDirty()).toBe false
+        m.save().then success
+        deferred.resolve id: 1
+
+        waitsFor ->
+            success.wasCalled == true
+
+        runs ->
+            expect(m.isDirty()).toBe false
 
     it 'is clean after save', ->
+        success = jasmine.createSpy()
         m = new Model {}, url: '/items'
         m.set text: 'yeah mate'
         expect(m.isDirty()).toBe true
 
-        promise = new Future()
-        spyOn(m, 'storage').andReturn promise
-        promise.fulfill true, id: 1
+        deferred = Q.defer()
+        spyOn(m, 'storage').andReturn deferred.promise
 
-        m.save()
-        expect(m.isDirty()).toBe false
+        m.save().then success
+        deferred.resolve id: 1
+
+        waitsFor ->
+            success.wasCalled == true
+
+        runs ->
+            expect(m.isDirty()).toBe false
 
     it 'only sets original value in dirty field after first set', ->
         m = new Model text: 'original text'

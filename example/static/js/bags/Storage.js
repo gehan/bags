@@ -10,19 +10,18 @@
         "delete": 'delete'
       },
       storage: function(operation, data, options) {
-        var Future, fail, fireEvent, method, promise, requestData,
+        var deferred, fail, fireEvent, method, requestData,
           _this = this;
         if (options == null) {
           options = {};
         }
-        Future = require('future');
-        promise = new Future();
+        deferred = Q.defer();
         method = this._crudMap[operation];
         fail = function(reason) {
           if (reason == null) {
             reason = null;
           }
-          promise.fulfill(false, reason);
+          deferred.reject(reason);
           return fireEvent("failure", [reason]);
         };
         fireEvent = function(event, args) {
@@ -41,7 +40,7 @@
         } else {
           requestData = {};
         }
-        promise.request = new Request.JSON({
+        new Request.JSON({
           url: this._getUrl(operation),
           method: method,
           data: requestData,
@@ -58,7 +57,7 @@
             var reason;
             if (_this.isSuccess(response)) {
               data = _this.parseResponse(response);
-              promise.fulfill(true, data);
+              deferred.resolve(data);
               return fireEvent("success", [data]);
             } else {
               reason = _this.parseFailResponse(response);
@@ -66,7 +65,7 @@
             }
           }
         }).send();
-        return promise;
+        return deferred.promise;
       },
       isSuccess: function(response) {
         return response.success === true;

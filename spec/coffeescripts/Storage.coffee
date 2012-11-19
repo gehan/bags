@@ -59,21 +59,6 @@ describe "Storage test", ->
         url = s._getUrl 'read'
         expect(url).toBe '/items/'
 
-    it 'sets request methods correctly', ->
-        s.id = 1
-
-        promise = s.storage 'read'
-        expect(promise.request.options.method).toBe 'get'
-
-        promise = s.storage 'create'
-        expect(promise.request.options.method).toBe 'post'
-
-        promise = s.storage 'delete'
-        expect(promise.request.options.method).toBe 'delete'
-
-        promise = s.storage 'update'
-        expect(promise.request.options.method).toBe 'put'
-
     it 'sends data across to server as json', ->
         model =
             text: 'internet'
@@ -114,14 +99,18 @@ describe "Storage test", ->
         setNextResponse response
 
         success = jasmine.createSpy 'succes cb'
-
         s.isCollection = true
-        promise = s.storage 'read'
-        promise.when (isSuccess, ret) ->
-            success(ret) if isSuccess
 
-        lastCall = success.mostRecentCall.args[0]
-        expect(lastCall).toBeObject(id: 2)
+        promise = s.storage 'read'
+        promise.then (ret) ->
+            success(ret)
+
+        waitsFor ->
+            success.wasCalled == true
+
+        runs ->
+            lastCall = success.mostRecentCall.args[0]
+            expect(lastCall).toBeObject(id: 2)
 
     it 'executes failure callback if passed through', ->
         response =
@@ -136,9 +125,14 @@ describe "Storage test", ->
 
         s.isCollection = true
         promise = s.storage 'read'
-        promise.when (isSuccess, ret) ->
-            fail(ret) if not isSuccess
-        expect(fail).toHaveBeenCalledWith('its rubbish')
+        promise.then (->), (reason) ->
+            fail(reason)
+
+        waitsFor ->
+            fail.wasCalled == true
+
+        runs ->
+            expect(fail).toHaveBeenCalledWith('its rubbish')
 
 
     it 'fires off events when request starts/completes/succeeds', ->

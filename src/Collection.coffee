@@ -66,13 +66,13 @@ new Class
     # `options.add=true` and `@add` will be called instead
     fetch: (filter={}, options={}) ->
         promise = @storage 'read', filter
-        promise.when (isSuccess, data) =>
-            if isSuccess
-                if options.add
-                    @add models, options
-                else
-                    @reset models, options
-                @fireEvent 'fetch', [true] unless options.silent
+        promise.then (data) =>
+            if options.add
+                @add models, options
+            else
+                @reset models, options
+            @fireEvent 'fetch', [true] unless options.silent
+        promise
 
     # This will replace the current collection with the models that are passed
     # in, and fires a `reset` event at the end.

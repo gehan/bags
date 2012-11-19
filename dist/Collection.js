@@ -48,18 +48,17 @@
           options = {};
         }
         promise = this.storage('read', filter);
-        return promise.when(function(isSuccess, data) {
-          if (isSuccess) {
-            if (options.add) {
-              _this.add(models, options);
-            } else {
-              _this.reset(models, options);
-            }
-            if (!options.silent) {
-              return _this.fireEvent('fetch', [true]);
-            }
+        promise.then(function(data) {
+          if (options.add) {
+            _this.add(models, options);
+          } else {
+            _this.reset(models, options);
+          }
+          if (!options.silent) {
+            return _this.fireEvent('fetch', [true]);
           }
         });
+        return promise;
       },
       reset: function(models, options) {
         var model;

@@ -1,5 +1,5 @@
 (function() {
-  var Collection, Future, Model, done, flatten;
+  var Collection, Model, done, flatten;
 
   Model = null;
 
@@ -14,8 +14,6 @@
     Collection = _Collection;
     return done = true;
   });
-
-  Future = require('future');
 
   flatten = function(obj) {
     return JSON.encode(obj);
@@ -311,36 +309,39 @@
       return expect(addedCollection.toJSON()).toBeObject(mdl.get('subCollection').toJSON());
     });
     it('sends create request to storage', function() {
-      var attrs, lastCall, promise, promise2, saved;
+      var attrs, deferred, saved;
       attrs = {
         value1: 'key1',
         value2: 'key2'
       };
       m.set(attrs);
       expect(m.isNew()).toBe(true);
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
       saved = false;
-      promise2 = m.save();
-      promise2.when(function(isSuccess, ret) {
-        if (isSuccess) {
-          return saved = true;
-        }
+      m.save().then(function(ret) {
+        return saved = true;
       });
-      promise.fulfill(true, {
+      deferred.resolve({
         id: 2
       });
-      expect(saved).toBe(true);
-      lastCall = m.storage.mostRecentCall.args;
-      expect(lastCall).toBeObject([
-        'create', attrs, {
-          eventName: 'save'
-        }
-      ]);
-      return expect(m.id).toBe(2);
+      waitsFor(function() {
+        return saved === true;
+      });
+      return runs(function() {
+        var lastCall;
+        expect(saved).toBe(true);
+        lastCall = m.storage.mostRecentCall.args;
+        expect(lastCall).toBeObject([
+          'create', attrs, {
+            eventName: 'save'
+          }
+        ]);
+        return expect(m.id).toBe(2);
+      });
     });
     it('sends update request to storage', function() {
-      var attrs, lastCall, promise, promise2;
+      var attrs, deferred, lastCall, promise2;
       attrs = {
         id: 2,
         value1: 'key1',
@@ -348,8 +349,8 @@
       };
       m.set(attrs);
       expect(m.isNew()).toBe(false);
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
       promise2 = m.save();
       lastCall = m.storage.mostRecentCall.args;
       return expect(lastCall).toBeObject([
@@ -405,12 +406,12 @@
       return expect(changeCalled).toBe(true);
     });
     it('save accepts values, but keeps id if existing model', function() {
-      var lastCall, promise, promise2;
+      var deferred, lastCall, promise2;
       m.set({
         id: 1
       });
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
       promise2 = m.save({
         internet: 'yes'
       });
@@ -468,65 +469,66 @@
       return expect(changeCalled).toBe(false);
     });
     it('save accepts callback for success', function() {
-      var calledWith, promise, promise2, success;
+      var deferred, success;
       success = jasmine.createSpy('success callback');
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
-      promise2 = m.save();
-      promise2.when(function(isSuccess, data) {
-        if (isSuccess) {
-          return success(data);
-        }
-      });
-      promise.fulfill(true, {
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
+      m.save().then(success);
+      deferred.resolve({
         id: 3
       });
-      expect(success).toHaveBeenCalled();
-      calledWith = flatten(success.mostRecentCall.args);
-      return expect(calledWith).toBe(flatten([
-        {
-          id: 3
-        }
-      ]));
+      waitsFor(function() {
+        return success.wasCalled === true;
+      });
+      return runs(function() {
+        var calledWith;
+        expect(success).toHaveBeenCalled();
+        calledWith = flatten(success.mostRecentCall.args);
+        return expect(calledWith).toBe(flatten([
+          {
+            id: 3
+          }
+        ]));
+      });
     });
     it('save accepts callback for failure', function() {
-      var fail, promise, promise2;
+      var deferred, fail;
       fail = jasmine.createSpy('fail callback');
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
-      m.save();
-      promise2 = m.save();
-      promise2.when(function(isSuccess, data) {
-        if (!isSuccess) {
-          return fail(data);
-        }
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
+      m.save().then((function() {}), fail);
+      deferred.reject('shiit');
+      waitsFor(function() {
+        return fail.wasCalled === true;
       });
-      promise.fulfill(false);
-      return expect(fail).toHaveBeenCalled();
+      return runs(function() {
+        return expect(fail).toHaveBeenCalledWith('shiit');
+      });
     });
     it('destroy send delete request to server', function() {
-      var destroy, lastCall, promise, promise2, success;
+      var deferred, destroy, success;
       success = jasmine.createSpy('success callback');
       destroy = jasmine.createSpy('destroy event');
       m.id = 1;
       m.addEvent('destroy', destroy);
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
-      promise2 = m.destroy();
-      promise2.when(function(isSuccess) {
-        if (isSuccess) {
-          return success();
-        }
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
+      m.destroy().then(success);
+      deferred.resolve('yeah mate');
+      waitsFor(function() {
+        return success.wasCalled === true;
       });
-      promise2.fulfill(true);
-      lastCall = m.storage.mostRecentCall.args;
-      expect(lastCall).toBeObject([
-        'delete', null, {
-          eventName: 'destroy'
-        }
-      ]);
-      expect(success).toHaveBeenCalled();
-      return expect(destroy).toHaveBeenCalled();
+      return runs(function() {
+        var lastCall;
+        lastCall = m.storage.mostRecentCall.args;
+        expect(lastCall).toBeObject([
+          'delete', null, {
+            eventName: 'destroy'
+          }
+        ]);
+        expect(success).toHaveBeenCalled();
+        return expect(destroy).toHaveBeenCalled();
+      });
     });
     it('allows custom get methods', function() {
       m.properties = {
@@ -674,23 +676,25 @@
       return expect(m.isDirty()).toBe(false);
     });
     it('is clean after fetch', function() {
-      var promise;
+      var deferred, success;
+      success = jasmine.createSpy();
       m = new Model({
         id: 1
       }, {
         url: '/items'
       });
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
-      promise.fulfill(true, {
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
+      deferred.resolve({
         id: 1,
         text: 'yeah'
       });
-      m.fetch();
+      m.fetch().then(success);
       return expect(m.isDirty()).toBe(false);
     });
     it('is clean after update', function() {
-      var promise;
+      var deferred, success;
+      success = jasmine.createSpy();
       m = new Model({
         id: 1
       }, {
@@ -700,16 +704,22 @@
         text: 'yeah mate'
       });
       expect(m.isDirty()).toBe(true);
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
-      promise.fulfill(true, {
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
+      m.save().then(success);
+      deferred.resolve({
         id: 1
       });
-      m.save();
-      return expect(m.isDirty()).toBe(false);
+      waitsFor(function() {
+        return success.wasCalled === true;
+      });
+      return runs(function() {
+        return expect(m.isDirty()).toBe(false);
+      });
     });
     it('is clean after save', function() {
-      var promise;
+      var deferred, success;
+      success = jasmine.createSpy();
       m = new Model({}, {
         url: '/items'
       });
@@ -717,13 +727,18 @@
         text: 'yeah mate'
       });
       expect(m.isDirty()).toBe(true);
-      promise = new Future();
-      spyOn(m, 'storage').andReturn(promise);
-      promise.fulfill(true, {
+      deferred = Q.defer();
+      spyOn(m, 'storage').andReturn(deferred.promise);
+      m.save().then(success);
+      deferred.resolve({
         id: 1
       });
-      m.save();
-      return expect(m.isDirty()).toBe(false);
+      waitsFor(function() {
+        return success.wasCalled === true;
+      });
+      return runs(function() {
+        return expect(m.isDirty()).toBe(false);
+      });
     });
     it('only sets original value in dirty field after first set', function() {
       m = new Model({

@@ -83,13 +83,12 @@ new Class
     #                 reason = data
     #
     storage: (operation, data, options={}) ->
-        Future = require 'future'
-        promise = new Future()
+        deferred = Q.defer()
 
         method = @_crudMap[operation]
 
         fail = (reason=null) =>
-            promise.fulfill false, reason
+            deferred.reject reason
             fireEvent "failure", [reason]
 
         fireEvent = (event, args) =>
@@ -103,7 +102,7 @@ new Class
         else
             requestData = {}
 
-        promise.request = new Request.JSON
+        new Request.JSON
             url: @_getUrl operation
             method: method
             data: requestData
@@ -114,14 +113,14 @@ new Class
             onSuccess: (response) =>
                 if @isSuccess response
                     data = @parseResponse response
-                    promise.fulfill true, data
+                    deferred.resolve data
                     fireEvent "success", [data]
                 else
                     reason = @parseFailResponse response
                     fail reason
         .send()
 
-        return promise
+        return deferred.promise
 
     # Response parsing
     # ----------------

@@ -11,12 +11,11 @@
 #   - dist/**/*.js
 #
 src_files:
+    - vendor/q.min.js
     - vendor/curl-env.js
     - vendor/mootools-core-1.4.5.js
     - vendor/mootools-more-1.4.0.1.js
     - vendor/curl.js
-    - vendor/futures.ender.js
-    - vendor/ender.noconflict.js
     - vendor/behaviour/Element.Data.js
     - vendor/behaviour/Event.Mock.js
     - vendor/behaviour/BehaviorAPI.js
