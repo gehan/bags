@@ -65,14 +65,13 @@ new Class
     # If you wish to add to the collection rather than replace it then set
     # `options.add=true` and `@add` will be called instead
     fetch: (filter={}, options={}) ->
-        promise = @storage 'read', filter
-        promise.then (models) =>
+        @storage('read', filter).then (models) =>
             if options.add
                 @add models, options
             else
                 @reset models, options
             @fireEvent 'fetch', [true] unless options.silent
-        promise
+            return models
 
     # This will replace the current collection with the models that are passed
     # in, and fires a `reset` event at the end.

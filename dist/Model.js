@@ -182,7 +182,7 @@
       return attrs;
     },
     fetch: function(options) {
-      var promise, storageOptions,
+      var storageOptions,
         _this = this;
       if (options == null) {
         options = {};
@@ -193,20 +193,19 @@
       storageOptions = Object.merge({
         eventName: 'fetch'
       }, options);
-      promise = this.storage('read', null, storageOptions);
-      promise.then(function(data) {
+      return this.storage('read', null, storageOptions).then(function(data) {
         _this.set(data, {
           silent: true
         });
         _this._clearDirtyFields();
         if (!options.silent) {
-          return _this.fireEvent('fetch', [true]);
+          _this.fireEvent('fetch', [true]);
         }
+        return data;
       });
-      return promise;
     },
     save: function(key, value, options) {
-      var ModelClass, attrs, data, promise, setAttrFn, storageMethod, storageOptions, toUpdate,
+      var ModelClass, attrs, data, setAttrFn, storageMethod, storageOptions, toUpdate,
         _this = this;
       if (options == null) {
         options = {};
@@ -245,8 +244,7 @@
       storageOptions = Object.merge({
         eventName: 'save'
       }, options);
-      promise = this.storage(storageMethod, data, storageOptions);
-      promise.then(function(data) {
+      return this.storage(storageMethod, data, storageOptions).then(function(data) {
         var model;
         if (!options.dontWait) {
           setAttrFn();
@@ -255,12 +253,12 @@
         _this.set(model, {
           silent: true
         });
-        return _this._clearDirtyFields();
+        _this._clearDirtyFields();
+        return data;
       });
-      return promise;
     },
     destroy: function(options) {
-      var fireEvent, promise, storageOptions,
+      var fireEvent, storageOptions,
         _this = this;
       if (options == null) {
         options = {};
@@ -280,13 +278,12 @@
       storageOptions = Object.merge({
         eventName: 'destroy'
       }, options);
-      promise = this.storage('delete', null, storageOptions);
-      promise.then(function(data) {
+      return this.storage('delete', null, storageOptions).then(function(data) {
         if (!options.dontWait) {
-          return fireEvent();
+          fireEvent();
         }
+        return data;
       });
-      return promise;
     },
     _attributes: {},
     _dirtyFields: {},
