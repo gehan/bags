@@ -75,12 +75,10 @@ Storage = new Class
     #   finished in some way, then you can do the following:
     #
     #         promise = model.storage(operation)
-    #         promise.when (isSuccess, data) ->
-    #             if isSucces
-    #                 # Some code to handle the response
-    #             else
-    #                 # Some code to handle the failure
-    #                 reason = data
+    #         promise.then (data) ->
+    #             # Some success code
+    #         , (reason) ->
+    #             # Some code to handle the failure
     #
     storage: (operation, data, options={}) ->
         deferred = Q.defer()
