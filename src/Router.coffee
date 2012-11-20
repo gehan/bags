@@ -1,12 +1,11 @@
 # Bags.Router AMD module
+`define(function(){`
 
 reParam = "\\:(\\w+)"
 reSplat = "\\*(\\w+)"
 reCombine = new RegExp "#{reParam}|#{reSplat}", 'g'
 
-define -> \
-
-new Class
+Router = new Class
     Implements: [Options, Events]
     Binds: ['_startRoute', '_getHtml4AtRoot']
 
@@ -302,3 +301,5 @@ new Class
         @view.destroy() if @view?
         @options.el.empty()
 
+return Router
+`})`
