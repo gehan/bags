@@ -9,22 +9,23 @@
 # Provides Collection mutator to allow class level access to the model's
 # collection
 Class.Mutators.Collection = (collectionDef) ->
-    if @$collection
-        collectionDef = Object.merge {}, @$collection, collectionDef
+    if @collection
+        collectionDef = Object.merge {}, @collection, collectionDef
     @extend
-        $collection: collectionDef
-        getCollection: ->
+        collection: collectionDef
+        getCollection: (models=[], options={}) ->
             copy = Object.clone collectionDef
-            col = new copy.class [],
+            col = new copy.class models, Object.merge(
                 url: @prototype.url
-            for key, value of copy when value != '$collection'
+            , options)
+            for key, value of copy when value != 'collection'
                 col[key] = value
             return col
 
 $extends = Class.Mutators.Extends
 Class.Mutators.Extends = (parent) ->
-    if parent.$collection
-        Class.Mutators.Collection.apply this, [parent.$collection]
+    if parent.collection
+        Class.Mutators.Collection.apply this, [parent.collection]
 
     $extends.apply this, arguments
 
@@ -313,11 +314,12 @@ Model = new Class
         return if @isNew()
 
         storageOptions = Object.merge {eventName: 'fetch'}, options
-        @storage('read', null, storageOptions).then (data) =>
+        promise = @storage 'read', null, storageOptions
+        promise.then (data) =>
             @set data, silent: true
             @_clearDirtyFields()
             @fireEvent 'fetch', [true] unless options.silent
-            return data
+        promise
 
     # Saves the model. Can be called simply as `save()` to store the model in
     # its current state or you can specificy only certain values to update and
@@ -351,12 +353,13 @@ Model = new Class
 
         storageMethod = if @isNew() then "create" else "update"
         storageOptions = Object.merge {eventName: 'save'}, options
-        @storage(storageMethod, data, storageOptions).then (data) =>
+        promise = @storage storageMethod, data, storageOptions
+        promise.then (data) =>
             setAttrFn() if not options.dontWait
             model = data or {}
             @set model, silent: true
             @_clearDirtyFields()
-            return data
+        promise
 
     # Deletes the model from storage
     destroy: (options={}) ->
@@ -371,9 +374,10 @@ Model = new Class
             fireEvent()
 
         storageOptions = Object.merge {eventName: 'destroy'}, options
-        @storage('delete', null, storageOptions).then (data) =>
+        promise = @storage 'delete', null, storageOptions
+        promise.then (data) =>
             fireEvent() if not options.dontWait
-            return data
+        promise
 
     # Private methods
     # ===============

@@ -5,8 +5,6 @@ curl ['bags/Events'], (_Events) ->
     BagsEvents = _Events
     done = true
 
-Future = require 'future'
-
 flatten = (obj) ->
     JSON.encode obj
 

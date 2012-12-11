@@ -1,5 +1,5 @@
 (function() {
-  var BagsEvents, Future, done, flatten;
+  var BagsEvents, done, flatten;
 
   BagsEvents = null;
 
@@ -9,8 +9,6 @@
     BagsEvents = _Events;
     return done = true;
   });
-
-  Future = require('future');
 
   flatten = function(obj) {
     return JSON.encode(obj);

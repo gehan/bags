@@ -25,15 +25,15 @@
       },
       loadAllTemplates: function() {
         var k, v, _i, _len, _ref, _ref1, _results;
-        _ref = this.TEMPLATES;
-        for (k in _ref) {
-          v = _ref[k];
+        _ref = $$('script[type=text/html]').get('template');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          k = _ref[_i];
           this._loadTemplate(k);
         }
-        _ref1 = $$('script[type=text/html]').get('template');
+        _ref1 = this.TEMPLATES;
         _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          k = _ref1[_i];
+        for (k in _ref1) {
+          v = _ref1[k];
           _results.push(this._loadTemplate(k));
         }
         return _results;
@@ -104,8 +104,7 @@
         return this.getRefs(el, ref);
       },
       _renderDustTemplate: function(templateName, data) {
-        var rendered,
-          _this = this;
+        var rendered;
         if (data == null) {
           data = {};
         }
@@ -125,9 +124,6 @@
           return chk;
         };
         rendered = "";
-        dust.filters.c = function(value) {
-          return value.capitalize();
-        };
         dust.render(templateName, data, function(err, out) {
           return rendered = out;
         });

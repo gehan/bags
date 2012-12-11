@@ -13,10 +13,12 @@ flatten = (obj) ->
 
 describe "ViewCollection test", ->
     cv = null; c = null; v = null; View = null; View2 = null
+    EmptyView = null
     listEl = null
     beforeEach ->
         waitsFor -> done
 
+        dust.cache = {}
         View2 = new Class
             Extends: View
             TEMPLATES:
@@ -29,12 +31,19 @@ describe "ViewCollection test", ->
                 @model.addEvent 'change', => @render()
                 ret
 
+        EmptyView = new Class
+            Extends: View
+            TEMPLATES:
+                empty: "<li>I'm empty</li>"
+                empty2: "<li>I'm empty too</li>"
+            template: 'empty'
+
         c = new Collection([
             id: 1
             name: 'item a'
         ,
             id: 2
-            name: 'item d'
+            name: 'item z'
         ,
             id: 3
             name: 'item c'
@@ -106,3 +115,25 @@ describe "ViewCollection test", ->
         expect(views[0].model.id).toBe 2
         expect(views[1].model.id).toBe 1
         expect(views[2].model.id).toBe 3
+
+    it 'shows emptyviewitem if collection empty', ->
+        listEl = new Element('ul')
+        c = new Collection [{id:1, name: 'feck'}]
+        cv = new Views.CollectionView c, listEl, View2,
+            itemEmptyView: EmptyView
+
+        listEl.inject document.body
+
+        expect(listEl.getChildren().length).toBe 1
+        expect(listEl.getChildren()[0].get 'text').toBe 'feck'
+
+        model = c[0]
+        c._remove model
+
+        expect(listEl.getChildren().length).toBe 1
+        expect(listEl.getChildren()[0].get 'text').toBe "I'm empty"
+
+        c.create {id:2, name: 'internet'}
+
+        expect(listEl.getChildren().length).toBe 1
+        expect(listEl.getChildren()[0].get 'text').toBe 'internet'

@@ -65,8 +65,8 @@ new Class
     #           </script>
     #
     loadAllTemplates: ->
-        @_loadTemplate(k) for k, v of @TEMPLATES
         @_loadTemplate(k) for k in $$('script[type=text/html]').get('template')
+        @_loadTemplate(k) for k, v of @TEMPLATES
 
 
     # Delegates events from the top level node(s) of the passed in `els`.
@@ -152,8 +152,6 @@ new Class
                 chk = chk.render(bodies.block, ctx.push({key: r, value: k}))
             chk
         rendered = ""
-        # add custom filter to capitalise strings in dust
-        dust.filters.c = (value) => value.capitalize()
         dust.render(templateName, data, (err, out) ->
             rendered = out
         )

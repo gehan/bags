@@ -4,37 +4,78 @@ define ['bags/View'], (View) ->
         Extends: View
         Binds: ['_sortViews', '_collectionAdd']
 
-        initialize: (@collection, @listEl, @modelView, options) ->
+        options:
+            # Define a view for when collection is empty
+            itemEmptyView: null
+            itemViewOptions: {}
+
+        initialize: (@collection, @listEl, @modelView, options={}) ->
             @setOptions options
             @collection.addEvents
                 add: @_collectionAdd
                 sort: @_sortViews
+                remove: (model) =>
+                    @_removeModelsView model
+                    @_toggleEmptyViewIfEmpty()
 
             @_createModelViews()
+            @_toggleEmptyViewIfEmpty()
+            @sort()
             @
+
+        getModelsView: (model) ->
+            views = @getViews @listEl
+            for view in views
+                if view.model is model
+                    return view
+
+        _removeModelsView: (model) ->
+            view = @getModelsView model
+            view.destroy() if view?
+
+        _toggleEmptyViewIfEmpty: ->
+            return unless @options.itemEmptyView
+            if @collection.length == 0
+                @_showEmptyItem()
+            else
+                @_hideEmptyItem()
+
+        sort: ->
+            @collection.sortBy @collection.sortField if @collection.sortField?
 
         _createModelViews: ->
             @_createModelView(model) for model in @collection
 
         _createModelView: (model) ->
-            view = new @modelView
+            options = Object.clone @options.itemViewOptions
+            Object.append options,
                 autoDestroyModel: true
                 model: model
                 injectTo: @listEl
-                onRender: =>
-                    @_sortCollection()
-                    @fireEvent 'render', [view].combine(arguments)
-                onDelete: =>
-                    @fireEvent 'delete', [view].combine(arguments)
+                onAny: (event, args=[]) =>
+                    if event == 'render'
+                        @sort()
+                    @fireEvent event, [view].combine(args)
+
+            view = new @modelView options
 
         _collectionAdd: (model) ->
+            @_toggleEmptyViewIfEmpty()
             @_createModelView model
             @_sortViews()
 
-        _sortCollection: ->
-            @collection.sortBy @collection.sortField if @collection.sortField?
+        _showEmptyItem: ->
+            return if @_emptyItem
+            @_emptyItem = new @options.itemEmptyView @options.itemViewOptions
+            @_emptyItem.inject @listEl
+
+        _hideEmptyItem: ->
+            return unless @_emptyItem
+            @_emptyItem.destroy()
+            delete @_emptyItem
 
         _sortViews: ->
+            return unless @collection.length > 0
             @reorderViews @collection, @listEl
 
         destroy: ->

@@ -1,7 +1,7 @@
 # Provides a simple view class. Implements `Template` for template rendering
 # and event delegation.
 
-define ['bags/Template'], (Template) -> \
+define ['bags/Template', 'bags/Events'], (Template, Events) -> \
 
 new Class
     Implements: [Options, Events, Template]

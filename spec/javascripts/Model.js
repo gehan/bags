@@ -809,6 +809,25 @@
     it('can create collection with Model.getCollection', function() {
       return expect(instanceOf(Model.getCollection(), Collection)).toBe(true);
     });
+    it('accepts models as argument', function() {
+      var col, models, options;
+      models = [
+        {
+          id: 1,
+          text: 'hello'
+        }, {
+          id: 3,
+          text: 'internet'
+        }
+      ];
+      options = {
+        url: '/gehan/'
+      };
+      col = Model.getCollection(models, options);
+      expect(col.length).toBe(2);
+      expect(col[1].get('text')).toBe('internet');
+      return expect(col.url).toBe('/gehan/');
+    });
     it('when extending Model keeps Model.getCollection', function() {
       var ModelDef, col;
       ModelDef = new Class({

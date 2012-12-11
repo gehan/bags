@@ -39,24 +39,26 @@
         return this;
       },
       fetch: function(filter, options) {
-        var _this = this;
+        var promise,
+          _this = this;
         if (filter == null) {
           filter = {};
         }
         if (options == null) {
           options = {};
         }
-        return this.storage('read', filter).then(function(models) {
+        promise = this.storage('read', filter);
+        promise.then(function(models) {
           if (options.add) {
             _this.add(models, options);
           } else {
             _this.reset(models, options);
           }
           if (!options.silent) {
-            _this.fireEvent('fetch', [true]);
+            return _this.fireEvent('fetch', [true]);
           }
-          return models;
         });
+        return promise;
       },
       reset: function(models, options) {
         var model;
@@ -120,7 +122,8 @@
           options = {};
         }
         model = this._makeModel(attributes);
-        return this.add(model, options);
+        this.add(model, options);
+        return model;
       },
       get: function(field, value) {
         var obj, _i, _len;

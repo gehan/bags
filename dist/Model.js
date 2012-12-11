@@ -7,20 +7,26 @@
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Class.Mutators.Collection = function(collectionDef) {
-    if (this.$collection) {
-      collectionDef = Object.merge({}, this.$collection, collectionDef);
+    if (this.collection) {
+      collectionDef = Object.merge({}, this.collection, collectionDef);
     }
     return this.extend({
-      $collection: collectionDef,
-      getCollection: function() {
+      collection: collectionDef,
+      getCollection: function(models, options) {
         var col, copy, key, value;
+        if (models == null) {
+          models = [];
+        }
+        if (options == null) {
+          options = {};
+        }
         copy = Object.clone(collectionDef);
-        col = new copy["class"]([], {
+        col = new copy["class"](models, Object.merge({
           url: this.prototype.url
-        });
+        }, options));
         for (key in copy) {
           value = copy[key];
-          if (value !== '$collection') {
+          if (value !== 'collection') {
             col[key] = value;
           }
         }
@@ -32,8 +38,8 @@
   $extends = Class.Mutators.Extends;
 
   Class.Mutators.Extends = function(parent) {
-    if (parent.$collection) {
-      Class.Mutators.Collection.apply(this, [parent.$collection]);
+    if (parent.collection) {
+      Class.Mutators.Collection.apply(this, [parent.collection]);
     }
     return $extends.apply(this, arguments);
   };
@@ -182,7 +188,7 @@
       return attrs;
     },
     fetch: function(options) {
-      var storageOptions,
+      var promise, storageOptions,
         _this = this;
       if (options == null) {
         options = {};
@@ -193,19 +199,20 @@
       storageOptions = Object.merge({
         eventName: 'fetch'
       }, options);
-      return this.storage('read', null, storageOptions).then(function(data) {
+      promise = this.storage('read', null, storageOptions);
+      promise.then(function(data) {
         _this.set(data, {
           silent: true
         });
         _this._clearDirtyFields();
         if (!options.silent) {
-          _this.fireEvent('fetch', [true]);
+          return _this.fireEvent('fetch', [true]);
         }
-        return data;
       });
+      return promise;
     },
     save: function(key, value, options) {
-      var ModelClass, attrs, data, setAttrFn, storageMethod, storageOptions, toUpdate,
+      var ModelClass, attrs, data, promise, setAttrFn, storageMethod, storageOptions, toUpdate,
         _this = this;
       if (options == null) {
         options = {};
@@ -244,7 +251,8 @@
       storageOptions = Object.merge({
         eventName: 'save'
       }, options);
-      return this.storage(storageMethod, data, storageOptions).then(function(data) {
+      promise = this.storage(storageMethod, data, storageOptions);
+      promise.then(function(data) {
         var model;
         if (!options.dontWait) {
           setAttrFn();
@@ -253,12 +261,12 @@
         _this.set(model, {
           silent: true
         });
-        _this._clearDirtyFields();
-        return data;
+        return _this._clearDirtyFields();
       });
+      return promise;
     },
     destroy: function(options) {
-      var fireEvent, storageOptions,
+      var fireEvent, promise, storageOptions,
         _this = this;
       if (options == null) {
         options = {};
@@ -278,12 +286,13 @@
       storageOptions = Object.merge({
         eventName: 'destroy'
       }, options);
-      return this.storage('delete', null, storageOptions).then(function(data) {
+      promise = this.storage('delete', null, storageOptions);
+      promise.then(function(data) {
         if (!options.dontWait) {
-          fireEvent();
+          return fireEvent();
         }
-        return data;
       });
+      return promise;
     },
     _attributes: {},
     _dirtyFields: {},
