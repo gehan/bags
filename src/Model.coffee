@@ -227,8 +227,13 @@ Model = new Class
             newVal = JSON.encode value
             changed = curVal isnt newVal
 
-            if not @_dirtyFields[key]? and changed
-                @_dirtyFields[key] = @_attributes[key]
+            if not @_dirtyFields[key]?
+                if changed
+                    @_dirtyFields[key] = @_attributes[key]
+            else
+                # has changed back to initial value, field no longer dirty
+                if @_dirtyFields[key] is value
+                    delete @_dirtyFields[key]
 
             @_attributes[key] = value
             if key == @idField

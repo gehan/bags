@@ -597,6 +597,16 @@ describe "Model test", ->
 
         expect(m._dirtyFields.text).toBe undefined
 
+    it 'no longer dirty once set back to original value', ->
+        m = new Model text: 'original text'
+        m.set text: 'new text'
+
+        expect(m._dirtyFields.text).toBe 'original text'
+
+        m.set text: 'original text'
+
+        expect(m._dirtyFields.text).toBe undefined
+
     it 'it can reset unsaved field changes', ->
         m = new Model id: 4, name: 'gehan', gear: true
         m.set name: 'fecker', gear: false
