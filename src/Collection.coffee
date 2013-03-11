@@ -154,8 +154,9 @@ new Class
             any: =>
                  @_modelEvent model, arguments
             destroy: =>
+                index = @indexOf model
                 @erase model
-                @fireEvent 'remove', [model]
+                @fireEvent 'remove', [model, index]
         model
 
     _modelEvent: (model, args) ->

@@ -1,7 +1,5 @@
-# Extends MooTools events to allow listening to any eventws
-
 `define(function() {`
-
+# Extends MooTools events to allow listening to any eventws
 removeOn = (string) ->
     string.replace(/^on([A-Z])/, (full, first) ->
         first.toLowerCase()

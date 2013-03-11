@@ -53,7 +53,7 @@ define ['bags/View'], (View) ->
                 model: model
                 injectTo: @listEl
                 onAny: (event, args=[]) =>
-                    if event == 'render'
+                    if event in ['render', 'rerender']
                         @sort()
                     @fireEvent event, [view].combine(args)
 

@@ -225,6 +225,8 @@ Model = new Class
 
             curVal = JSON.encode @_attributes[key]
             newVal = JSON.encode value
+            dirtyVal = JSON.encode @_dirtyFields[key]
+
             changed = curVal isnt newVal
 
             if not @_dirtyFields[key]?
@@ -232,7 +234,7 @@ Model = new Class
                     @_dirtyFields[key] = @_attributes[key]
             else
                 # has changed back to initial value, field no longer dirty
-                if @_dirtyFields[key] is value
+                if newVal is dirtyVal
                     delete @_dirtyFields[key]
 
             @_attributes[key] = value

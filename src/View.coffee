@@ -119,7 +119,7 @@ new Class
     # they are updated without disturbing the other refs
     #
     # * If within the dom then `domupdated` is still fired on `document`
-    rerender: (refs, data={}) ->
+    rerender: (refs, data={}, options={}) ->
         el = @_render data
         Array.from(refs).each (ref) =>
             replaceThis = @refs[ref]
@@ -130,6 +130,8 @@ new Class
             @refs[ref].replaces replaceThis
 
             @_checkDomUpdate newEl.getParent()
+
+        @fireEvent 'rerender' unless options.silent
 
     # We have an inject method here so that we can fire `domupdated` on
     # `document` if necessary.

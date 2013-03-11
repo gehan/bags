@@ -5,7 +5,9 @@ NullStorage = new Class
 
     storage: (operation, data, options={}) ->
         deferred = Q.defer()
-        deferred.resolve success: true
+        if data and not data.id
+            data.id = Math.floor(Math.random()*100)
+        deferred.resolve data
         return deferred.promise
 
 return NullStorage
