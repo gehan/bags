@@ -29,9 +29,15 @@ ViewModel = new Class
 
     init: ->
 
+    # Define the properties of the ViewModel here. Functions can be put
+    # directly on the class but properties can't be on the prototype so must
+    # go here. It will also group them in one place.
+    properties: ->
+
     initialize: (@element, options) ->
         @setOptions options
         @init()
+        @properties()
         if @options.template
             el = @renderTemplate @options.template
             @element.adopt el
