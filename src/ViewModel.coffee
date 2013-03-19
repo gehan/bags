@@ -1,6 +1,18 @@
 `define(['ko', 'bags/Template'],
 function(ko, Template){`
 
+pushHandler = (event) ->
+    element = event.target
+    event.preventDefault()
+    href = element.get 'href'
+    History.pushState null, null, href
+
+ko.bindingHandlers.pushState =
+    init: (element, valueAccessor) ->
+        element.addEvent 'click', pushHandler
+        ko.utils.domNodeDisposal.addDisposeCallback element, ->
+            element.removeEvent 'click', pushHandler
+
 ko.bindingHandlers.someBehavior =
     init: (element, valueAccessor) ->
         console.log 'apply some behavior'
