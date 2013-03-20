@@ -27,13 +27,13 @@ ko.bindingHandlers.editable =
             element.contentEditable = true
             element.focus()
         blurFn = ->
+            valueAccessor() element.get('text')
             element.contentEditable = false
 
         element.addEvents
             click: editFn
             blur: blurFn
 
-        # handle disposal (if KO removes by the template binding)
         ko.utils.domNodeDisposal.addDisposeCallback element, ->
             element.removeEvents
                 click: editFn
