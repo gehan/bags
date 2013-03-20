@@ -72,7 +72,7 @@ new Class
             else
                 @reset models, options
             @fireEvent 'fetch', [true] unless options.silent
-        promise
+            return this
 
     # This will replace the current collection with the models that are passed
     # in, and fires a `reset` event at the end.
