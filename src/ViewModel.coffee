@@ -13,18 +13,36 @@ ko.bindingHandlers.pushState =
         ko.utils.domNodeDisposal.addDisposeCallback element, ->
             element.removeEvent 'click', pushHandler
 
-ko.bindingHandlers.someBehavior =
-    init: (element, valueAccessor) ->
-        console.log 'apply some behavior'
-        ko.utils.domNodeDisposal.addDisposeCallback element, ->
-            console.log 'removed'
+ko.bindingHandlers.editable =
+    init: (element, valueAccessor, allBindingsAccessor) ->
+        # get the options that were passed in
+        options = allBindingsAccessor().jeditableOptions or {}
 
-ko.bindingHandlers.itemBehavior =
-    init: (element, valueAccessor) ->
+        # "submit" should be the default onblur action like regular ko controls
+        if !options.onblur
+            options.onblur = 'submit';
+
+        # set the value on submit and pass the editable the options
+        editFn = ->
+            element.contentEditable = true
+            element.focus()
+        blurFn = ->
+            element.contentEditable = false
+
+        element.addEvents
+            click: editFn
+            blur: blurFn
+
+        # handle disposal (if KO removes by the template binding)
         ko.utils.domNodeDisposal.addDisposeCallback element, ->
-            console.log 'removed item'
-    update: (element, valueAccessor, allBindingsAccessor, viewModel) ->
-        console.log 'updated item behavior'
+            element.removeEvents
+                click: editFn
+                blur: blurFn
+
+     #update the control when the view model changes
+     update: (element, valueAccessor) ->
+         value = ko.utils.unwrapObservable valueAccessor()
+         $(element).set 'html', value
 
 # Helper to allow multiple ViewModels in same html template
 ko.bindingHandlers.stopBinding =
