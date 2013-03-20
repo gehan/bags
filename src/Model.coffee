@@ -24,7 +24,7 @@ Class.Mutators.Collection = (collectionDef) ->
 
 $extends = Class.Mutators.Extends
 Class.Mutators.Extends = (parent) ->
-    if parent.collection
+    if parent? and parent.collection
         Class.Mutators.Collection.apply this, [parent.collection]
 
     $extends.apply this, arguments
@@ -326,7 +326,7 @@ Model = new Class
             @set data, silent: true
             @_clearDirtyFields()
             @fireEvent 'fetch', [true] unless options.silent
-        promise
+            return this
 
     # Saves the model. Can be called simply as `save()` to store the model in
     # its current state or you can specificy only certain values to update and
@@ -366,7 +366,7 @@ Model = new Class
             model = data or {}
             @set model, silent: true
             @_clearDirtyFields()
-        promise
+            return this
 
     # Deletes the model from storage
     destroy: (options={}) ->
@@ -384,7 +384,7 @@ Model = new Class
         promise = @storage 'delete', null, storageOptions
         promise.then (data) =>
             fireEvent() if not options.dontWait
-        promise
+            return this
 
     # Private methods
     # ===============
