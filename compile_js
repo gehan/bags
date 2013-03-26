@@ -1,0 +1,2 @@
+coffee --output dist -bc src
+coffee --output spec/javascripts -c spec/coffeescripts
