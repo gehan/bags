@@ -1,7 +1,0 @@
-guard 'coffeescript', :input => 'coffeescript', :output => 'static/js', :all_on_start => true
-guard 'coffeescript', :input => '../src', :output => 'static/js/bags', :all_on_start => true
-
-guard 'compass' do
-  watch(/^sass\/(.*)\.s[ac]ss/)
-end
-
