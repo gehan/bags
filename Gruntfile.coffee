@@ -12,12 +12,6 @@ module.exports = (grunt) ->
                 src: ['**/*.coffee']
                 dest: 'dist'
                 ext: '.js'
-            example:
-                expand: true
-                cwd: 'src'
-                src: ['**/*.coffee']
-                dest: 'example/static/js/bags'
-                ext: '.js'
             specs:
                 expand: true
                 cwd: 'spec/coffeescripts'
