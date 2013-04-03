@@ -5,6 +5,11 @@
     "project_name": "bags",
     "show_timestamp": true
   },
-  "dependencies": []
+  "dependencies": [],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-coffee": "~0.6.4",
+    "grunt-contrib-jasmine": "~0.4.1"
+  }
 }
 
