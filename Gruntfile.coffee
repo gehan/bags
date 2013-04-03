@@ -3,6 +3,11 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
+
+        watch:
+            files: ['src/**.coffee', 'spec/coffeescripts/**.coffee']
+            tasks: ['test']
+
         coffee:
             options:
                 bare: true
@@ -43,6 +48,7 @@ module.exports = (grunt) ->
 
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-jasmine'
+    grunt.loadNpmTasks 'grunt-contrib-watch'
 
     grunt.registerTask 'default', ['coffee']
     grunt.registerTask 'test', ['coffee', 'jasmine']
