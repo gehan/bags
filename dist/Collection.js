@@ -150,12 +150,27 @@ define(['require', 'bags/Storage', 'bags/Events'], function(require, Storage, Ev
         return this.fireEvent('sort');
       }
     },
+    _parseSort: function(field) {
+      if (field.substr(0, 1) === '-') {
+        return [field.substr(1), true];
+      } else {
+        return [field, false];
+      }
+    },
     sortBy: function(field, options) {
+      var descending, _ref;
+
+      _ref = this._parseSort(field), field = _ref[0], descending = _ref[1];
       return this.sort(function(a, b) {
         var aVal, bVal, type;
 
-        aVal = a.get(field);
-        bVal = b.get(field);
+        if (descending) {
+          bVal = a.get(field);
+          aVal = b.get(field);
+        } else {
+          aVal = a.get(field);
+          bVal = b.get(field);
+        }
         type = typeOf(aVal);
         if (type === 'number') {
           return aVal - bVal;

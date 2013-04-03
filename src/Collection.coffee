@@ -119,10 +119,22 @@ new Class
         @parent comparator
         @fireEvent 'sort' unless options.silent
 
+    _parseSort: (field) ->
+        if field.substr(0,1) is '-'
+            [field.substr(1), true]
+        else
+            [field, false]
+
     sortBy: (field, options) ->
+        [field, descending] = @_parseSort(field)
+
         @sort (a, b ) ->
-            aVal = a.get field
-            bVal = b.get field
+            if descending
+                bVal = a.get field
+                aVal = b.get field
+            else
+                aVal = a.get field
+                bVal = b.get field
             type = typeOf aVal
             if type == 'number'
                 aVal - bVal
