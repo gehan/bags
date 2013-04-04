@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><title>ViewModel.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../index.html" class="source"><span class="file_name">README</span></a><a href="../src/Views.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Views.coffee</span></a><a href="../src/Exceptions.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Exceptions.coffee</span></a><a href="../src/NullStorage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">NullStorage.coffee</span></a><a href="../src/View.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">View.coffee</span></a><a href="../src/Template.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Template.coffee</span></a><a href="../src/ViewModel.coffee.html" class="source selected"><span class="base_path">src / </span><span class="file_name">ViewModel.coffee</span></a><a href="../src/Storage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Storage.coffee</span></a><a href="../src/Model.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Model.coffee</span></a><a href="../src/Collection.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Collection.coffee</span></a><a href="../src/Events.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Events.coffee</span></a><a href="../src/Router.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Router.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>ViewModel.coffee</h1><div class="filepath">src/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div>
+</td><td class="code"><div class="highlight"><pre><span class="o">`</span><span class="nx">define</span><span class="p">([</span><span class="s">&#39;ko&#39;</span><span class="p">,</span> <span class="s">&#39;bags/Template&#39;</span><span class="p">],</span>
+<span class="nx">function</span><span class="p">(</span><span class="nx">ko</span><span class="p">,</span> <span class="nx">Template</span><span class="p">){</span><span class="o">`</span>
+
+<span class="nv">pushHandler = </span><span class="nf">(event) -&gt;</span>
+    <span class="nv">element = </span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">()</span>
+    <span class="nv">href = </span><span class="nx">element</span><span class="p">.</span><span class="nx">get</span> <span class="s">&#39;href&#39;</span>
+    <span class="nx">History</span><span class="p">.</span><span class="nx">pushState</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">href</span>
+
+<span class="nv">ko.bindingHandlers.pushState =</span>
+    <span class="nv">init: </span><span class="nf">(element, valueAccessor) -&gt;</span>
+        <span class="nx">element</span><span class="p">.</span><span class="nx">addEvent</span> <span class="s">&#39;click&#39;</span><span class="p">,</span> <span class="nx">pushHandler</span>
+        <span class="nx">ko</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">domNodeDisposal</span><span class="p">.</span><span class="nx">addDisposeCallback</span> <span class="nx">element</span><span class="p">,</span> <span class="nf">-&gt;</span>
+            <span class="nx">element</span><span class="p">.</span><span class="nx">removeEvent</span> <span class="s">&#39;click&#39;</span><span class="p">,</span> <span class="nx">pushHandler</span>
+
+<span class="nv">ko.bindingHandlers.editable =</span>
+    <span class="nv">init: </span><span class="nf">(element, valueAccessor, allBindingsAccessor) -&gt;</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><p>get the options that were passed in</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="nv">options = </span><span class="nx">allBindingsAccessor</span><span class="p">().</span><span class="nx">jeditableOptions</span> <span class="o">or</span> <span class="p">{}</span></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><p>"submit" should be the default onblur action like regular ko controls</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="k">if</span> <span class="o">!</span><span class="nx">options</span><span class="p">.</span><span class="nx">onblur</span>
+            <span class="nv">options.onblur = </span><span class="s">&#39;submit&#39;</span><span class="p">;</span></pre></div></td></tr><tr id="section-4"><td class="docs"><div class="pilwrap"><a href="#section-4" class="pilcrow">&#182;</a></div><p>set the value on submit and pass the editable the options</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="nv">editFn = </span><span class="nf">-&gt;</span>
+            <span class="nv">element.contentEditable = </span><span class="kc">true</span>
+            <span class="nx">element</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span>
+        <span class="nv">blurFn = </span><span class="nf">-&gt;</span>
+            <span class="nx">valueAccessor</span><span class="p">()</span> <span class="nx">element</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">)</span>
+            <span class="nv">element.contentEditable = </span><span class="kc">false</span>
+
+        <span class="nx">element</span><span class="p">.</span><span class="nx">addEvents</span>
+            <span class="nv">click: </span><span class="nx">editFn</span>
+            <span class="nv">blur: </span><span class="nx">blurFn</span>
+
+        <span class="nx">ko</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">domNodeDisposal</span><span class="p">.</span><span class="nx">addDisposeCallback</span> <span class="nx">element</span><span class="p">,</span> <span class="nf">-&gt;</span>
+            <span class="nx">element</span><span class="p">.</span><span class="nx">removeEvents</span>
+                <span class="nv">click: </span><span class="nx">editFn</span>
+                <span class="nv">blur: </span><span class="nx">blurFn</span></pre></div></td></tr><tr id="section-5"><td class="docs"><div class="pilwrap"><a href="#section-5" class="pilcrow">&#182;</a></div><p>update the control when the view model changes</p>
+</td><td class="code"><div class="highlight"><pre>     <span class="nv">update: </span><span class="nf">(element, valueAccessor) -&gt;</span>
+         <span class="nv">value = </span><span class="nx">ko</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">unwrapObservable</span> <span class="nx">valueAccessor</span><span class="p">()</span>
+         <span class="nx">$</span><span class="p">(</span><span class="nx">element</span><span class="p">).</span><span class="nx">set</span> <span class="s">&#39;html&#39;</span><span class="p">,</span> <span class="nx">value</span></pre></div></td></tr><tr id="section-6"><td class="docs"><div class="pilwrap"><a href="#section-6" class="pilcrow">&#182;</a></div><p>Helper to allow multiple ViewModels in same html template</p>
+</td><td class="code"><div class="highlight"><pre><span class="nv">ko.bindingHandlers.stopBinding =</span>
+    <span class="nv">init: </span><span class="nf">-&gt;</span>
+        <span class="k">return</span> <span class="nv">controlsDescendantBindings: </span><span class="kc">true</span>
+<span class="nv">ko.virtualElements.allowedBindings.stopBinding = </span><span class="kc">true</span>
+
+<span class="nv">ViewModel = </span><span class="k">new</span> <span class="nx">Class</span>
+    <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Options</span><span class="p">,</span> <span class="nx">Events</span><span class="p">,</span> <span class="nx">Template</span><span class="p">]</span>
+
+    <span class="nv">options:</span></pre></div></td></tr><tr id="section-7"><td class="docs"><div class="pilwrap"><a href="#section-7" class="pilcrow">&#182;</a></div><p>If specified then will render dust template</p>
+</td><td class="code"><div class="highlight"><pre>        <span class="nv">template: </span><span class="kc">null</span>
+
+    <span class="nv">init: </span><span class="nf">-&gt;</span></pre></div></td></tr><tr id="section-8"><td class="docs"><div class="pilwrap"><a href="#section-8" class="pilcrow">&#182;</a></div><p>Define the properties of the ViewModel here. Functions can be put
+directly on the class but properties can't be on the prototype so must
+go here. It will also group them in one place.</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">properties: </span><span class="nf">-&gt;</span>
+
+    <span class="nv">initialize: </span><span class="nf">(@element, options) -&gt;</span>
+        <span class="nx">@setOptions</span> <span class="nx">options</span>
+        <span class="nx">@init</span><span class="p">()</span>
+        <span class="nx">@properties</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">template</span>
+            <span class="nv">el = </span><span class="nx">@renderTemplate</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">template</span>
+            <span class="nx">@element</span><span class="p">.</span><span class="nx">adopt</span> <span class="nx">el</span>
+        <span class="nx">@applyBindings</span><span class="p">()</span>
+        <span class="k">return</span> <span class="k">this</span>
+
+    <span class="nv">computed: </span><span class="nf">(fn, bind) -&gt;</span>
+        <span class="nx">ko</span><span class="p">.</span><span class="nx">computed</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">bind</span>
+
+    <span class="nv">observable: </span><span class="nf">(value) -&gt;</span>
+        <span class="nx">ko</span><span class="p">.</span><span class="nx">observable</span> <span class="nx">value</span>
+
+    <span class="nv">observableArray: </span><span class="nf">(value=[]) -&gt;</span>
+        <span class="nx">ko</span><span class="p">.</span><span class="nx">observableArray</span> <span class="nx">value</span>
+
+    <span class="nv">applyBindings: </span><span class="nf">-&gt;</span>
+        <span class="nx">ko</span><span class="p">.</span><span class="nx">applyBindings</span> <span class="k">this</span><span class="p">,</span> <span class="nx">@element</span>
+
+    <span class="nv">destroy: </span><span class="nf">-&gt;</span>
+        <span class="nx">ko</span><span class="p">.</span><span class="nx">cleanNode</span> <span class="nx">@element</span>
+
+<span class="k">return</span> <span class="nx">ViewModel</span>
+
+<span class="o">`</span><span class="p">})</span><span class="o">`</span>
+
+</pre></div></td></tr></tbody></table><div id="generated">generated Thu Apr 04 2013 10:42:38 GMT+0000 (UTC)  </div><div id="projectname"><a href="../index.html">bags</a></div></div></body></html>

@@ -1,27 +1,28 @@
-<!DOCTYPE html><html><head><title>Model.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../index.html" class="source"><span class="file_name">README</span></a><a href="../src/Views.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Views.coffee</span></a><a href="../src/Exceptions.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Exceptions.coffee</span></a><a href="../src/View.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">View.coffee</span></a><a href="../src/Template.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Template.coffee</span></a><a href="../src/Storage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Storage.coffee</span></a><a href="../src/Model.coffee.html" class="source selected"><span class="base_path">src / </span><span class="file_name">Model.coffee</span></a><a href="../src/Collection.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Collection.coffee</span></a><a href="../src/Events.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Events.coffee</span></a><a href="../src/Router.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Router.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>Model.coffee</h1><div class="filepath">src/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><p>Provides a simple model class. The key benefit is separating models from
+<!DOCTYPE html><html><head><title>Model.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../index.html" class="source"><span class="file_name">README</span></a><a href="../src/Views.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Views.coffee</span></a><a href="../src/Exceptions.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Exceptions.coffee</span></a><a href="../src/NullStorage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">NullStorage.coffee</span></a><a href="../src/View.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">View.coffee</span></a><a href="../src/Template.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Template.coffee</span></a><a href="../src/ViewModel.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">ViewModel.coffee</span></a><a href="../src/Storage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Storage.coffee</span></a><a href="../src/Model.coffee.html" class="source selected"><span class="base_path">src / </span><span class="file_name">Model.coffee</span></a><a href="../src/Collection.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Collection.coffee</span></a><a href="../src/Events.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Events.coffee</span></a><a href="../src/Router.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Router.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>Model.coffee</h1><div class="filepath">src/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><p>Provides a simple model class. The key benefit is separating models from
 your view code, along with concerns like persistance, and interacting
 through the events fired when a model is updated to handle rendering.</p>
-</td><td class="code"><div class="highlight"><pre><span class="o">`</span><span class="nx">define</span><span class="p">([</span><span class="s1">&#39;require&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Storage&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Collection&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Exceptions&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;bags/Events&#39;</span><span class="p">],</span> <span class="nx">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">Storage</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span> <span class="nx">Exceptions</span><span class="p">,</span> <span class="nx">Events</span><span class="p">)</span>
+</td><td class="code"><div class="highlight"><pre><span class="o">`</span><span class="nx">define</span><span class="p">([</span><span class="s">&#39;require&#39;</span><span class="p">,</span> <span class="s">&#39;bags/Storage&#39;</span><span class="p">,</span> <span class="s">&#39;bags/Collection&#39;</span><span class="p">,</span> <span class="s">&#39;bags/Exceptions&#39;</span><span class="p">,</span>
+    <span class="s">&#39;bags/Events&#39;</span><span class="p">],</span> <span class="nx">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">Storage</span><span class="p">,</span> <span class="nx">Collection</span><span class="p">,</span> <span class="nx">Exceptions</span><span class="p">,</span> <span class="nx">Events</span><span class="p">)</span>
     <span class="p">{</span><span class="o">`</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><p>Provides Collection mutator to allow class level access to the model's
 collection</p>
 </td><td class="code"><div class="highlight"><pre><span class="nv">Class.Mutators.Collection = </span><span class="nf">(collectionDef) -&gt;</span>
-    <span class="k">if</span> <span class="nx">@$collection</span>
-        <span class="nv">collectionDef = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{},</span> <span class="nx">@$collection</span><span class="p">,</span> <span class="nx">collectionDef</span>
+    <span class="k">if</span> <span class="nx">@collection</span>
+        <span class="nv">collectionDef = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{},</span> <span class="nx">@collection</span><span class="p">,</span> <span class="nx">collectionDef</span>
     <span class="nx">@extend</span>
-        <span class="nv">$collection: </span><span class="nx">collectionDef</span>
-        <span class="nv">getCollection: </span><span class="o">-&gt;</span>
+        <span class="nv">collection: </span><span class="nx">collectionDef</span>
+        <span class="nv">getCollection: </span><span class="nf">(models=[], options={}) -&gt;</span>
             <span class="nv">copy = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">collectionDef</span>
-            <span class="nv">col = </span><span class="k">new</span> <span class="nx">copy</span><span class="p">.</span><span class="k">class</span> <span class="p">[],</span>
+            <span class="nv">col = </span><span class="k">new</span> <span class="nx">copy</span><span class="p">.</span><span class="nx">class</span> <span class="nx">models</span><span class="p">,</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span>
                 <span class="nv">url: </span><span class="nx">@prototype</span><span class="p">.</span><span class="nx">url</span>
-            <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">copy</span> <span class="k">when</span> <span class="nx">value</span> <span class="o">!=</span> <span class="s1">&#39;$collection&#39;</span>
+            <span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+            <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">copy</span> <span class="k">when</span> <span class="nx">value</span> <span class="o">!=</span> <span class="s">&#39;collection&#39;</span>
                 <span class="nx">col</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
             <span class="k">return</span> <span class="nx">col</span>
 
 <span class="nv">$extends = </span><span class="nx">Class</span><span class="p">.</span><span class="nx">Mutators</span><span class="p">.</span><span class="nx">Extends</span>
 <span class="nv">Class.Mutators.Extends = </span><span class="nf">(parent) -&gt;</span>
-    <span class="k">if</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">$collection</span>
-        <span class="nx">Class</span><span class="p">.</span><span class="nx">Mutators</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="nx">parent</span><span class="p">.</span><span class="nx">$collection</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nx">parent</span><span class="o">?</span> <span class="o">and</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">collection</span>
+        <span class="nx">Class</span><span class="p">.</span><span class="nx">Mutators</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="nx">parent</span><span class="p">.</span><span class="nx">collection</span><span class="p">]</span>
 
     <span class="nx">$extends</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span>
 
@@ -106,7 +107,7 @@ this field will not change it and will probably break your model</p>
 then override it here and that field will be used to give the magic <code>id</code>
 field
 here</p>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">idField: </span><span class="s2">&quot;id&quot;</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><h2>Using <a href="Collection.coffee.html">Collection</a> classes as fields</h2>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">idField: </span><span class="s">&quot;id&quot;</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><h2>Using <a href="Collection.coffee.html">Collection</a> classes as fields</h2>
 </td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><p>If you set a field as a Collection then it is handled slightly
 differently. As well as the field being set as a Collection instance, the
 collection will be added to the <code>@collections</code> object and a
@@ -145,13 +146,13 @@ would be taken from the associated collection.</p>
 
 <p>When a model is first instatiated no events are fired.</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">initialize: </span><span class="nf">(attributes, options={}) -&gt;</span>
-        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;collection&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;collection&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
-                <span class="err">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+                <span class="nx">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
                 <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
         <span class="nx">@setOptions</span> <span class="nx">options</span>
         <span class="nx">@_setInitial</span> <span class="nx">attributes</span>
-        <span class="err">@</span></pre></div></td></tr><tr id="section-18"><td class="docs"><div class="pilwrap"><a href="#section-18" class="pilcrow">&#182;</a></div><p>Simple has, get methods</p>
+        <span class="nx">@</span></pre></div></td></tr><tr id="section-18"><td class="docs"><div class="pilwrap"><a href="#section-18" class="pilcrow">&#182;</a></div><p>Simple has, get methods</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">has: </span><span class="nf">(key) -&gt;</span>
         <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
 
@@ -173,7 +174,7 @@ If the value is an Collection then it is also added to <code>@collection</code>.
 listeners, unless <code>silent: true</code> is passed through as an option.</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">set: </span><span class="nf">(key, value, options={}) -&gt;</span>
 
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;object&#39;</span>
             <span class="nv">attrs = </span><span class="nx">key</span>
             <span class="nv">options = </span><span class="nx">value</span> <span class="o">or</span> <span class="nx">options</span>
         <span class="k">else</span>
@@ -194,18 +195,24 @@ listeners, unless <code>silent: true</code> is passed through as an option.</p>
 
             <span class="nv">curVal = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
             <span class="nv">newVal = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">value</span>
+            <span class="nv">dirtyVal = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+
             <span class="nv">changed = </span><span class="nx">curVal</span> <span class="o">isnt</span> <span class="nx">newVal</span>
 
-            <span class="k">if</span> <span class="o">not</span> <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span> <span class="o">and</span> <span class="nx">changed</span>
-                <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="o">not</span> <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
+                <span class="k">if</span> <span class="nx">changed</span>
+                    <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+            <span class="k">else</span></pre></div></td></tr><tr id="section-20"><td class="docs"><div class="pilwrap"><a href="#section-20" class="pilcrow">&#182;</a></div><p>has changed back to initial value, field no longer dirty</p>
+</td><td class="code"><div class="highlight"><pre>                <span class="k">if</span> <span class="nx">newVal</span> <span class="o">is</span> <span class="nx">dirtyVal</span>
+                    <span class="k">delete</span> <span class="nx">@_dirtyFields</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
 
             <span class="nx">@_attributes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
             <span class="k">if</span> <span class="nx">key</span> <span class="o">==</span> <span class="nx">@idField</span>
                 <span class="vi">@id = </span><span class="nx">value</span>
 
             <span class="k">if</span> <span class="nx">changed</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
-                <span class="nx">@fireEvent</span> <span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
-                <span class="nx">@fireEvent</span> <span class="s2">&quot;change:#{key}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">]</span>
+                <span class="nx">@fireEvent</span> <span class="s">&quot;change&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+                <span class="nx">@fireEvent</span> <span class="s">&quot;change:</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="kc">true</span>
 
@@ -225,17 +232,17 @@ listeners, unless <code>silent: true</code> is passed through as an option.</p>
         <span class="k">if</span> <span class="nx">@validators</span> <span class="o">and</span> <span class="nx">@validators</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
             <span class="nv">result = </span><span class="nx">@validators</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">call</span> <span class="k">this</span><span class="p">,</span> <span class="nx">value</span>
             <span class="k">if</span> <span class="nx">result</span> <span class="o">isnt</span> <span class="kc">true</span>
-                <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
-                    <span class="nx">@fireEvent</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">result</span><span class="p">]</span>
-                    <span class="nx">@fireEvent</span> <span class="s2">&quot;error:#{key}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">result</span><span class="p">]</span>
+                <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+                    <span class="nx">@fireEvent</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">result</span><span class="p">]</span>
+                    <span class="nx">@fireEvent</span> <span class="s">&quot;error:</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">result</span><span class="p">]</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nx">Exceptions</span><span class="p">.</span><span class="nx">Validation</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">result</span>
-        <span class="k">return</span> <span class="kc">true</span></pre></div></td></tr><tr id="section-20"><td class="docs"><div class="pilwrap"><a href="#section-20" class="pilcrow">&#182;</a></div><p>Whether model is already stored or new</p>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">isNew: </span><span class="o">-&gt;</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span></pre></div></td></tr><tr id="section-21"><td class="docs"><div class="pilwrap"><a href="#section-21" class="pilcrow">&#182;</a></div><p>Whether a model has unsaved changes or not</p>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">isDirty: </span><span class="o">-&gt;</span>
-        <span class="nb">Object</span><span class="p">.</span><span class="nx">getLength</span><span class="p">(</span><span class="nx">@_dirtyFields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></pre></div></td></tr><tr id="section-22"><td class="docs"><div class="pilwrap"><a href="#section-22" class="pilcrow">&#182;</a></div><p>Clear unsaved changes and restores model to last saved state</p>
+        <span class="k">return</span> <span class="kc">true</span></pre></div></td></tr><tr id="section-21"><td class="docs"><div class="pilwrap"><a href="#section-21" class="pilcrow">&#182;</a></div><p>Whether model is already stored or new</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">isNew: </span><span class="nf">-&gt;</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span></pre></div></td></tr><tr id="section-22"><td class="docs"><div class="pilwrap"><a href="#section-22" class="pilcrow">&#182;</a></div><p>Whether a model has unsaved changes or not</p>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">isDirty: </span><span class="nf">-&gt;</span>
+        <span class="nb">Object</span><span class="p">.</span><span class="nx">getLength</span><span class="p">(</span><span class="nx">@_dirtyFields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></pre></div></td></tr><tr id="section-23"><td class="docs"><div class="pilwrap"><a href="#section-23" class="pilcrow">&#182;</a></div><p>Clear unsaved changes and restores model to last saved state</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">clearChanges: </span><span class="nf">(options={silent: true}) -&gt;</span>
         <span class="nx">@set</span> <span class="nx">@_dirtyFields</span><span class="p">,</span> <span class="nx">options</span>
-        <span class="nx">@_clearDirtyFields</span><span class="p">()</span></pre></div></td></tr><tr id="section-23"><td class="docs"><div class="pilwrap"><a href="#section-23" class="pilcrow">&#182;</a></div><h2>Serialisation</h2>
+        <span class="nx">@_clearDirtyFields</span><span class="p">()</span></pre></div></td></tr><tr id="section-24"><td class="docs"><div class="pilwrap"><a href="#section-24" class="pilcrow">&#182;</a></div><h2>Serialisation</h2>
 
 <p>This method will return a represenation of the model in a format that
 is suitable for JSON encoding. This is used to store the model but is
@@ -255,28 +262,28 @@ use for fields can simply have a <code>toJSON</code> method</p></li>
 the class called <code>jsonMyField</code> which will be called to serialise the
 data</p></li>
 </ul>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">toJSON: </span><span class="o">-&gt;</span>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">toJSON: </span><span class="nf">-&gt;</span>
         <span class="nv">attrs = </span><span class="p">{}</span>
         <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">@_attributes</span>
             <span class="nx">attrs</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@_jsonKeyValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
-        <span class="k">return</span> <span class="nx">attrs</span></pre></div></td></tr><tr id="section-24"><td class="docs"><div class="pilwrap"><a href="#section-24" class="pilcrow">&#182;</a></div><h1>Model storage</h1>
+        <span class="k">return</span> <span class="nx">attrs</span></pre></div></td></tr><tr id="section-25"><td class="docs"><div class="pilwrap"><a href="#section-25" class="pilcrow">&#182;</a></div><h1>Model storage</h1>
 
 <p>The actual model storage has been abstracted out to
 <a href="Storage.coffee.html">Storage</a>
 which should be read to learn about the various events fired during each
 operation and as well as how to handle to returned promise.</p>
-</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-25"><td class="docs"><div class="pilwrap"><a href="#section-25" class="pilcrow">&#182;</a></div><p>Fetches the model from the server, useful if you just have the id
+</td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-26"><td class="docs"><div class="pilwrap"><a href="#section-26" class="pilcrow">&#182;</a></div><p>Fetches the model from the server, useful if you just have the id
 of the model.</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">fetch: </span><span class="nf">(options={}) -&gt;</span>
         <span class="k">return</span> <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
 
-        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s1">&#39;fetch&#39;</span><span class="p">},</span> <span class="nx">options</span>
-        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">storageOptions</span>
-        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="nx">@set</span> <span class="nx">data</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-                <span class="nx">@_clearDirtyFields</span><span class="p">()</span>
-                <span class="nx">@fireEvent</span> <span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div></td></tr><tr id="section-26"><td class="docs"><div class="pilwrap"><a href="#section-26" class="pilcrow">&#182;</a></div><p>Saves the model. Can be called simply as <code>save()</code> to store the model in
+        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s">&#39;fetch&#39;</span><span class="p">},</span> <span class="nx">options</span>
+        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">storageOptions</span>
+        <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span> <span class="nf">(data) =&gt;</span>
+            <span class="nx">@set</span> <span class="nx">data</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+            <span class="nx">@_clearDirtyFields</span><span class="p">()</span>
+            <span class="nx">@fireEvent</span> <span class="s">&#39;fetch&#39;</span><span class="p">,</span> <span class="p">[</span><span class="kc">true</span><span class="p">]</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+            <span class="k">return</span> <span class="k">this</span></pre></div></td></tr><tr id="section-27"><td class="docs"><div class="pilwrap"><a href="#section-27" class="pilcrow">&#182;</a></div><p>Saves the model. Can be called simply as <code>save()</code> to store the model in
 its current state or you can specificy only certain values to update and
 call <code>save(field, value)</code> or <code>save(fieldValueObject</code> in the same way you
 call <code>set</code></p>
@@ -298,7 +305,7 @@ it.</p>
 
         <span class="nv">data = </span><span class="nx">toUpdate</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="s">&#39;object&#39;</span><span class="p">)</span>
             <span class="nv">options = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span>
 
         <span class="nv">setAttrFn = </span><span class="o">=&gt;</span>
@@ -306,18 +313,18 @@ it.</p>
             <span class="nx">@_clearDirtyFields</span><span class="p">()</span>
         <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
 
-        <span class="nv">storageMethod = </span><span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span> <span class="k">then</span> <span class="s2">&quot;create&quot;</span> <span class="k">else</span> <span class="s2">&quot;update&quot;</span>
-        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s1">&#39;save&#39;</span><span class="p">},</span> <span class="nx">options</span>
+        <span class="nv">storageMethod = </span><span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span> <span class="k">then</span> <span class="s">&quot;create&quot;</span> <span class="k">else</span> <span class="s">&quot;update&quot;</span>
+        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s">&#39;save&#39;</span><span class="p">},</span> <span class="nx">options</span>
         <span class="nv">promise = </span><span class="nx">@storage</span> <span class="nx">storageMethod</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">storageOptions</span>
-        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
-                <span class="nv">model = </span><span class="nx">data</span> <span class="o">or</span> <span class="p">{}</span>
-                <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
-                <span class="nx">@_clearDirtyFields</span><span class="p">()</span></pre></div></td></tr><tr id="section-27"><td class="docs"><div class="pilwrap"><a href="#section-27" class="pilcrow">&#182;</a></div><p>Deletes the model from storage</p>
+        <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span> <span class="nf">(data) =&gt;</span>
+            <span class="nx">setAttrFn</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
+            <span class="nv">model = </span><span class="nx">data</span> <span class="o">or</span> <span class="p">{}</span>
+            <span class="nx">@set</span> <span class="nx">model</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
+            <span class="nx">@_clearDirtyFields</span><span class="p">()</span>
+            <span class="k">return</span> <span class="k">this</span></pre></div></td></tr><tr id="section-28"><td class="docs"><div class="pilwrap"><a href="#section-28" class="pilcrow">&#182;</a></div><p>Deletes the model from storage</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">destroy: </span><span class="nf">(options={}) -&gt;</span>
         <span class="nv">fireEvent = </span><span class="o">=&gt;</span>
-            <span class="nx">@fireEvent</span> <span class="s1">&#39;destroy&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+            <span class="nx">@fireEvent</span> <span class="s">&#39;destroy&#39;</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
 
         <span class="k">if</span> <span class="nx">@isNew</span><span class="p">()</span>
             <span class="nx">fireEvent</span><span class="p">()</span>
@@ -326,17 +333,17 @@ it.</p>
         <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
             <span class="nx">fireEvent</span><span class="p">()</span>
 
-        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s1">&#39;destroy&#39;</span><span class="p">},</span> <span class="nx">options</span>
-        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">storageOptions</span>
-        <span class="nx">promise</span><span class="p">.</span><span class="k">when</span> <span class="p">(</span><span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
-            <span class="k">if</span> <span class="nx">isSuccess</span>
-                <span class="nx">fireEvent</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span></pre></div></td></tr><tr id="section-28"><td class="docs"><div class="pilwrap"><a href="#section-28" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
+        <span class="nv">storageOptions = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="p">{</span><span class="nv">eventName: </span><span class="s">&#39;destroy&#39;</span><span class="p">},</span> <span class="nx">options</span>
+        <span class="nv">promise = </span><span class="nx">@storage</span> <span class="s">&#39;delete&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">storageOptions</span>
+        <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span> <span class="nf">(data) =&gt;</span>
+            <span class="nx">fireEvent</span><span class="p">()</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">options</span><span class="p">.</span><span class="nx">dontWait</span>
+            <span class="k">return</span> <span class="k">this</span></pre></div></td></tr><tr id="section-29"><td class="docs"><div class="pilwrap"><a href="#section-29" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">_attributes: </span><span class="p">{}</span>
     <span class="nv">_dirtyFields: </span><span class="p">{}</span>
 
     <span class="nv">_makeValue: </span><span class="nf">(key, value) -&gt;</span>
         <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span>
             <span class="p">(</span><span class="nx">@_makeValue</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="k">for</span> <span class="nx">item</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span>
         <span class="k">else</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">type</span>
             <span class="nx">value</span>
@@ -349,16 +356,16 @@ it.</p>
         <span class="k">else</span> <span class="k">if</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">and</span> <span class="nx">type</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">isModel</span>
             <span class="nv">value = </span><span class="nx">value</span> <span class="o">or</span> <span class="p">{}</span>
             <span class="nv">val = </span><span class="k">new</span> <span class="nx">type</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
-            <span class="nv">val._parent = </span><span class="err">@</span>
+            <span class="nv">val._parent = </span><span class="nx">@</span>
             <span class="nx">val</span>
         <span class="k">else</span>
             <span class="k">new</span> <span class="nx">type</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
 
     <span class="nv">_getType: </span><span class="nf">(name) -&gt;</span>
         <span class="nv">type = </span><span class="nx">@fields</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;function&quot;</span>
             <span class="nx">type</span><span class="p">()</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span>  <span class="s2">&quot;string&quot;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="o">==</span>  <span class="s">&quot;string&quot;</span>
             <span class="nb">window</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span>
         <span class="k">else</span>
             <span class="nx">type</span>
@@ -377,14 +384,14 @@ it.</p>
 
     <span class="nv">_addCollection: </span><span class="nf">(key, collection, options={}) -&gt;</span>
         <span class="nx">@collections</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">collection</span>
-        <span class="nx">@fireEvent</span> <span class="s1">&#39;addCollection&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">collection</span><span class="p">]</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+        <span class="nx">@fireEvent</span> <span class="s">&#39;addCollection&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">collection</span><span class="p">]</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
 
     <span class="nv">_setInitial: </span><span class="nf">(attributes={}) -&gt;</span>
-        <span class="nx">unless</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">ignoreDefaults</span>
-            <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">@defaults</span><span class="p">)),</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="k">unless</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">ignoreDefaults</span>
+            <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">@defaults</span><span class="p">)),</span> <span class="nf">(value, key) =&gt;</span>
                 <span class="nx">@_getDefault</span> <span class="nx">key</span>
         <span class="k">else</span>
-            <span class="nv">defaults = </span><span class="p">{}</span></pre></div></td></tr><tr id="section-29"><td class="docs"><div class="pilwrap"><a href="#section-29" class="pilcrow">&#182;</a></div><p>Merge defaults into attributes like this to
+            <span class="nv">defaults = </span><span class="p">{}</span></pre></div></td></tr><tr id="section-30"><td class="docs"><div class="pilwrap"><a href="#section-30" class="pilcrow">&#182;</a></div><p>Merge defaults into attributes like this to
 keep references intact</p>
 </td><td class="code"><div class="highlight"><pre>        <span class="nv">attrKeys = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span> <span class="nx">attributes</span>
         <span class="nv">defaults = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">defaults</span><span class="p">,</span> <span class="nf">(value, key) -&gt;</span>
@@ -399,9 +406,9 @@ keep references intact</p>
         <span class="nv">type = </span><span class="nx">@_getType</span> <span class="nx">key</span>
         <span class="nv">jsonValue = </span><span class="nx">@_jsonKeyValue</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span>
 
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span>
             <span class="nv">_value = </span><span class="nx">jsonValue</span><span class="p">.</span><span class="nx">clone</span><span class="p">()</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">jsonValue</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;object&#39;</span>
             <span class="nv">_value = </span><span class="nb">Object</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">jsonValue</span>
         <span class="k">else</span>
             <span class="nv">_value = </span><span class="nx">jsonValue</span>
@@ -411,16 +418,16 @@ keep references intact</p>
         <span class="k">else</span> <span class="k">if</span> <span class="nx">_value</span> <span class="o">and</span> <span class="nx">@_isModel</span> <span class="nx">key</span>
             <span class="nv">_value = </span><span class="k">new</span> <span class="nx">type</span> <span class="nx">_value</span>
             <span class="nv">_value._parent = </span><span class="k">this</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span>
             <span class="nv">_value = </span><span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">_value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span>
             <span class="nv">_value = </span><span class="k">new</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span> <span class="nx">_value</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span>
             <span class="nv">_value = </span><span class="nx">_value</span><span class="p">.</span><span class="nx">map</span> <span class="nf">(item, idx) -&gt;</span>
                 <span class="nv">orig = </span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span>
+                <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span>
                     <span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">item</span>
-                <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span>
+                <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">orig</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;object&#39;</span> <span class="o">and</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span>
                     <span class="k">new</span> <span class="nx">orig</span><span class="p">.</span><span class="nx">constructor</span> <span class="nx">item</span>
                 <span class="k">else</span>
                     <span class="nx">item</span>
@@ -428,8 +435,8 @@ keep references intact</p>
 
     <span class="nv">_getDefault: </span><span class="nf">(key) -&gt;</span>
         <span class="nv">def = </span><span class="nx">@defaults</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">def</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
-            <span class="nx">def</span><span class="p">.</span><span class="nx">call</span> <span class="err">@</span>
+        <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">def</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;function&#39;</span>
+            <span class="nx">def</span><span class="p">.</span><span class="nx">call</span> <span class="nx">@</span>
         <span class="k">else</span>
             <span class="nx">def</span>
 
@@ -437,23 +444,23 @@ keep references intact</p>
         <span class="nx">response</span><span class="p">.</span><span class="nx">success</span> <span class="o">is</span> <span class="kc">true</span>
 
     <span class="nv">_jsonKeyValue: </span><span class="nf">(key, value) -&gt;</span>
-        <span class="nv">jsonFn = </span><span class="s2">&quot;json#{key.capitalize()}&quot;</span>
-        <span class="k">if</span> <span class="err">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">]</span><span class="o">?</span>
-            <span class="err">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">](</span><span class="nx">value</span><span class="p">)</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+        <span class="nv">jsonFn = </span><span class="s">&quot;json</span><span class="si">#{</span><span class="nx">key</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
+        <span class="k">if</span> <span class="nx">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">]</span><span class="o">?</span>
+            <span class="nx">@</span><span class="p">[</span><span class="nx">jsonFn</span><span class="p">](</span><span class="nx">value</span><span class="p">)</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span>
             <span class="p">(</span><span class="nx">@_jsonValue</span> <span class="nx">v</span> <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span>
         <span class="k">else</span>
             <span class="nx">@_jsonValue</span> <span class="nx">value</span>
 
     <span class="nv">_jsonValue: </span><span class="nf">(value) -&gt;</span>
         <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">instanceOf</span> <span class="nx">value</span><span class="p">,</span> <span class="nb">Date</span>
-            <span class="nx">value</span><span class="p">.</span><span class="nx">format</span> <span class="s2">&quot;%Y-%m-%dT%H:%M:%S.%LZ&quot;</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span>
+            <span class="nx">value</span><span class="p">.</span><span class="nx">format</span> <span class="s">&quot;%Y-%m-%dT%H:%M:%S.%LZ&quot;</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">value</span> <span class="o">and</span> <span class="nx">typeOf</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;function&#39;</span>
             <span class="nx">value</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span>
         <span class="k">else</span>
             <span class="nx">value</span>
 
-    <span class="nv">_clearDirtyFields: </span><span class="o">-&gt;</span>
+    <span class="nv">_clearDirtyFields: </span><span class="nf">-&gt;</span>
         <span class="vi">@_dirtyFields = </span><span class="p">{}</span>
 
     <span class="nv">isModel: </span><span class="kc">true</span>
@@ -461,4 +468,4 @@ keep references intact</p>
 <span class="k">return</span> <span class="nx">Model</span>
 <span class="o">`</span><span class="p">});</span><span class="o">`</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Thu Nov 08 2012 16:30:13 GMT+0000 (UTC)  </div><div id="projectname"><a href="../index.html">bags</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Thu Apr 04 2013 10:42:38 GMT+0000 (UTC)  </div><div id="projectname"><a href="../index.html">bags</a></div></div></body></html>
