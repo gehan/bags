@@ -3,7 +3,6 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
-
         watch:
             files: ['src/**.coffee', 'spec/coffeescripts/**.coffee']
             tasks: ['test']
@@ -23,6 +22,12 @@ module.exports = (grunt) ->
                 src: ['**/*.coffee']
                 dest: 'spec/javascripts'
                 ext: '.js'
+
+        shell:
+            docs:
+                command: 'node_modules/.bin/docco-husky src'
+                options:
+                    stdout: true
 
         jasmine:
             conversocial:
@@ -49,6 +54,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-jasmine'
     grunt.loadNpmTasks 'grunt-contrib-watch'
+    grunt.loadNpmTasks 'grunt-shell'
 
-    grunt.registerTask 'default', ['coffee']
+    grunt.registerTask 'default', ['coffee', 'shell:docs']
     grunt.registerTask 'test', ['coffee', 'jasmine']
