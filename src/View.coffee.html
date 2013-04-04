@@ -1,10 +1,10 @@
-<!DOCTYPE html><html><head><title>View.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../index.html" class="source"><span class="file_name">README</span></a><a href="../src/Views.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Views.coffee</span></a><a href="../src/Exceptions.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Exceptions.coffee</span></a><a href="../src/NullStorage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">NullStorage.coffee</span></a><a href="../src/View.coffee.html" class="source selected"><span class="base_path">src / </span><span class="file_name">View.coffee</span></a><a href="../src/Template.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Template.coffee</span></a><a href="../src/Storage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Storage.coffee</span></a><a href="../src/Model.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Model.coffee</span></a><a href="../src/Collection.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Collection.coffee</span></a><a href="../src/Events.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Events.coffee</span></a><a href="../src/Router.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Router.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>View.coffee</h1><div class="filepath">src/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><p>Provides a simple view class. Implements <code>Template</code> for template rendering
+<!DOCTYPE html><html><head><title>View.coffee</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="../docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="../index.html" class="source"><span class="file_name">README</span></a><a href="../src/Views.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Views.coffee</span></a><a href="../src/Exceptions.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Exceptions.coffee</span></a><a href="../src/NullStorage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">NullStorage.coffee</span></a><a href="../src/View.coffee.html" class="source selected"><span class="base_path">src / </span><span class="file_name">View.coffee</span></a><a href="../src/Template.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Template.coffee</span></a><a href="../src/ViewModel.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">ViewModel.coffee</span></a><a href="../src/Storage.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Storage.coffee</span></a><a href="../src/Model.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Model.coffee</span></a><a href="../src/Collection.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Collection.coffee</span></a><a href="../src/Events.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Events.coffee</span></a><a href="../src/Router.coffee.html" class="source "><span class="base_path">src / </span><span class="file_name">Router.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"><h1>View.coffee</h1><div class="filepath">src/</div></th><th class="code"></th></tr></thead><tbody><tr id="section-1"><td class="docs"><div class="pilwrap"><a href="#section-1" class="pilcrow">&#182;</a></div><p>Provides a simple view class. Implements <code>Template</code> for template rendering
 and event delegation.</p>
-</td><td class="code"><div class="highlight"><pre><span class="nx">define</span> <span class="p">[</span><span class="s1">&#39;bags/Template&#39;</span><span class="p">,</span> <span class="s1">&#39;bags/Events&#39;</span><span class="p">],</span> <span class="nf">(Template, Events) -&gt;</span> <span class="o">\</span>
+</td><td class="code"><div class="highlight"><pre><span class="nx">define</span> <span class="p">[</span><span class="s">&#39;bags/Template&#39;</span><span class="p">,</span> <span class="s">&#39;bags/Events&#39;</span><span class="p">],</span> <span class="nf">(Template, Events) -&gt;</span> <span class="o">\</span>
 
 <span class="k">new</span> <span class="nx">Class</span>
     <span class="nv">Implements: </span><span class="p">[</span><span class="nx">Options</span><span class="p">,</span> <span class="nx">Events</span><span class="p">,</span> <span class="nx">Template</span><span class="p">]</span>
-    <span class="nv">Binds: </span><span class="p">[</span><span class="s1">&#39;destroy&#39;</span><span class="p">]</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><p>Dust.js template name to be used for rendering this view</p>
+    <span class="nv">Binds: </span><span class="p">[</span><span class="s">&#39;destroy&#39;</span><span class="p">]</span></pre></div></td></tr><tr id="section-2"><td class="docs"><div class="pilwrap"><a href="#section-2" class="pilcrow">&#182;</a></div><p>Dust.js template name to be used for rendering this view</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">template: </span><span class="kc">null</span></pre></div></td></tr><tr id="section-3"><td class="docs"><div class="pilwrap"><a href="#section-3" class="pilcrow">&#182;</a></div><p>Define events for delegation here, of the type below. See
 <code>Template.delegateEvents</code> for more info.</p>
 
@@ -31,17 +31,17 @@ to the object root. If <code>el</code> is specified then this element itself wil
 be the view.</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">initialize: </span><span class="nf">(options={}) -&gt;</span>
         <span class="nx">@loadAllTemplates</span><span class="p">()</span>
-        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;el&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;model&#39;</span><span class="p">,</span> <span class="s">&#39;el&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="o">?</span>
-                <span class="err">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+                <span class="nx">@</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
                 <span class="k">delete</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
         <span class="nx">@setOptions</span> <span class="nx">options</span>
         <span class="k">if</span> <span class="nx">@model</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">autoDestroyModel</span>
-            <span class="nx">@model</span><span class="p">.</span><span class="nx">addEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
+            <span class="nx">@model</span><span class="p">.</span><span class="nx">addEvent</span> <span class="s">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
         <span class="nx">@render</span> <span class="nx">options</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nv">silent: </span><span class="kc">true</span>
         <span class="k">if</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">injectTo</span><span class="o">?</span>
             <span class="nx">@inject</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">injectTo</span>
-        <span class="err">@</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><p>Renders the view, if already rendered then replaces the current element
+        <span class="nx">@</span></pre></div></td></tr><tr id="section-10"><td class="docs"><div class="pilwrap"><a href="#section-10" class="pilcrow">&#182;</a></div><p>Renders the view, if already rendered then replaces the current element
 whilst keeping the <code>@el</code> reference current.</p>
 
 <ul>
@@ -52,7 +52,7 @@ fired on <code>document</code></p></li>
 </ul>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">render: </span><span class="nf">(data={}, options={}) -&gt;</span>
         <span class="nv">el = </span><span class="nx">@_render</span> <span class="nx">data</span>
-        <span class="nx">el</span><span class="p">.</span><span class="nx">store</span> <span class="s1">&#39;view&#39;</span><span class="p">,</span> <span class="err">@</span>
+        <span class="nx">el</span><span class="p">.</span><span class="nx">store</span> <span class="s">&#39;view&#39;</span><span class="p">,</span> <span class="nx">@</span>
 
         <span class="k">if</span> <span class="o">not</span> <span class="nx">@el</span><span class="o">?</span>
             <span class="vi">@el = </span><span class="nx">el</span>
@@ -65,7 +65,7 @@ fired on <code>document</code></p></li>
         <span class="nv">container = </span><span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">el</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getParent</span><span class="p">()</span>
         <span class="nx">@_checkDomUpdate</span> <span class="nx">container</span>
 
-        <span class="nx">@fireEvent</span> <span class="s1">&#39;render&#39;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
+        <span class="nx">@fireEvent</span> <span class="s">&#39;render&#39;</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
         <span class="nx">el</span></pre></div></td></tr><tr id="section-11"><td class="docs"><div class="pilwrap"><a href="#section-11" class="pilcrow">&#182;</a></div><p>When rendering a model this is called to get a representation suitable
 for passing into the template. By default this calls <code>model.toJSON</code> but
 can be overridden.</p>
@@ -98,62 +98,64 @@ called rerender(['ref1', 'ref2']) then re-rendering will be as such:</p>
 they are updated without disturbing the other refs</p></li>
 <li><p>If within the dom then <code>domupdated</code> is still fired on <code>document</code></p></li>
 </ul>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">rerender: </span><span class="nf">(refs, data={}) -&gt;</span>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">rerender: </span><span class="nf">(refs, data={}, options={}) -&gt;</span>
         <span class="nv">el = </span><span class="nx">@_render</span> <span class="nx">data</span>
-        <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">refs</span><span class="p">).</span><span class="nx">each</span> <span class="p">(</span><span class="nx">ref</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">refs</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(ref) =&gt;</span>
             <span class="nv">replaceThis = </span><span class="nx">@refs</span><span class="p">[</span><span class="nx">ref</span><span class="p">]</span>
             <span class="k">if</span> <span class="o">not</span> <span class="nx">replaceThis</span>
-                <span class="k">throw</span> <span class="s2">&quot;Cannot find ref #{ref} in template #{@template}&quot;</span>
+                <span class="k">throw</span> <span class="s">&quot;Cannot find ref </span><span class="si">#{</span><span class="nx">ref</span><span class="si">}</span><span class="s"> in template </span><span class="si">#{</span><span class="nx">@template</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nv">newEl = </span><span class="nx">@getRefs</span><span class="p">(</span><span class="nx">el</span><span class="p">)[</span><span class="nx">ref</span><span class="p">]</span>
             <span class="nb">Object</span><span class="p">.</span><span class="nx">merge</span> <span class="nx">@refs</span><span class="p">,</span> <span class="nx">@getRefs</span><span class="p">(</span><span class="nx">newEl</span><span class="p">)</span>
             <span class="nx">@refs</span><span class="p">[</span><span class="nx">ref</span><span class="p">].</span><span class="nx">replaces</span> <span class="nx">replaceThis</span>
 
-            <span class="nx">@_checkDomUpdate</span> <span class="nx">newEl</span><span class="p">.</span><span class="nx">getParent</span><span class="p">()</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><p>We have an inject method here so that we can fire <code>domupdated</code> on
+            <span class="nx">@_checkDomUpdate</span> <span class="nx">newEl</span><span class="p">.</span><span class="nx">getParent</span><span class="p">()</span>
+
+        <span class="nx">@fireEvent</span> <span class="s">&#39;rerender&#39;</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span></pre></div></td></tr><tr id="section-13"><td class="docs"><div class="pilwrap"><a href="#section-13" class="pilcrow">&#182;</a></div><p>We have an inject method here so that we can fire <code>domupdated</code> on
 <code>document</code> if necessary.</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">inject: </span><span class="nf">(container, el=@el) -&gt;</span>
         <span class="nx">el</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">container</span>
         <span class="nx">@_checkDomUpdate</span> <span class="nx">container</span>
 
-    <span class="nv">getElement: </span><span class="o">-&gt;</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">getElement</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@el</span><span class="p">,</span> <span class="nx">arguments</span>
-    <span class="nv">getElements: </span><span class="o">-&gt;</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">getElements</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@el</span><span class="p">,</span> <span class="nx">arguments</span>
+    <span class="nv">getElement: </span><span class="nf">-&gt;</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">getElement</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@el</span><span class="p">,</span> <span class="nx">arguments</span>
+    <span class="nv">getElements: </span><span class="nf">-&gt;</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">getElements</span><span class="p">.</span><span class="nx">apply</span> <span class="nx">@el</span><span class="p">,</span> <span class="nx">arguments</span>
 
     <span class="nv">getViews: </span><span class="nf">(el) -&gt;</span>
         <span class="nv">els = </span><span class="nx">el</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()</span>
-        <span class="nx">els</span><span class="p">.</span><span class="nx">retrieve</span><span class="p">(</span><span class="s1">&#39;view&#39;</span><span class="p">)</span>
+        <span class="nx">els</span><span class="p">.</span><span class="nx">retrieve</span><span class="p">(</span><span class="s">&#39;view&#39;</span><span class="p">)</span>
 
     <span class="nv">reorderViews: </span><span class="nf">(collection, rootEl) -&gt;</span>
         <span class="nv">views = </span><span class="nx">@getViews</span> <span class="nx">rootEl</span>
         <span class="k">for</span> <span class="nx">view</span> <span class="k">in</span> <span class="nx">views</span>
 
-            <span class="nv">dummy = </span><span class="k">new</span> <span class="nx">Element</span> <span class="s1">&#39;div&#39;</span>
+            <span class="nv">dummy = </span><span class="k">new</span> <span class="nx">Element</span> <span class="s">&#39;div&#39;</span>
             <span class="nv">current = </span><span class="nx">$</span><span class="p">(</span><span class="nx">view</span><span class="p">)</span>
             <span class="nv">desiredIndex = </span><span class="nx">collection</span><span class="p">.</span><span class="nx">indexOf</span> <span class="nx">view</span><span class="p">.</span><span class="nx">model</span>
             <span class="nv">swap = </span><span class="nx">rootEl</span><span class="p">.</span><span class="nx">getChildren</span><span class="p">()[</span><span class="nx">desiredIndex</span><span class="p">]</span>
 
-            <span class="nx">dummy</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">current</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
-            <span class="nx">current</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">swap</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
-            <span class="nx">swap</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">dummy</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span>
+            <span class="nx">dummy</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">current</span><span class="p">,</span> <span class="s">&#39;before&#39;</span>
+            <span class="nx">current</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">swap</span><span class="p">,</span> <span class="s">&#39;before&#39;</span>
+            <span class="nx">swap</span><span class="p">.</span><span class="nx">inject</span> <span class="nx">dummy</span><span class="p">,</span> <span class="s">&#39;before&#39;</span>
             <span class="nx">dummy</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span></pre></div></td></tr><tr id="section-14"><td class="docs"><div class="pilwrap"><a href="#section-14" class="pilcrow">&#182;</a></div><p>Very handy method for emptying an element and killing all the views
 inside it by calling their <code>destroy</code> methods</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">destroyViews: </span><span class="nf">(el) -&gt;</span>
         <span class="nv">views = </span><span class="nx">@getViews</span><span class="p">(</span><span class="nx">el</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">if</span> <span class="nx">views</span> <span class="o">is</span> <span class="kc">null</span>
-        <span class="nx">views</span><span class="p">.</span><span class="nx">invoke</span> <span class="s1">&#39;destroy&#39;</span>
+        <span class="nx">views</span><span class="p">.</span><span class="nx">invoke</span> <span class="s">&#39;destroy&#39;</span>
 
-    <span class="nv">destroy: </span><span class="o">-&gt;</span>
+    <span class="nv">destroy: </span><span class="nf">-&gt;</span>
         <span class="k">if</span> <span class="nx">@model</span><span class="o">?</span> <span class="o">and</span> <span class="nx">@options</span><span class="p">.</span><span class="nx">autoDestroyModel</span>
-            <span class="nx">@model</span><span class="p">.</span><span class="nx">removeEvent</span> <span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
-        <span class="nx">@el</span><span class="p">.</span><span class="nx">eliminate</span> <span class="s1">&#39;view&#39;</span>
+            <span class="nx">@model</span><span class="p">.</span><span class="nx">removeEvent</span> <span class="s">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">@destroy</span>
+        <span class="nx">@el</span><span class="p">.</span><span class="nx">eliminate</span> <span class="s">&#39;view&#39;</span>
         <span class="nx">@el</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
 
-    <span class="nv">toElement: </span><span class="o">-&gt;</span> <span class="nx">@el</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
+    <span class="nv">toElement: </span><span class="nf">-&gt;</span> <span class="nx">@el</span></pre></div></td></tr><tr id="section-15"><td class="docs"><div class="pilwrap"><a href="#section-15" class="pilcrow">&#182;</a></div><h1>Private methods</h1>
 </td><td class="code"><div class="highlight"><pre></pre></div></td></tr><tr id="section-16"><td class="docs"><div class="pilwrap"><a href="#section-16" class="pilcrow">&#182;</a></div><p>Replaces the elements in <code>@el</code> with the elements in <code>el</code>, being careful
 to update the references and iterate through array if needed.</p>
 </td><td class="code"><div class="highlight"><pre>    <span class="nv">_replaceCurrentEl: </span><span class="nf">(el) -&gt;</span>
         <span class="k">if</span> <span class="o">not</span> <span class="nx">instanceOf</span> <span class="nx">el</span><span class="p">,</span> <span class="nb">Array</span>
             <span class="vi">@el = </span><span class="nx">el</span><span class="p">.</span><span class="nx">replaces</span> <span class="nx">@el</span>
         <span class="k">else</span>
-            <span class="nx">@el</span><span class="p">.</span><span class="nx">each</span> <span class="p">(</span><span class="nx">currentEl</span><span class="p">,</span> <span class="nx">idx</span><span class="p">)</span> <span class="o">=&gt;</span>
+            <span class="nx">@el</span><span class="p">.</span><span class="nx">each</span> <span class="nf">(currentEl, idx) =&gt;</span>
                 <span class="nx">@el</span><span class="p">[</span><span class="nx">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nx">el</span><span class="p">[</span><span class="nx">idx</span><span class="p">].</span><span class="nx">replaces</span> <span class="nx">currentEl</span>
 
     <span class="nv">_render: </span><span class="nf">(data={}) -&gt;</span>
@@ -176,6 +178,6 @@ within the DOM or not, if so fire <code>domupdated</code> on <code>document</cod
         <span class="k">while</span> <span class="nv">parent = </span><span class="nx">$</span><span class="p">(</span><span class="nx">parent</span><span class="p">).</span><span class="nx">getParent</span><span class="p">()</span>
             <span class="nv">inDom = </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">parent</span> <span class="o">==</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span>
         <span class="k">if</span> <span class="nx">inDom</span>
-            <span class="nb">document</span><span class="p">.</span><span class="nx">fireEvent</span> <span class="s1">&#39;domupdated&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">container</span><span class="p">]</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">fireEvent</span> <span class="s">&#39;domupdated&#39;</span><span class="p">,</span> <span class="p">[</span><span class="nx">container</span><span class="p">]</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Tue Feb 12 2013 11:18:56 GMT+0000 (UTC)  </div><div id="projectname"><a href="../index.html">bags</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Thu Apr 04 2013 10:50:34 GMT+0000 (UTC)  </div><div id="projectname"><a href="../index.html">bags</a></div></div></body></html>
