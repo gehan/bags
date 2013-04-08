@@ -1,4 +1,4 @@
-`define(['ko', 'bags/Template'],
+`define(['ko', './Template'],
 function(ko, Template){`
 
 pushHandler = (event) ->

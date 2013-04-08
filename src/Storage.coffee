@@ -1,7 +1,7 @@
 # Provides prersistent model storage via AJAX. You can create alternative
 # Storage classes and implement these in your model to use other methods like
 # HTML5 local storage.
-`define(['Q', 'bags/Events'], function(Q, Events){`
+`define(['Q', './Events'], function(Q, Events){`
 
 # Storage uses CRUD functions, and this is mapped to it's HTTP counterparts
 # for this class

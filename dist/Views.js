@@ -1,4 +1,4 @@
-define(['bags/View'], function(View) {
+define(['./View'], function(View) {
   return {
     CollectionView: new Class({
       Extends: View,

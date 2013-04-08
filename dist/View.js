@@ -1,4 +1,4 @@
-define(['bags/Template', 'bags/Events'], function(Template, Events) {
+define(['./Template', './Events'], function(Template, Events) {
   return new Class({
     Implements: [Options, Events, Template],
     Binds: ['destroy'],

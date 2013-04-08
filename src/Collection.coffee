@@ -1,7 +1,7 @@
 # Provides a simple collection class, which can be used to handle retrieval
 # and management of sets of [Model](Model.coffee.html)s
 
-define ['require', 'bags/Storage', 'bags/Events'], (require, Storage, Events) -> \
+define ['require', './Storage', './Events'], (require, Storage, Events) -> \
 
 new Class
     # Extends the native javascript Array object so we get all the methods of

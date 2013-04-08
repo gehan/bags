@@ -1,4 +1,4 @@
-`define(['Q', 'bags/Storage'], function(Q, Storage){`
+`define(['Q', './Storage'], function(Q, Storage){`
 
 NullStorage = new Class
     Extends: Storage

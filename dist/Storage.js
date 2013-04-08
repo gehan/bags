@@ -1,4 +1,4 @@
-define(['Q', 'bags/Events'], function(Q, Events){;
+define(['Q', './Events'], function(Q, Events){;
 var Storage, _crudMap;
 
 _crudMap = {

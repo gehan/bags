@@ -1,4 +1,4 @@
-define(['require', 'bags/Storage', 'bags/Events'], function(require, Storage, Events) {
+define(['require', './Storage', './Events'], function(require, Storage, Events) {
   return new Class({
     Extends: Array,
     Implements: [Options, Events, Storage],

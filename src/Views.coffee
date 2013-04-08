@@ -1,4 +1,4 @@
-define ['bags/View'], (View) ->
+define ['./View'], (View) ->
 
     CollectionView: new Class
         Extends: View
