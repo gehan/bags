@@ -1,24 +1,11 @@
-Model = null
-Collection = null
+`define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){`
 
-done = false
-curl ['Q', 'bags/Model', 'bags/Collection'], (_Q, _Model, _Collection) ->
-    window.Q = _Q
-    window.Model = _Model
-    window.Collection = _Collection
-    Model = _Model
-    Collection = _Collection
-    Q = _Q
-    done = true
-
-flatten = (obj) ->
-    JSON.encode obj
+flatten = (obj) -> JSON.encode obj
 
 describe "Model test", ->
     m = null
 
     beforeEach ->
-        waitsFor -> done
         m = new Model {},
             url: '/items'
 
@@ -724,3 +711,4 @@ describe "Model test", ->
         expect(col.sortByField).toBe 'yourDad'
         expect(col.internet).toBe 'yes'
 
+`})`

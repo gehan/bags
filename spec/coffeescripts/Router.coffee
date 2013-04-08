@@ -1,25 +1,16 @@
-Router = null
-View = null
+`define(['bags/Router', 'bags/View'], function(Router, View) {`
 
-done = false
-curl ['bags/Router', 'bags/View'], (_Router, _View) ->
-    Router = _Router
-    View = _View
-    done = true
+Router.implement
+    routes:
+        'route-1/': 'route1'
+        'route-2/': 'route2'
 
-    Router.implement
-        routes:
-            'route-1/': 'route1'
-            'route-2/': 'route2'
-
-flatten = (obj) ->
-    JSON.encode obj
+flatten = (obj) -> JSON.encode obj
 
 describe "Router test", ->
     r = null
 
     beforeEach ->
-        waitsFor -> done
         Router.implement
             route1: (args, data) ->
             route2: (args, data) ->
@@ -241,4 +232,4 @@ describe "SubView test", ->
 
         expect(s1.destroy).toHaveBeenCalled()
 
-
+`})`

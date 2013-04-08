@@ -1,19 +1,6 @@
-var Collection, View, Views, done, flatten;
-
-Views = null;
-
-View = null;
-
-Collection = null;
-
-done = false;
-
-curl(['bags/Views', 'bags/View', 'bags/Collection'], function(_Views, _View, _Collection) {
-  Views = _Views;
-  View = _View;
-  Collection = _Collection;
-  return done = true;
-});
+define(['bags/Views', 'bags/View', 'bags/Collection'],
+function(Views, View, Collection) {;
+var flatten;
 
 flatten = function(obj) {
   return JSON.encode(obj);
@@ -25,14 +12,10 @@ describe("ViewCollection test", function() {
   cv = null;
   c = null;
   v = null;
-  View = null;
   View2 = null;
   EmptyView = null;
   listEl = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     dust.cache = {};
     View2 = new Class({
       Extends: View,
@@ -177,4 +160,6 @@ describe("ViewCollection test", function() {
     expect(listEl.getChildren().length).toBe(1);
     return expect(listEl.getChildren()[0].get('text')).toBe('internet');
   });
+});
+
 });

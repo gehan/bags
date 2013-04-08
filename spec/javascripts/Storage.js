@@ -1,13 +1,5 @@
-var Storage, done, flatten;
-
-Storage = null;
-
-done = false;
-
-curl(['bags/Storage'], function(_Storage) {
-  Storage = _Storage;
-  return done = true;
-});
+define(['bags/Storage'], function (Storage) {;
+var flatten;
 
 flatten = function(obj) {
   return JSON.encode(obj);
@@ -19,9 +11,6 @@ describe("Storage test", function() {
   StorageClass = null;
   s = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     StorageClass = new Class({
       Implements: [Storage],
       url: '/items',
@@ -248,4 +237,6 @@ describe("Storage test", function() {
     req = mostRecentAjaxRequest();
     return expect(req.url).toBe('/items/?page=1&action=A');
   });
+});
+
 });

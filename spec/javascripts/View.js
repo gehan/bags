@@ -1,13 +1,5 @@
-var View, done, flatten;
-
-View = null;
-
-done = false;
-
-curl(['bags/View'], function(_View) {
-  View = _View;
-  return done = true;
-});
+define(['bags/View'], function (View) {;
+var flatten;
 
 flatten = function(obj) {
   return JSON.encode(obj);
@@ -18,9 +10,6 @@ describe("View test", function() {
 
   v = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     View.implement({
       template: 'test',
       TEMPLATES: {
@@ -156,4 +145,6 @@ describe("View test", function() {
     data = v._getTemplateData();
     return expect(data.fullName).toBe('Gehan Gonsalkorale');
   });
+});
+
 });

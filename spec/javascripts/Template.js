@@ -1,13 +1,5 @@
-var Template, done, flatten;
-
-Template = null;
-
-done = false;
-
-curl(['bags/Template'], function(_Template) {
-  Template = _Template;
-  return done = true;
-});
+define(['bags/Template'], function (Template) {;
+var flatten;
 
 flatten = function(obj) {
   return JSON.encode(obj);
@@ -19,9 +11,6 @@ describe("Template test", function() {
 
   t = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     t = new Template();
     return t.TEMPLATES.base3 = "<div ref=\"refa\" class=\"refa\">\n    <p ref=\"ref1\" class=\"ref1\">Hello there {internet}</p>\n    <p ref=\"ref2\" class=\"ref2\">You are the face</p>\n</div>";
   });
@@ -134,4 +123,6 @@ describe("Template test", function() {
     expect(fired.hello).toBe(true);
     return expect(fired.hello1).toBe(true);
   });
+});
+
 });

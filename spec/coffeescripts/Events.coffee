@@ -1,18 +1,11 @@
-BagsEvents = null
+`define(['bags/Events'], function(BagsEvents){`
 
-done = false
-curl ['bags/Events'], (_Events) ->
-    BagsEvents = _Events
-    done = true
-
-flatten = (obj) ->
-    JSON.encode obj
+flatten = (obj) -> JSON.encode obj
 
 describe "Events test", ->
     ev = null
 
     beforeEach ->
-        waitsFor -> done
         ev = new BagsEvents()
 
     it "provides 'any' event which is fired whenever any event is fired", ->
@@ -29,3 +22,5 @@ describe "Events test", ->
         ev.addEvent 'any', anySpy
         ev.fireEvent 'any'
         expect(anySpy.calls.length).toBe 1
+
+`})`

@@ -1,9 +1,4 @@
-Template = null
-
-done = false
-curl ['bags/Template'], (_Template) ->
-    Template = _Template
-    done = true
+`define(['bags/Template'], function (Template) {`
 
 flatten = (obj) ->
     JSON.encode obj
@@ -12,7 +7,6 @@ describe "Template test", ->
     t = null
 
     beforeEach ->
-        waitsFor -> done
         t = new Template()
         t.TEMPLATES.base3 = """
         <div ref="refa" class="refa">
@@ -131,3 +125,4 @@ describe "Template test", ->
         expect(fired.hello).toBe(true)
         expect(fired.hello1).toBe(true)
 
+`})`

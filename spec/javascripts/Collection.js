@@ -1,13 +1,5 @@
-var Collection, done, flatten;
-
-Collection = null;
-
-done = false;
-
-curl(['bags/Collection'], function(_Collection) {
-  Collection = _Collection;
-  return done = true;
-});
+define(['bags/Collection', 'bags/Model'], function(Collection, Model){;
+var flatten;
 
 flatten = function(obj) {
   return JSON.encode(obj);
@@ -18,9 +10,6 @@ describe("Collection test", function() {
 
   col = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     return col = new Collection();
   });
   it("listens to events on model and re-fires on collection", function() {
@@ -92,4 +81,6 @@ describe("Collection test", function() {
     expect(col[1].get('text')).toBe('b');
     return expect(col[2].get('text')).toBe('a');
   });
+});
+
 });

@@ -33,14 +33,17 @@ module.exports = (grunt) ->
             conversocial:
                 src: []
                 options:
-                    specs: ["spec/javascripts/**/*.js"]
+                    specs: ["spec/javascripts/*.js"]
+                    template : require('grunt-template-jasmine-curljs')
+                    templateOptions:
+                        curlConfig :
+                            baseUrl: ''
             options:
-                helpers : ['specs/helpers/*.js']
+                helpers : ['spec/javascripts/helpers/*.js']
                 vendor: [
                     "vendor/curl-env.js",
                     "vendor/mootools-core-1.4.5.js",
                     "vendor/mootools-more-1.4.0.1.js",
-                    "vendor/curl.js",
                     "vendor/behaviour/Element.Data.js",
                     "vendor/behaviour/Event.Mock.js",
                     "vendor/behaviour/BehaviorAPI.js",

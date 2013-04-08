@@ -1,23 +1,14 @@
-Views = null; View = null; Collection = null
-
-done = false
-curl ['bags/Views', 'bags/View', 'bags/Collection'],
-(_Views, _View, _Collection) ->
-    Views = _Views
-    View = _View
-    Collection = _Collection
-    done = true
+`define(['bags/Views', 'bags/View', 'bags/Collection'],
+function(Views, View, Collection) {`
 
 flatten = (obj) ->
     JSON.encode obj
 
 describe "ViewCollection test", ->
-    cv = null; c = null; v = null; View = null; View2 = null
+    cv = null; c = null; v = null; View2 = null
     EmptyView = null
     listEl = null
     beforeEach ->
-        waitsFor -> done
-
         dust.cache = {}
         View2 = new Class
             Extends: View
@@ -137,3 +128,5 @@ describe "ViewCollection test", ->
 
         expect(listEl.getChildren().length).toBe 1
         expect(listEl.getChildren()[0].get 'text').toBe 'internet'
+
+`})`

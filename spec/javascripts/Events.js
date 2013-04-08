@@ -1,13 +1,5 @@
-var BagsEvents, done, flatten;
-
-BagsEvents = null;
-
-done = false;
-
-curl(['bags/Events'], function(_Events) {
-  BagsEvents = _Events;
-  return done = true;
-});
+define(['bags/Events'], function(BagsEvents){;
+var flatten;
 
 flatten = function(obj) {
   return JSON.encode(obj);
@@ -18,9 +10,6 @@ describe("Events test", function() {
 
   ev = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     return ev = new BagsEvents();
   });
   it("provides 'any' event which is fired whenever any event is fired", function() {
@@ -42,4 +31,6 @@ describe("Events test", function() {
     ev.fireEvent('any');
     return expect(anySpy.calls.length).toBe(1);
   });
+});
+
 });

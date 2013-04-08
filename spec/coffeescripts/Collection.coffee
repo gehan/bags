@@ -1,18 +1,11 @@
-Collection = null
+`define(['bags/Collection', 'bags/Model'], function(Collection, Model){`
 
-done = false
-curl ['bags/Collection'], (_Collection) ->
-    Collection = _Collection
-    done = true
-
-flatten = (obj) ->
-    JSON.encode obj
+flatten = (obj) -> JSON.encode obj
 
 describe "Collection test", ->
     col = null
 
     beforeEach ->
-        waitsFor -> done
         col = new Collection()
 
     it "listens to events on model and re-fires on collection", ->
@@ -77,3 +70,5 @@ describe "Collection test", ->
         expect(col[0].get('text')).toBe 'c'
         expect(col[1].get('text')).toBe 'b'
         expect(col[2].get('text')).toBe 'a'
+
+`})`

@@ -1,21 +1,11 @@
-var Router, View, done, flatten;
+define(['bags/Router', 'bags/View'], function(Router, View) {;
+var flatten;
 
-Router = null;
-
-View = null;
-
-done = false;
-
-curl(['bags/Router', 'bags/View'], function(_Router, _View) {
-  Router = _Router;
-  View = _View;
-  done = true;
-  return Router.implement({
-    routes: {
-      'route-1/': 'route1',
-      'route-2/': 'route2'
-    }
-  });
+Router.implement({
+  routes: {
+    'route-1/': 'route1',
+    'route-2/': 'route2'
+  }
 });
 
 flatten = function(obj) {
@@ -27,9 +17,6 @@ describe("Router test", function() {
 
   r = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     Router.implement({
       route1: function(args, data) {},
       route2: function(args, data) {}
@@ -286,4 +273,6 @@ describe("SubView test", function() {
     r.initSubView(a.sv2, el);
     return expect(s1.destroy).toHaveBeenCalled();
   });
+});
+
 });

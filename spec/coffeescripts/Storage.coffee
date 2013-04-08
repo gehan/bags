@@ -1,19 +1,12 @@
-Storage = null
+`define(['bags/Storage'], function (Storage) {`
 
-done = false
-curl ['bags/Storage'], (_Storage) ->
-    Storage = _Storage
-    done = true
-
-flatten = (obj) ->
-    JSON.encode obj
+flatten = (obj) -> JSON.encode obj
 
 describe "Storage test", ->
     StorageClass = null
     s = null
 
     beforeEach ->
-        waitsFor -> done
         StorageClass = new Class
             Implements: [Storage]
             url: '/items'
@@ -193,3 +186,5 @@ describe "Storage test", ->
         s.storage 'read', page: 1, action: 'A'
         req = mostRecentAjaxRequest()
         expect(req.url).toBe '/items/?page=1&action=A'
+
+`})`

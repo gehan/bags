@@ -1,22 +1,5 @@
-var Collection, Model, done, flatten;
-
-Model = null;
-
-Collection = null;
-
-done = false;
-
-curl(['Q', 'bags/Model', 'bags/Collection'], function(_Q, _Model, _Collection) {
-  var Q;
-
-  window.Q = _Q;
-  window.Model = _Model;
-  window.Collection = _Collection;
-  Model = _Model;
-  Collection = _Collection;
-  Q = _Q;
-  return done = true;
-});
+define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;
+var flatten;
 
 flatten = function(obj) {
   return JSON.encode(obj);
@@ -27,9 +10,6 @@ describe("Model test", function() {
 
   m = null;
   beforeEach(function() {
-    waitsFor(function() {
-      return done;
-    });
     return m = new Model({}, {
       url: '/items'
     });
@@ -951,4 +931,6 @@ describe("Model test", function() {
     expect(col.sortByField).toBe('yourDad');
     return expect(col.internet).toBe('yes');
   });
+});
+
 });

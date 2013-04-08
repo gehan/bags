@@ -1,9 +1,4 @@
-View = null
-
-done = false
-curl ['bags/View'], (_View) ->
-    View = _View
-    done = true
+`define(['bags/View'], function (View) {`
 
 flatten = (obj) ->
     JSON.encode obj
@@ -12,8 +7,6 @@ describe "View test", ->
     v = null
 
     beforeEach ->
-        waitsFor -> done
-
         View.implement
             template: 'test'
             TEMPLATES:
@@ -138,3 +131,4 @@ describe "View test", ->
         data = v._getTemplateData()
         expect(data.fullName).toBe 'Gehan Gonsalkorale'
 
+`})`
