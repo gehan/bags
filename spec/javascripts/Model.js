@@ -6,11 +6,15 @@ Collection = null;
 
 done = false;
 
-curl(['bags/Model', 'bags/Collection'], function(_Model, _Collection) {
+curl(['Q', 'bags/Model', 'bags/Collection'], function(_Q, _Model, _Collection) {
+  var Q;
+
+  window.Q = _Q;
   window.Model = _Model;
   window.Collection = _Collection;
   Model = _Model;
   Collection = _Collection;
+  Q = _Q;
   return done = true;
 });
 

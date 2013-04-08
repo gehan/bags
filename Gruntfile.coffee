@@ -37,7 +37,6 @@ module.exports = (grunt) ->
             options:
                 helpers : ['specs/helpers/*.js']
                 vendor: [
-                    "vendor/q.min.js",
                     "vendor/curl-env.js",
                     "vendor/mootools-core-1.4.5.js",
                     "vendor/mootools-more-1.4.0.1.js",

@@ -2,11 +2,13 @@ Model = null
 Collection = null
 
 done = false
-curl ['bags/Model', 'bags/Collection'], (_Model, _Collection) ->
+curl ['Q', 'bags/Model', 'bags/Collection'], (_Q, _Model, _Collection) ->
+    window.Q = _Q
     window.Model = _Model
     window.Collection = _Collection
     Model = _Model
     Collection = _Collection
+    Q = _Q
     done = true
 
 flatten = (obj) ->

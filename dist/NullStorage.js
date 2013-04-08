@@ -1,4 +1,4 @@
-define(['bags/Storage'], function(Storage){;
+define(['Q', 'bags/Storage'], function(Q, Storage){;
 var NullStorage;
 
 NullStorage = new Class({
