@@ -44,12 +44,6 @@ module.exports = (grunt) ->
                     "vendor/curl-env.js",
                     "vendor/mootools-core-1.4.5.js",
                     "vendor/mootools-more-1.4.0.1.js",
-                    "vendor/behaviour/Element.Data.js",
-                    "vendor/behaviour/Event.Mock.js",
-                    "vendor/behaviour/BehaviorAPI.js",
-                    "vendor/behaviour/Behavior.js",
-                    "vendor/behaviour/Behavior.Startup.js",
-                    "vendor/behaviour/Delegator.js",
                     "vendor/dust-full-0.3.0.min.js",
                 ]
 
