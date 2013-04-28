@@ -1,0 +1,7 @@
+{
+    "name": "bags",
+    "dependencies": {
+        "q": "0.9.3",
+        "knockout": "2.2.1"
+    }
+}

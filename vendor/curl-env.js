@@ -3,8 +3,8 @@ var curl = {
         bags: 'dist'
     },
     packages: [
-        { name: 'ko', location: 'vendor', main: 'knockout-2.2.1' },
-        { name: 'Q', location: 'vendor', main: 'q.min' }
+        { name: 'ko', location: 'components/knockout/build/output', main: 'knockout-latest' },
+        { name: 'Q', location: 'components/q/', main: 'q' }
     ]
 };
 
