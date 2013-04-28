@@ -4,8 +4,12 @@ module.exports = (grunt) ->
         pkg: grunt.file.readJSON 'package.json'
 
         watch:
-            files: ['src/**.coffee', 'spec/coffeescripts/**.coffee']
-            tasks: ['test']
+            default:
+                files: ['src/**.coffee']
+                tasks: ['coffee:bags', 'shell:docs']
+            test:
+                files: ['src/**.coffee', 'spec/coffeescripts/**.coffee']
+                tasks: ['test']
 
         coffee:
             options:
@@ -52,5 +56,5 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-shell'
 
-    grunt.registerTask 'default', ['coffee', 'shell:docs']
-    grunt.registerTask 'test', ['coffee', 'jasmine', 'watch']
+    grunt.registerTask 'default', ['coffee', 'shell:docs', 'watch:default']
+    grunt.registerTask 'test', ['coffee', 'jasmine', 'watch:test']

@@ -1,50 +1,35 @@
 # Provides an interface to the resource api on the server via AJAX
 `define(['Q', './Events'], function(Q, Events){`
 
-_urlSchemes =
-    file: "{baseUrl}"
-    directory: "{baseUrl}/"
-    id: "{baseUrl}/{id}"
-    method: "{baseUrl}/{id}/{method}"
-
-# Defines what urlschemes and request methods to use for each
-# method.
-_methodDefinitions =
-    create:
-        method: 'post'
-        scheme: 'file'
-    read:
-        method: 'get'
-        scheme: 'id'
-    update:
-        method: 'put'
-        scheme: 'id'
-    delete:
-        method: 'delete'
-        scheme: 'id'
-    list:
-        method: 'get'
-        scheme: 'directory'
-
-Storage = new Class
+Api = new Class
     Implements: [Events]
 
     # Model api
     # =============
 
-    # To perform api functions, the [Model](Model.coffee.html) class will
+    # To perform api calls, the [Model](Model.coffee.html) class will
     # call this method and pass simply the operation being performed and any
     # paramteres as needed. The [Collection](Collection.coffee.html) class
-    # also uses the `read` operation to fetch from the api.
+    # also uses the `list` operation to fetch multiple models from the api.
     #
-    # Operations
-    # ----------
+    # Default Operations
+    # ------------------
     #
     # * Create - `api('create', modelData)`
+    #   - POST to `/url`
     # * Read - `api('read', queryFilters)`
+    #   - GET from `/url/id`
     # * Update - `api('update', updatedModelData)`
+    #   - PUT to `/url/id`
     # * Delete - `api('delete')`
+    #   - DELETE to `/url/id`
     # * List - `api('list', queryFilters)`
+    #   - GET from `/url/`
+    #
+    # Can also be used for generic actions on models
+    #
+    # * 'someAction' - `api('someAction', paramaters)`
+    #   - POST to '/url/id/someAction'
     #
     # Handling Operation Completion
     # -----------------------------
@@ -83,8 +68,8 @@ Storage = new Class
     #
     #   Rather than using callbacks the request uses
     #   [Q.js](https://github.com/kriskowal/q)
-    #   to return a promise. See the docs
-    #   [Promise](http://documentup.com/kriskowal/q/)
+    #   to return a promise. See the docs on
+    #   [Q.js](http://documentup.com/kriskowal/q/)
     #
     #   To be notified when the promise is fulfilled, i.e. the request has
     #   finished in some way, then you can do the following:
@@ -209,6 +194,30 @@ Storage = new Class
         else
             'post'
 
+_urlSchemes =
+    file: "{baseUrl}"
+    directory: "{baseUrl}/"
+    id: "{baseUrl}/{id}"
+    method: "{baseUrl}/{id}/{method}"
 
-return Storage
+# Defines what urlschemes and request methods to use for each
+# method.
+_methodDefinitions =
+    create:
+        method: 'post'
+        scheme: 'file'
+    read:
+        method: 'get'
+        scheme: 'id'
+    update:
+        method: 'put'
+        scheme: 'id'
+    delete:
+        method: 'delete'
+        scheme: 'id'
+    list:
+        method: 'get'
+        scheme: 'directory'
+
+return Api
 `})`

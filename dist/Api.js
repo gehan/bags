@@ -1,37 +1,7 @@
 define(['Q', './Events'], function(Q, Events){;
-var Storage, _methodDefinitions, _urlSchemes;
+var Api, _methodDefinitions, _urlSchemes;
 
-_urlSchemes = {
-  file: "{baseUrl}",
-  directory: "{baseUrl}/",
-  id: "{baseUrl}/{id}",
-  method: "{baseUrl}/{id}/{method}"
-};
-
-_methodDefinitions = {
-  create: {
-    method: 'post',
-    scheme: 'file'
-  },
-  read: {
-    method: 'get',
-    scheme: 'id'
-  },
-  update: {
-    method: 'put',
-    scheme: 'id'
-  },
-  "delete": {
-    method: 'delete',
-    scheme: 'id'
-  },
-  list: {
-    method: 'get',
-    scheme: 'directory'
-  }
-};
-
-Storage = new Class({
+Api = new Class({
   Implements: [Events],
   api: function(operation, data, options) {
     var deferred, fail, fireEvent, method, requestData,
@@ -148,6 +118,36 @@ Storage = new Class({
   }
 });
 
-return Storage;
+_urlSchemes = {
+  file: "{baseUrl}",
+  directory: "{baseUrl}/",
+  id: "{baseUrl}/{id}",
+  method: "{baseUrl}/{id}/{method}"
+};
+
+_methodDefinitions = {
+  create: {
+    method: 'post',
+    scheme: 'file'
+  },
+  read: {
+    method: 'get',
+    scheme: 'id'
+  },
+  update: {
+    method: 'put',
+    scheme: 'id'
+  },
+  "delete": {
+    method: 'delete',
+    scheme: 'id'
+  },
+  list: {
+    method: 'get',
+    scheme: 'directory'
+  }
+};
+
+return Api;
 
 });
