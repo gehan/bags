@@ -1,19 +1,19 @@
 {
-  "name": "bags",
-  "version": "0.5.1",
-  "description": "bags framework",
-  "docco_husky": {
-    "project_name": "bags",
-    "show_timestamp": true
-  },
-  "dependencies": [],
-  "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-coffee": "~0.6.4",
-    "grunt-contrib-jasmine": "~0.4.1",
-    "grunt-contrib-watch": "~0.3.1",
-    "docco-husky": "~0.3.3",
-    "grunt-shell": "~0.2.2",
-    "grunt-template-jasmine-curljs": "~0.1.0"
-  }
+    "name": "bags",
+    "version": "0.5.5",
+    "description": "bags framework",
+    "docco_husky": {
+        "project_name": "bags",
+        "show_timestamp": true
+    },
+    "dependencies": [],
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-contrib-coffee": "~0.6.4",
+        "grunt-contrib-jasmine": "~0.4.1",
+        "grunt-contrib-watch": "~0.3.1",
+        "docco-husky": "~0.3.3",
+        "grunt-shell": "~0.2.2",
+        "grunt-template-jasmine-curljs": "~0.1.0"
+    }
 }
