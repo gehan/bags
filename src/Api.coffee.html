@@ -76,11 +76,11 @@ promise.then (data) -&gt;
     # Some code to handle the failure
 </code></pre></li>
 </ul>
-</td><td class="code"><div class="highlight"><pre>    <span class="nv">api: </span><span class="nf">(operation, data, options={}) -&gt;</span>
+</td><td class="code"><div class="highlight"><pre>    <span class="nv">api: </span><span class="nf">(operation, data={}, options={}) -&gt;</span>
         <span class="nv">deferred = </span><span class="nx">Q</span><span class="p">.</span><span class="nx">defer</span><span class="p">()</span>
 
         <span class="nv">method = </span><span class="nx">@_getRequestMethod</span> <span class="nx">operation</span>
-
+        <span class="nv">sendDataAsJson = </span><span class="nx">@_sendDataAsJson</span> <span class="nx">operation</span>
 
         <span class="nv">fail = </span><span class="nf">(reason=null) =&gt;</span>
             <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span> <span class="nx">reason</span>
@@ -90,17 +90,23 @@ promise.then (data) -&gt;
             <span class="nv">eventName = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">options</span><span class="p">.</span><span class="nx">eventName</span> <span class="o">or</span> <span class="nx">operation</span><span class="si">}#{</span><span class="nx">event</span><span class="p">.</span><span class="nx">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s">&quot;</span>
             <span class="nx">@fireEvent</span> <span class="nx">eventName</span><span class="p">,</span> <span class="nx">args</span> <span class="k">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">silent</span>
 
-        <span class="k">if</span> <span class="nx">operation</span> <span class="o">==</span> <span class="s">&#39;read&#39;</span>
-            <span class="nv">requestData = </span><span class="nx">data</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">data</span><span class="o">?</span>
-            <span class="nv">requestData = model: </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">data</span>
+        <span class="k">if</span> <span class="nx">sendDataAsJson</span>
+            <span class="nv">requestData = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">encode</span> <span class="nx">data</span>
+            <span class="nv">urlEncoded = </span><span class="kc">false</span>
+            <span class="nv">headers = </span><span class="p">{</span>
+                <span class="s">&#39;Content-type&#39;</span><span class="o">:</span> <span class="s">&#39;application/json&#39;</span>
+            <span class="p">}</span>
         <span class="k">else</span>
-            <span class="nv">requestData = </span><span class="p">{}</span>
+            <span class="nv">requestData = </span><span class="nx">data</span>
+            <span class="nv">urlEncoded = </span><span class="kc">true</span>
+            <span class="nv">headers = </span><span class="p">{}</span>
 
         <span class="k">new</span> <span class="nx">Request</span><span class="p">.</span><span class="nx">JSON</span>
             <span class="nv">url: </span><span class="nx">@_getUrl</span> <span class="nx">operation</span>
             <span class="nv">method: </span><span class="nx">method</span>
+            <span class="nv">headers: </span><span class="nx">headers</span>
             <span class="nv">data: </span><span class="nx">requestData</span>
+            <span class="nv">urlEncoded: </span><span class="nx">urlEncoded</span>
 
             <span class="nv">onRequest: </span><span class="o">=&gt;</span> <span class="nx">fireEvent</span> <span class="s">&quot;start&quot;</span>
             <span class="nv">onComplete: </span><span class="o">=&gt;</span> <span class="nx">fireEvent</span> <span class="s">&quot;complete&quot;</span>
@@ -163,23 +169,20 @@ the model is part of a collection.</p>
             <span class="nv">method: </span><span class="nx">operation</span>
 
         <span class="k">return</span> <span class="nx">operationUrl</span>
-        <span class="k">if</span> <span class="nx">@isCollection</span>
-            <span class="s">&quot;</span><span class="si">#{</span><span class="nx">url</span><span class="si">}</span><span class="s">/&quot;</span>
-        <span class="k">else</span> <span class="k">if</span> <span class="nx">operation</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="o">not</span> <span class="nx">@id</span><span class="o">?</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;&quot;&quot;Model doesn&#39;t have an id, cannot perform</span>
-<span class="s">                    </span><span class="si">#{</span><span class="nx">operation</span><span class="si">}</span><span class="s">&quot;&quot;&quot;</span>
-
-            <span class="s">&quot;</span><span class="si">#{</span><span class="nx">url</span><span class="si">}</span><span class="s">/</span><span class="si">#{</span><span class="nx">@id</span><span class="si">}</span><span class="s">&quot;</span>
-        <span class="k">else</span>
-            <span class="nx">url</span>
 
     <span class="nv">_getRequestMethod: </span><span class="nf">(operation) -&gt;</span>
         <span class="nv">def = </span><span class="nx">_methodDefinitions</span><span class="p">[</span><span class="nx">operation</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nx">def</span>
+        <span class="k">if</span> <span class="nx">def</span><span class="o">?</span>
             <span class="nx">def</span><span class="p">.</span><span class="nx">method</span>
         <span class="k">else</span>
             <span class="s">&#39;post&#39;</span>
+
+    <span class="nv">_sendDataAsJson: </span><span class="nf">(operation) -&gt;</span>
+        <span class="nv">def = </span><span class="nx">_methodDefinitions</span><span class="p">[</span><span class="nx">operation</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nx">def</span><span class="o">?</span>
+            <span class="nx">def</span><span class="p">.</span><span class="nx">json</span> <span class="o">or</span> <span class="kc">false</span>
+        <span class="k">else</span>
+            <span class="kc">false</span>
 
 <span class="nv">_urlSchemes =</span>
     <span class="nv">file: </span><span class="s">&quot;{baseUrl}&quot;</span>
@@ -191,12 +194,14 @@ method.</p>
     <span class="nv">create:</span>
         <span class="nv">method: </span><span class="s">&#39;post&#39;</span>
         <span class="nv">scheme: </span><span class="s">&#39;file&#39;</span>
+        <span class="nv">json: </span><span class="kc">true</span>
     <span class="nv">read:</span>
         <span class="nv">method: </span><span class="s">&#39;get&#39;</span>
         <span class="nv">scheme: </span><span class="s">&#39;id&#39;</span>
     <span class="nv">update:</span>
         <span class="nv">method: </span><span class="s">&#39;put&#39;</span>
         <span class="nv">scheme: </span><span class="s">&#39;id&#39;</span>
+        <span class="nv">json: </span><span class="kc">true</span>
     <span class="k">delete</span><span class="o">:</span>
         <span class="nv">method: </span><span class="s">&#39;delete&#39;</span>
         <span class="nv">scheme: </span><span class="s">&#39;id&#39;</span>
@@ -207,4 +212,4 @@ method.</p>
 <span class="k">return</span> <span class="nx">Api</span>
 <span class="o">`</span><span class="p">})</span><span class="o">`</span>
 
-</pre></div></td></tr></tbody></table><div id="generated">generated Sun Apr 28 2013 19:33:02 GMT+0100 (BST)  </div><div id="projectname"><a href="../index.html">bags</a></div></div></body></html>
+</pre></div></td></tr></tbody></table><div id="generated">generated Mon Apr 29 2013 00:07:46 GMT+0100 (BST)  </div><div id="projectname"><a href="../index.html">bags</a></div></div></body></html>
