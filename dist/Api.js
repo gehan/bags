@@ -4,14 +4,18 @@ var Api, _methodDefinitions, _urlSchemes;
 Api = new Class({
   Implements: [Events],
   api: function(operation, data, options) {
-    var deferred, fail, fireEvent, method, requestData,
+    var deferred, fail, fireEvent, headers, method, requestData, sendDataAsJson, urlEncoded,
       _this = this;
 
+    if (data == null) {
+      data = {};
+    }
     if (options == null) {
       options = {};
     }
     deferred = Q.defer();
     method = this._getRequestMethod(operation);
+    sendDataAsJson = this._sendDataAsJson(operation);
     fail = function(reason) {
       if (reason == null) {
         reason = null;
@@ -27,19 +31,23 @@ Api = new Class({
         return _this.fireEvent(eventName, args);
       }
     };
-    if (operation === 'read') {
-      requestData = data;
-    } else if (data != null) {
-      requestData = {
-        model: JSON.encode(data)
+    if (sendDataAsJson) {
+      requestData = JSON.encode(data);
+      urlEncoded = false;
+      headers = {
+        'Content-type': 'application/json'
       };
     } else {
-      requestData = {};
+      requestData = data;
+      urlEncoded = true;
+      headers = {};
     }
     new Request.JSON({
       url: this._getUrl(operation),
       method: method,
+      headers: headers,
       data: requestData,
+      urlEncoded: urlEncoded,
       onRequest: function() {
         return fireEvent("start");
       },
@@ -95,25 +103,25 @@ Api = new Class({
       method: operation
     });
     return operationUrl;
-    if (this.isCollection) {
-      return "" + url + "/";
-    } else if (operation === 'update' || operation === 'delete' || operation === 'read') {
-      if (this.id == null) {
-        throw new Error("Model doesn't have an id, cannot perform\n" + operation);
-      }
-      return "" + url + "/" + this.id;
-    } else {
-      return url;
-    }
   },
   _getRequestMethod: function(operation) {
     var def;
 
     def = _methodDefinitions[operation];
-    if (def) {
+    if (def != null) {
       return def.method;
     } else {
       return 'post';
+    }
+  },
+  _sendDataAsJson: function(operation) {
+    var def;
+
+    def = _methodDefinitions[operation];
+    if (def != null) {
+      return def.json || false;
+    } else {
+      return false;
     }
   }
 });
@@ -128,7 +136,8 @@ _urlSchemes = {
 _methodDefinitions = {
   create: {
     method: 'post',
-    scheme: 'file'
+    scheme: 'file',
+    json: true
   },
   read: {
     method: 'get',
@@ -136,7 +145,8 @@ _methodDefinitions = {
   },
   update: {
     method: 'put',
-    scheme: 'id'
+    scheme: 'id',
+    json: true
   },
   "delete": {
     method: 'delete',

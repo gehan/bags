@@ -372,12 +372,10 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
     });
     m.save('action', 'deleted');
     req = mostRecentAjaxRequest();
-    requestData = {
-      model: JSON.encode({
-        action: 'deleted'
-      })
-    };
-    expect(req.params).toBe(Object.toQueryString(requestData));
+    requestData = JSON.encode({
+      action: 'deleted'
+    });
+    expect(req.params).toBe(requestData);
     return expect(changeCalledBeforeSave).toBe(false);
   });
   it('save accepts values, updates immediately if requested', function() {
@@ -428,13 +426,11 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
       feck: 'arse'
     });
     req = mostRecentAjaxRequest();
-    requestData = {
-      model: JSON.encode({
-        action: 'deleted',
-        feck: 'arse'
-      })
-    };
-    return expect(req.params).toBe(Object.toQueryString(requestData));
+    requestData = JSON.encode({
+      action: 'deleted',
+      feck: 'arse'
+    });
+    return expect(req.params).toBe(requestData);
   });
   it('save works with types', function() {
     var Mdl, changeCalled, dte, req, requestData;
@@ -456,12 +452,10 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
       aDate: dte
     });
     req = mostRecentAjaxRequest();
-    requestData = {
-      model: JSON.encode({
-        aDate: dte.toJSON()
-      })
-    };
-    expect(req.params).toBe(Object.toQueryString(requestData));
+    requestData = JSON.encode({
+      aDate: dte.toJSON()
+    });
+    expect(req.params).toBe(requestData);
     return expect(changeCalled).toBe(false);
   });
   it('save accepts callback for success', function() {

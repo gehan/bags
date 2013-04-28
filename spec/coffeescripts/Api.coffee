@@ -33,6 +33,14 @@ describe "Api test", ->
         expect(s._getRequestMethod 'list').toBe 'get'
         expect(s._getRequestMethod 'archive').toBe 'post'
 
+    it 'gets should jsons data correctly', ->
+        expect(s._sendDataAsJson 'create').toBe true
+        expect(s._sendDataAsJson 'read').toBe false
+        expect(s._sendDataAsJson 'update').toBe true
+        expect(s._sendDataAsJson 'delete').toBe false
+        expect(s._sendDataAsJson 'list').toBe false
+        expect(s._sendDataAsJson 'archive').toBe false
+
     it 'throws error if no url found', ->
         errorThrown = false
         s.url = null
@@ -63,14 +71,15 @@ describe "Api test", ->
         url = s._getUrl 'read'
         expect(url).toBe '/items/'
 
-    it 'sends data across to server as json', ->
+    it 'sends data across to server as json with correct content type', ->
         model =
             text: 'internet'
             date: '2012-01-01'
         s.api 'create', model
 
         req = mostRecentAjaxRequest()
-        expect(req.params).toBe Object.toQueryString(model: JSON.encode(model))
+        expect(req.requestHeaders['Content-type']).toBe 'application/json'
+        expect(req.params).toBe JSON.encode(model)
 
     it 'parses response data correctly on success', ->
         response =

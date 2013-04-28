@@ -294,8 +294,8 @@ describe "Model test", ->
 
         req = mostRecentAjaxRequest()
         requestData =
-            model: JSON.encode(action: 'deleted')
-        expect(req.params).toBe Object.toQueryString(requestData)
+            JSON.encode(action: 'deleted')
+        expect(req.params).toBe requestData
         expect(changeCalledBeforeSave).toBe false
 
 
@@ -330,8 +330,8 @@ describe "Model test", ->
 
         req = mostRecentAjaxRequest()
         requestData =
-            model: JSON.encode(action: 'deleted', feck: 'arse')
-        expect(req.params).toBe Object.toQueryString(requestData)
+            JSON.encode(action: 'deleted', feck: 'arse')
+        expect(req.params).toBe requestData
 
     it 'save works with types', ->
         Mdl = new Class
@@ -350,8 +350,8 @@ describe "Model test", ->
 
         req = mostRecentAjaxRequest()
         requestData =
-            model: JSON.encode(aDate: dte.toJSON())
-        expect(req.params).toBe Object.toQueryString(requestData)
+            JSON.encode(aDate: dte.toJSON())
+        expect(req.params).toBe requestData
         expect(changeCalled).toBe false
 
     it 'save accepts callback for success', ->

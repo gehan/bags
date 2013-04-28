@@ -80,11 +80,11 @@ Api = new Class
     #         , (reason) ->
     #             # Some code to handle the failure
     #
-    api: (operation, data, options={}) ->
+    api: (operation, data={}, options={}) ->
         deferred = Q.defer()
 
         method = @_getRequestMethod operation
-
+        sendDataAsJson = @_sendDataAsJson operation
 
         fail = (reason=null) =>
             deferred.reject reason
@@ -94,17 +94,23 @@ Api = new Class
             eventName = "#{options.eventName or operation}#{event.capitalize()}"
             @fireEvent eventName, args unless options.silent
 
-        if operation == 'read'
-            requestData = data
-        else if data?
-            requestData = model: JSON.encode data
+        if sendDataAsJson
+            requestData = JSON.encode data
+            urlEncoded = false
+            headers = {
+                'Content-type': 'application/json'
+            }
         else
-            requestData = {}
+            requestData = data
+            urlEncoded = true
+            headers = {}
 
         new Request.JSON
             url: @_getUrl operation
             method: method
+            headers: headers
             data: requestData
+            urlEncoded: urlEncoded
 
             onRequest: => fireEvent "start"
             onComplete: => fireEvent "complete"
@@ -176,23 +182,20 @@ Api = new Class
             method: operation
 
         return operationUrl
-        if @isCollection
-            "#{url}/"
-        else if operation in ['update', 'delete', 'read']
-            if not @id?
-                throw new Error """Model doesn't have an id, cannot perform
-                    #{operation}"""
-
-            "#{url}/#{@id}"
-        else
-            url
 
     _getRequestMethod: (operation) ->
         def = _methodDefinitions[operation]
-        if def
+        if def?
             def.method
         else
             'post'
+
+    _sendDataAsJson: (operation) ->
+        def = _methodDefinitions[operation]
+        if def?
+            def.json or false
+        else
+            false
 
 _urlSchemes =
     file: "{baseUrl}"
@@ -206,12 +209,14 @@ _methodDefinitions =
     create:
         method: 'post'
         scheme: 'file'
+        json: true
     read:
         method: 'get'
         scheme: 'id'
     update:
         method: 'put'
         scheme: 'id'
+        json: true
     delete:
         method: 'delete'
         scheme: 'id'

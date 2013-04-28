@@ -45,6 +45,14 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
     expect(s._getRequestMethod('list')).toBe('get');
     return expect(s._getRequestMethod('archive')).toBe('post');
   });
+  it('gets should jsons data correctly', function() {
+    expect(s._sendDataAsJson('create')).toBe(true);
+    expect(s._sendDataAsJson('read')).toBe(false);
+    expect(s._sendDataAsJson('update')).toBe(true);
+    expect(s._sendDataAsJson('delete')).toBe(false);
+    expect(s._sendDataAsJson('list')).toBe(false);
+    return expect(s._sendDataAsJson('archive')).toBe(false);
+  });
   it('throws error if no url found', function() {
     var err, errorThrown, url;
 
@@ -83,7 +91,7 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
     url = s._getUrl('read');
     return expect(url).toBe('/items/');
   });
-  it('sends data across to server as json', function() {
+  it('sends data across to server as json with correct content type', function() {
     var model, req;
 
     model = {
@@ -92,9 +100,8 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
     };
     s.api('create', model);
     req = mostRecentAjaxRequest();
-    return expect(req.params).toBe(Object.toQueryString({
-      model: JSON.encode(model)
-    }));
+    expect(req.requestHeaders['Content-type']).toBe('application/json');
+    return expect(req.params).toBe(JSON.encode(model));
   });
   it('parses response data correctly on success', function() {
     var lastCall, response;
