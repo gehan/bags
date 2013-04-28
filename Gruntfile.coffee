@@ -59,4 +59,4 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-shell'
 
     grunt.registerTask 'default', ['coffee', 'shell:docs']
-    grunt.registerTask 'test', ['coffee', 'jasmine']
+    grunt.registerTask 'test', ['coffee', 'jasmine', 'watch']

@@ -66,10 +66,9 @@ Storage = new Class
     # * __Promises__
     #
     #   Rather than using callbacks the request uses
-    #   [futures.js](https://github.com/coolaj86/futures)
-    #   to return a promise, or rather a
-    #   [Future](https://github.com/coolaj86/futures/tree/v2.0/future)
-    #   as it is called in this library.
+    #   [Q.js](https://github.com/kriskowal/q)
+    #   to return a promise. See the docs
+    #   [Promise](http://documentup.com/kriskowal/q/)
     #
     #   To be notified when the promise is fulfilled, i.e. the request has
     #   finished in some way, then you can do the following:
