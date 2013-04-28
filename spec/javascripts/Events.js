@@ -1,11 +1,4 @@
-define(['bags/Events'], function(BagsEvents){;
-var flatten;
-
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
-
-describe("Events test", function() {
+define(['bags/Events'], function(BagsEvents){;describe("Events test", function() {
   var ev;
 
   ev = null;

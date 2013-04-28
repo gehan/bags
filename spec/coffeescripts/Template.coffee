@@ -1,8 +1,5 @@
 `define(['bags/Template'], function (Template) {`
 
-flatten = (obj) ->
-    JSON.encode obj
-
 describe "Template test", ->
     t = null
 

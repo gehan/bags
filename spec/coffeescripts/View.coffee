@@ -1,8 +1,5 @@
 `define(['bags/View'], function (View) {`
 
-flatten = (obj) ->
-    JSON.encode obj
-
 describe "View test", ->
     v = null
 

@@ -1,11 +1,4 @@
-define(['bags/Collection', 'bags/Model'], function(Collection, Model){;
-var flatten;
-
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
-
-describe("Collection test", function() {
+define(['bags/Collection', 'bags/Model'], function(Collection, Model){;describe("Collection test", function() {
   var col;
 
   col = null;

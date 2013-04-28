@@ -1,7 +1,7 @@
-define(['require', './Storage', './Events'], function(require, Storage, Events) {
+define(['require', './Api', './Events'], function(require, Api, Events) {
   return new Class({
     Extends: Array,
-    Implements: [Options, Events, Storage],
+    Implements: [Options, Events, Api],
     options: {},
     url: null,
     initialize: function(models, options) {
@@ -47,7 +47,7 @@ define(['require', './Storage', './Events'], function(require, Storage, Events) 
       if (options == null) {
         options = {};
       }
-      promise = this.storage('read', filter);
+      promise = this.api('list', filter);
       return promise.then(function(models) {
         if (options.add) {
           _this.add(models, options);

@@ -1,34 +1,50 @@
-# Provides prersistent model storage via AJAX. You can create alternative
-# Storage classes and implement these in your model to use other methods like
-# HTML5 local storage.
+# Provides an interface to the resource api on the server via AJAX
 `define(['Q', './Events'], function(Q, Events){`
 
-# Storage uses CRUD functions, and this is mapped to it's HTTP counterparts
-# for this class
-_crudMap =
-    create: 'post'
-    read: 'get'
-    update: 'put'
-    delete: 'delete'
+_urlSchemes =
+    file: "{baseUrl}"
+    directory: "{baseUrl}/"
+    id: "{baseUrl}/{id}"
+    method: "{baseUrl}/{id}/{method}"
+
+# Defines what urlschemes and request methods to use for each
+# method.
+_methodDefinitions =
+    create:
+        method: 'post'
+        scheme: 'file'
+    read:
+        method: 'get'
+        scheme: 'id'
+    update:
+        method: 'put'
+        scheme: 'id'
+    delete:
+        method: 'delete'
+        scheme: 'id'
+    list:
+        method: 'get'
+        scheme: 'directory'
 
 Storage = new Class
     Implements: [Events]
 
-    # Model storage
+    # Model api
     # =============
 
-    # To perform storage functions, the [Model](Model.coffee.html) class will
+    # To perform api functions, the [Model](Model.coffee.html) class will
     # call this method and pass simply the operation being performed and any
     # paramteres as needed. The [Collection](Collection.coffee.html) class
-    # also uses the `read` operation to fetch from the storage.
+    # also uses the `read` operation to fetch from the api.
     #
     # Operations
     # ----------
     #
-    # * Create - `storage('create', modelData)`
-    # * Read - `storage('read', queryFilters)`
-    # * Update - `storage('update', updatedModelData)`
-    # * Delete - `storage('delete')`
+    # * Create - `api('create', modelData)`
+    # * Read - `api('read', queryFilters)`
+    # * Update - `api('update', updatedModelData)`
+    # * Delete - `api('delete')`
+    # * List - `api('list', queryFilters)`
     #
     # Handling Operation Completion
     # -----------------------------
@@ -38,8 +54,8 @@ Storage = new Class
     #
     # * __Events__
     #
-    #   Events are fired when during the various stages of the storage request.
-    #   They will be prefixed by the storage operation or `options.eventName`
+    #   Events are fired when during the various stages of the api request.
+    #   They will be prefixed by the api operation or `options.eventName`
     #   if it's been passed in.
     #
     #   * operation`Start` - e.g. readStart
@@ -73,16 +89,17 @@ Storage = new Class
     #   To be notified when the promise is fulfilled, i.e. the request has
     #   finished in some way, then you can do the following:
     #
-    #         promise = model.storage(operation)
+    #         promise = model.api(operation)
     #         promise.then (data) ->
     #             # Some success code
     #         , (reason) ->
     #             # Some code to handle the failure
     #
-    storage: (operation, data, options={}) ->
+    api: (operation, data, options={}) ->
         deferred = Q.defer()
 
-        method = _crudMap[operation]
+        method = @_getRequestMethod operation
+
 
         fail = (reason=null) =>
             deferred.reject reason
@@ -149,10 +166,12 @@ Storage = new Class
     # * read: `url/id`
     # * update: `url/id`
     # * delete: `url/id`
+    # * list: `url`
     #
-    # If this is a collection then it will be
+    # For unknown actions the url will default to
     #
-    # * read: `url`
+    # * `url/id/<action>`
+    #
     _getUrl: (operation) ->
         url = @url
         if not url? and @collection?
@@ -160,6 +179,18 @@ Storage = new Class
         if not url?
             throw new Error "No url can be found"
 
+        def = _methodDefinitions[operation]
+        if def
+            urlScheme = _urlSchemes[def.scheme]
+        else
+            urlScheme = _urlSchemes.method
+
+        operationUrl = urlScheme.substitute
+            baseUrl: url
+            id: @id
+            method: operation
+
+        return operationUrl
         if @isCollection
             "#{url}/"
         else if operation in ['update', 'delete', 'read']
@@ -170,6 +201,14 @@ Storage = new Class
             "#{url}/#{@id}"
         else
             url
+
+    _getRequestMethod: (operation) ->
+        def = _methodDefinitions[operation]
+        if def
+            def.method
+        else
+            'post'
+
 
 return Storage
 `})`

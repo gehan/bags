@@ -1,7 +1,5 @@
 `define(['bags/Collection', 'bags/Model'], function(Collection, Model){`
 
-flatten = (obj) -> JSON.encode obj
-
 describe "Collection test", ->
     col = null
 

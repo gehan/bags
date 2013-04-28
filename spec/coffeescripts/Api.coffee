@@ -1,20 +1,18 @@
-`define(['bags/Storage'], function (Storage) {`
+`define(['bags/Api'], function (Api) {`
 
-flatten = (obj) -> JSON.encode obj
-
-describe "Storage test", ->
-    StorageClass = null
+describe "Api test", ->
+    ApiClass = null
     s = null
 
     beforeEach ->
-        StorageClass = new Class
-            Implements: [Storage]
+        ApiClass = new Class
+            Implements: [Api]
             url: '/items'
             fetch: (options={}) ->
-                storageOptions = Object.merge({eventName: 'fetch'}, options)
-                @storage 'read', null, storageOptions
+                apiOptions = Object.merge({eventName: 'fetch'}, options)
+                @api 'read', null, apiOptions
 
-        s = new StorageClass()
+        s = new ApiClass()
 
     it 'tries to get url from module', ->
         url = s._getUrl 'create'
@@ -26,6 +24,14 @@ describe "Storage test", ->
             url: '/collection'
         url = s._getUrl 'create'
         expect(url).toBe '/collection'
+
+    it 'gets request methods correctly', ->
+        expect(s._getRequestMethod 'create').toBe 'post'
+        expect(s._getRequestMethod 'read').toBe 'get'
+        expect(s._getRequestMethod 'update').toBe 'put'
+        expect(s._getRequestMethod 'delete').toBe 'delete'
+        expect(s._getRequestMethod 'list').toBe 'get'
+        expect(s._getRequestMethod 'archive').toBe 'post'
 
     it 'throws error if no url found', ->
         errorThrown = false
@@ -47,6 +53,11 @@ describe "Storage test", ->
         url = s._getUrl 'update'
         expect(url).toBe '/items/1'
 
+    it 'append operation name to url if unknown', ->
+        s.id = 1
+        url = s._getUrl 'archive'
+        expect(url).toBe '/items/1/archive'
+
     it 'doesnt add /@id to read for collections, adds /', ->
         s.isCollection = true
         url = s._getUrl 'read'
@@ -56,7 +67,7 @@ describe "Storage test", ->
         model =
             text: 'internet'
             date: '2012-01-01'
-        s.storage 'create', model
+        s.api 'create', model
 
         req = mostRecentAjaxRequest()
         expect(req.params).toBe Object.toQueryString(model: JSON.encode(model))
@@ -75,7 +86,7 @@ describe "Storage test", ->
         spyOn(s, 'parseResponse').andCallThrough()
 
         s.isCollection = true
-        s.storage 'read'
+        s.api 'read'
 
         expect(s.isSuccess).toHaveBeenCalled()
         lastCall = flatten s.parseResponse.mostRecentCall.args[0]
@@ -94,7 +105,7 @@ describe "Storage test", ->
         success = jasmine.createSpy 'succes cb'
         s.isCollection = true
 
-        promise = s.storage 'read'
+        promise = s.api 'read'
         promise.then (ret) ->
             success(ret)
 
@@ -117,7 +128,7 @@ describe "Storage test", ->
         fail = jasmine.createSpy 'fail cb'
 
         s.isCollection = true
-        promise = s.storage 'read'
+        promise = s.api 'read'
         promise.then (->), (reason) ->
             fail(reason)
 
@@ -145,7 +156,7 @@ describe "Storage test", ->
         s.addEvent 'readSuccess', successSpy
 
         s.isCollection = true
-        s.storage 'read'
+        s.api 'read'
 
         expect(readSpy).toHaveBeenCalled()
         expect(completeSpy).toHaveBeenCalled()
@@ -158,7 +169,7 @@ describe "Storage test", ->
         failSpy = jasmine.createSpy 'fail spy'
         s.addEvent 'readFailure', failSpy
         s.isCollection = true
-        s.storage 'read'
+        s.api 'read'
         expect(failSpy).toHaveBeenCalled()
 
     it 'fires off failure events with custom name', ->
@@ -183,7 +194,7 @@ describe "Storage test", ->
 
     it 'sends qs data to read command', ->
         s.isCollection = true
-        s.storage 'read', page: 1, action: 'A'
+        s.api 'read', page: 1, action: 'A'
         req = mostRecentAjaxRequest()
         expect(req.url).toBe '/items/?page=1&action=A'
 

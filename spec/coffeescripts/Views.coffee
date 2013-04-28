@@ -1,9 +1,6 @@
 `define(['bags/Views', 'bags/View', 'bags/Collection'],
 function(Views, View, Collection) {`
 
-flatten = (obj) ->
-    JSON.encode obj
-
 describe "ViewCollection test", ->
     cv = null; c = null; v = null; View2 = null
     EmptyView = null

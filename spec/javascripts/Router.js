@@ -1,16 +1,9 @@
-define(['bags/Router', 'bags/View'], function(Router, View) {;
-var flatten;
-
-Router.implement({
+define(['bags/Router', 'bags/View'], function(Router, View) {;Router.implement({
   routes: {
     'route-1/': 'route1',
     'route-2/': 'route2'
   }
 });
-
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
 
 describe("Router test", function() {
   var r;

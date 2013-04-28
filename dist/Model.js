@@ -1,5 +1,5 @@
-define(['require', './Storage', './Collection', './Exceptions',
-    './Events'], function(require, Storage, Collection, Exceptions, Events)
+define(['require', './Api', './Collection', './Exceptions',
+    './Events'], function(require, Api, Collection, Exceptions, Events)
     {;
 var $extends, Model,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -44,7 +44,7 @@ Class.Mutators.Extends = function(parent) {
 };
 
 Model = new Class({
-  Implements: [Events, Options, Storage],
+  Implements: [Events, Options, Api],
   Collection: {
     "class": Collection
   },
@@ -201,7 +201,7 @@ Model = new Class({
     return attrs;
   },
   fetch: function(options) {
-    var promise, storageOptions,
+    var apiOptions, promise,
       _this = this;
 
     if (options == null) {
@@ -210,10 +210,10 @@ Model = new Class({
     if (this.isNew()) {
       return;
     }
-    storageOptions = Object.merge({
+    apiOptions = Object.merge({
       eventName: 'fetch'
     }, options);
-    promise = this.storage('read', null, storageOptions);
+    promise = this.api('read', null, apiOptions);
     return promise.then(function(data) {
       _this.set(data, {
         silent: true
@@ -226,7 +226,7 @@ Model = new Class({
     });
   },
   save: function(key, value, options) {
-    var ModelClass, attrs, data, promise, setAttrFn, storageMethod, storageOptions, toUpdate,
+    var ModelClass, apiMethod, apiOptions, attrs, data, promise, setAttrFn, toUpdate,
       _this = this;
 
     if (options == null) {
@@ -262,11 +262,11 @@ Model = new Class({
     if (options.dontWait) {
       setAttrFn();
     }
-    storageMethod = this.isNew() ? "create" : "update";
-    storageOptions = Object.merge({
+    apiMethod = this.isNew() ? "create" : "update";
+    apiOptions = Object.merge({
       eventName: 'save'
     }, options);
-    promise = this.storage(storageMethod, data, storageOptions);
+    promise = this.api(apiMethod, data, apiOptions);
     return promise.then(function(data) {
       var model;
 
@@ -282,7 +282,7 @@ Model = new Class({
     });
   },
   destroy: function(options) {
-    var fireEvent, promise, storageOptions,
+    var apiOptions, fireEvent, promise,
       _this = this;
 
     if (options == null) {
@@ -300,10 +300,10 @@ Model = new Class({
     if (options.dontWait) {
       fireEvent();
     }
-    storageOptions = Object.merge({
+    apiOptions = Object.merge({
       eventName: 'destroy'
     }, options);
-    promise = this.storage('delete', null, storageOptions);
+    promise = this.api('delete', null, apiOptions);
     return promise.then(function(data) {
       if (!options.dontWait) {
         fireEvent();

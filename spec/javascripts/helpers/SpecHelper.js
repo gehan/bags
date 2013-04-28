@@ -1,3 +1,7 @@
+function flatten(obj) {
+    return JSON.encode(obj);
+}
+
 beforeEach(function() {
     // Replace MooTools XHR with fake request
     if (typeof Browser.Request !== 'undefined') {

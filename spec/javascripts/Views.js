@@ -1,12 +1,5 @@
 define(['bags/Views', 'bags/View', 'bags/Collection'],
-function(Views, View, Collection) {;
-var flatten;
-
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
-
-describe("ViewCollection test", function() {
+function(Views, View, Collection) {;describe("ViewCollection test", function() {
   var EmptyView, View2, c, cv, listEl, v;
 
   cv = null;

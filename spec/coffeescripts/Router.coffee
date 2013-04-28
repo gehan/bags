@@ -5,8 +5,6 @@ Router.implement
         'route-1/': 'route1'
         'route-2/': 'route2'
 
-flatten = (obj) -> JSON.encode obj
-
 describe "Router test", ->
     r = null
 

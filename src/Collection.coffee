@@ -1,15 +1,15 @@
 # Provides a simple collection class, which can be used to handle retrieval
 # and management of sets of [Model](Model.coffee.html)s
 
-define ['require', './Storage', './Events'], (require, Storage, Events) -> \
+define ['require', './Api', './Events'], (require, Api, Events) -> \
 
 new Class
     # Extends the native javascript Array object so we get all the methods of
     # this class as well as the Mootools extensions.
     Extends: Array
 
-    # Uses [Storage](Storage.coffee.html) for collection retrieval
-    Implements: [Options, Events, Storage]
+    # Uses [Api](Api.coffee.html) for collection retrieval
+    Implements: [Options, Events, Api]
 
     options: {}
 
@@ -17,7 +17,7 @@ new Class
     # be used to create new instances after calling `fetch`
     #model: Model
 
-    # If using default `Storage` class then you must set the URL here
+    # If using default `Api` class then you must set the URL here
     url: null
 
     # Using the Collection class
@@ -52,8 +52,8 @@ new Class
     # Collection retrieval
     # --------------------
     #
-    # The actual collection storage has been abstracted out to
-    # [Storage](Storage.coffee.html)
+    # The actual collection api has been abstracted out to
+    # [Api](Api.coffee.html)
     # which should be read to learn about the various events fired during each
     # operation and as well as how to handle to returned promise.
 
@@ -65,7 +65,7 @@ new Class
     # If you wish to add to the collection rather than replace it then set
     # `options.add=true` and `@add` will be called instead
     fetch: (filter={}, options={}) ->
-        promise = @storage 'read', filter
+        promise = @api 'list', filter
         promise.then (models) =>
             if options.add
                 @add models, options

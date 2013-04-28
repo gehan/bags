@@ -1,11 +1,4 @@
-define(['bags/Template'], function (Template) {;
-var flatten;
-
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
-
-describe("Template test", function() {
+define(['bags/Template'], function (Template) {;describe("Template test", function() {
   var t,
     _this = this;
 

@@ -1,11 +1,4 @@
-define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;
-var flatten;
-
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
-
-describe("Model test", function() {
+define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;describe("Model test", function() {
   var m;
 
   m = null;
@@ -303,7 +296,7 @@ describe("Model test", function() {
     expect(addedKey).toBe('subCollection');
     return expect(addedCollection.toJSON()).toBeObject(mdl.get('subCollection').toJSON());
   });
-  it('sends create request to storage', function() {
+  it('sends create request to api', function() {
     var attrs, deferred, saved;
 
     attrs = {
@@ -313,7 +306,7 @@ describe("Model test", function() {
     m.set(attrs);
     expect(m.isNew()).toBe(true);
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     saved = false;
     m.save().then(function(ret) {
       return saved = true;
@@ -328,7 +321,7 @@ describe("Model test", function() {
       var lastCall;
 
       expect(saved).toBe(true);
-      lastCall = m.storage.mostRecentCall.args;
+      lastCall = m.api.mostRecentCall.args;
       expect(lastCall).toBeObject([
         'create', attrs, {
           eventName: 'save'
@@ -337,7 +330,7 @@ describe("Model test", function() {
       return expect(m.id).toBe(2);
     });
   });
-  it('sends update request to storage', function() {
+  it('sends update request to api', function() {
     var attrs, deferred, lastCall, promise2;
 
     attrs = {
@@ -348,9 +341,9 @@ describe("Model test", function() {
     m.set(attrs);
     expect(m.isNew()).toBe(false);
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     promise2 = m.save();
-    lastCall = m.storage.mostRecentCall.args;
+    lastCall = m.api.mostRecentCall.args;
     return expect(lastCall).toBeObject([
       'update', attrs, {
         eventName: 'save'
@@ -412,11 +405,11 @@ describe("Model test", function() {
       id: 1
     });
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     promise2 = m.save({
       internet: 'yes'
     });
-    lastCall = m.storage.mostRecentCall.args;
+    lastCall = m.api.mostRecentCall.args;
     return expect(lastCall).toBeObject([
       'update', {
         id: 1,
@@ -476,7 +469,7 @@ describe("Model test", function() {
 
     success = jasmine.createSpy('success callback');
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     m.save().then(success);
     deferred.resolve({
       id: 3
@@ -501,7 +494,7 @@ describe("Model test", function() {
 
     fail = jasmine.createSpy('fail callback');
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     m.save().then((function() {}), fail);
     deferred.reject('shiit');
     waitsFor(function() {
@@ -519,7 +512,7 @@ describe("Model test", function() {
     m.id = 1;
     m.addEvent('destroy', destroy);
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     m.destroy().then(success);
     deferred.resolve('yeah mate');
     waitsFor(function() {
@@ -528,7 +521,7 @@ describe("Model test", function() {
     return runs(function() {
       var lastCall;
 
-      lastCall = m.storage.mostRecentCall.args;
+      lastCall = m.api.mostRecentCall.args;
       expect(lastCall).toBeObject([
         'delete', null, {
           eventName: 'destroy'
@@ -697,7 +690,7 @@ describe("Model test", function() {
       url: '/items'
     });
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     deferred.resolve({
       id: 1,
       text: 'yeah'
@@ -719,7 +712,7 @@ describe("Model test", function() {
     });
     expect(m.isDirty()).toBe(true);
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     m.save().then(success);
     deferred.resolve({
       id: 1
@@ -743,7 +736,7 @@ describe("Model test", function() {
     });
     expect(m.isDirty()).toBe(true);
     deferred = Q.defer();
-    spyOn(m, 'storage').andReturn(deferred.promise);
+    spyOn(m, 'api').andReturn(deferred.promise);
     m.save().then(success);
     deferred.resolve({
       id: 1

@@ -1,7 +1,5 @@
 `define(['bags/Events'], function(BagsEvents){`
 
-flatten = (obj) -> JSON.encode obj
-
 describe "Events test", ->
     ev = null
 

@@ -1,32 +1,25 @@
-define(['bags/Storage'], function (Storage) {;
-var flatten;
+define(['bags/Api'], function (Api) {;describe("Api test", function() {
+  var ApiClass, s;
 
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
-
-describe("Storage test", function() {
-  var StorageClass, s;
-
-  StorageClass = null;
+  ApiClass = null;
   s = null;
   beforeEach(function() {
-    StorageClass = new Class({
-      Implements: [Storage],
+    ApiClass = new Class({
+      Implements: [Api],
       url: '/items',
       fetch: function(options) {
-        var storageOptions;
+        var apiOptions;
 
         if (options == null) {
           options = {};
         }
-        storageOptions = Object.merge({
+        apiOptions = Object.merge({
           eventName: 'fetch'
         }, options);
-        return this.storage('read', null, storageOptions);
+        return this.api('read', null, apiOptions);
       }
     });
-    return s = new StorageClass();
+    return s = new ApiClass();
   });
   it('tries to get url from module', function() {
     var url;
@@ -43,6 +36,14 @@ describe("Storage test", function() {
     };
     url = s._getUrl('create');
     return expect(url).toBe('/collection');
+  });
+  it('gets request methods correctly', function() {
+    expect(s._getRequestMethod('create')).toBe('post');
+    expect(s._getRequestMethod('read')).toBe('get');
+    expect(s._getRequestMethod('update')).toBe('put');
+    expect(s._getRequestMethod('delete')).toBe('delete');
+    expect(s._getRequestMethod('list')).toBe('get');
+    return expect(s._getRequestMethod('archive')).toBe('post');
   });
   it('throws error if no url found', function() {
     var err, errorThrown, url;
@@ -68,6 +69,13 @@ describe("Storage test", function() {
     url = s._getUrl('update');
     return expect(url).toBe('/items/1');
   });
+  it('append operation name to url if unknown', function() {
+    var url;
+
+    s.id = 1;
+    url = s._getUrl('archive');
+    return expect(url).toBe('/items/1/archive');
+  });
   it('doesnt add /@id to read for collections, adds /', function() {
     var url;
 
@@ -82,7 +90,7 @@ describe("Storage test", function() {
       text: 'internet',
       date: '2012-01-01'
     };
-    s.storage('create', model);
+    s.api('create', model);
     req = mostRecentAjaxRequest();
     return expect(req.params).toBe(Object.toQueryString({
       model: JSON.encode(model)
@@ -104,7 +112,7 @@ describe("Storage test", function() {
     spyOn(s, 'isSuccess').andCallThrough();
     spyOn(s, 'parseResponse').andCallThrough();
     s.isCollection = true;
-    s.storage('read');
+    s.api('read');
     expect(s.isSuccess).toHaveBeenCalled();
     lastCall = flatten(s.parseResponse.mostRecentCall.args[0]);
     return expect(lastCall).toBe(response.responseText);
@@ -124,7 +132,7 @@ describe("Storage test", function() {
     setNextResponse(response);
     success = jasmine.createSpy('succes cb');
     s.isCollection = true;
-    promise = s.storage('read');
+    promise = s.api('read');
     promise.then(function(ret) {
       return success(ret);
     });
@@ -153,7 +161,7 @@ describe("Storage test", function() {
     setNextResponse(response);
     fail = jasmine.createSpy('fail cb');
     s.isCollection = true;
-    promise = s.storage('read');
+    promise = s.api('read');
     promise.then((function() {}), function(reason) {
       return fail(reason);
     });
@@ -183,7 +191,7 @@ describe("Storage test", function() {
     s.addEvent('readComplete', completeSpy);
     s.addEvent('readSuccess', successSpy);
     s.isCollection = true;
-    s.storage('read');
+    s.api('read');
     expect(readSpy).toHaveBeenCalled();
     expect(completeSpy).toHaveBeenCalled();
     return expect(successSpy).toHaveBeenCalled();
@@ -197,7 +205,7 @@ describe("Storage test", function() {
     failSpy = jasmine.createSpy('fail spy');
     s.addEvent('readFailure', failSpy);
     s.isCollection = true;
-    s.storage('read');
+    s.api('read');
     return expect(failSpy).toHaveBeenCalled();
   });
   it('fires off failure events with custom name', function() {
@@ -230,7 +238,7 @@ describe("Storage test", function() {
     var req;
 
     s.isCollection = true;
-    s.storage('read', {
+    s.api('read', {
       page: 1,
       action: 'A'
     });

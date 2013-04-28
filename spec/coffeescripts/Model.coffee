@@ -1,7 +1,5 @@
 `define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){`
 
-flatten = (obj) -> JSON.encode obj
-
 describe "Model test", ->
     m = null
 
@@ -233,7 +231,7 @@ describe "Model test", ->
         expect(addedCollection.toJSON()).toBeObject \
             mdl.get('subCollection').toJSON()
 
-    it 'sends create request to storage', ->
+    it 'sends create request to api', ->
         attrs =
             value1: 'key1'
             value2: 'key2'
@@ -243,7 +241,7 @@ describe "Model test", ->
         expect(m.isNew()).toBe true
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         saved = false
         m.save().then (ret) -> saved = true
@@ -254,11 +252,11 @@ describe "Model test", ->
 
         runs ->
             expect(saved).toBe true
-            lastCall = m.storage.mostRecentCall.args
+            lastCall = m.api.mostRecentCall.args
             expect(lastCall).toBeObject(['create', attrs, eventName: 'save' ])
             expect(m.id).toBe 2
 
-    it 'sends update request to storage', ->
+    it 'sends update request to api', ->
         attrs =
             id: 2
             value1: 'key1'
@@ -269,11 +267,11 @@ describe "Model test", ->
         expect(m.isNew()).toBe false
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         promise2 = m.save()
 
-        lastCall = m.storage.mostRecentCall.args
+        lastCall = m.api.mostRecentCall.args
         expect(lastCall).toBeObject(['update', attrs, eventName: 'save' ])
 
     it 'save accepts values, doesnt update until server response', ->
@@ -319,11 +317,11 @@ describe "Model test", ->
         m.set id: 1
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         promise2 = m.save internet: 'yes'
 
-        lastCall = m.storage.mostRecentCall.args
+        lastCall = m.api.mostRecentCall.args
         expect(lastCall).toBeObject(['update', {id: 1, internet: 'yes'}, eventName: 'save' ])
 
     it 'save accepts value obj', ->
@@ -360,7 +358,7 @@ describe "Model test", ->
         success = jasmine.createSpy 'success callback'
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         m.save().then success
 
@@ -378,7 +376,7 @@ describe "Model test", ->
         fail = jasmine.createSpy 'fail callback'
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         m.save().then (->), fail
         deferred.reject 'shiit'
@@ -397,7 +395,7 @@ describe "Model test", ->
         m.addEvent 'destroy', destroy
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         m.destroy().then success
         deferred.resolve 'yeah mate'
@@ -406,7 +404,7 @@ describe "Model test", ->
             success.wasCalled == true
 
         runs ->
-            lastCall = m.storage.mostRecentCall.args
+            lastCall = m.api.mostRecentCall.args
             expect(lastCall).toBeObject(['delete', null, eventName: 'destroy' ])
 
             expect(success).toHaveBeenCalled()
@@ -531,7 +529,7 @@ describe "Model test", ->
         m = new Model {id: 1}, url: '/items'
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
         deferred.resolve id: 1, text: 'yeah'
 
         m.fetch().then success
@@ -544,7 +542,7 @@ describe "Model test", ->
         expect(m.isDirty()).toBe true
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         m.save().then success
         deferred.resolve id: 1
@@ -562,7 +560,7 @@ describe "Model test", ->
         expect(m.isDirty()).toBe true
 
         deferred = Q.defer()
-        spyOn(m, 'storage').andReturn deferred.promise
+        spyOn(m, 'api').andReturn deferred.promise
 
         m.save().then success
         deferred.resolve id: 1

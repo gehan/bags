@@ -1,11 +1,4 @@
-define(['bags/View'], function (View) {;
-var flatten;
-
-flatten = function(obj) {
-  return JSON.encode(obj);
-};
-
-describe("View test", function() {
+define(['bags/View'], function (View) {;describe("View test", function() {
   var v;
 
   v = null;

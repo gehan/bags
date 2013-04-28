@@ -2,8 +2,8 @@
 # your view code, along with concerns like persistance, and interacting
 # through the events fired when a model is updated to handle rendering.
 
-`define(['require', './Storage', './Collection', './Exceptions',
-    './Events'], function(require, Storage, Collection, Exceptions, Events)
+`define(['require', './Api', './Collection', './Exceptions',
+    './Events'], function(require, Api, Collection, Exceptions, Events)
     {`
 
 # Provides Collection mutator to allow class level access to the model's
@@ -30,8 +30,8 @@ Class.Mutators.Extends = (parent) ->
     $extends.apply this, arguments
 
 Model = new Class
-    # Uses [Storage](Storage.coffee.html) for model storage
-    Implements: [Events, Options, Storage]
+    # Uses [Api](Api.coffee.html) for model api
+    Implements: [Events, Options, Api]
 
     Collection:
         class: Collection
@@ -148,7 +148,7 @@ Model = new Class
     #     => model.collections.myCollection = collection
     collections: {}
 
-    # If using default `Storage` class then you can set the server url here. If
+    # If using default `Api` class then you can set the server url here. If
     # the Model was create via a Collection then @url will be read from that.
     url: null
 
@@ -307,11 +307,11 @@ Model = new Class
             attrs[key] = @_jsonKeyValue key, value
         return attrs
 
-    # Model storage
+    # Model api
     # =============
     #
-    # The actual model storage has been abstracted out to
-    # [Storage](Storage.coffee.html)
+    # The actual model api has been abstracted out to
+    # [Api](Api.coffee.html)
     # which should be read to learn about the various events fired during each
     # operation and as well as how to handle to returned promise.
 
@@ -320,8 +320,8 @@ Model = new Class
     fetch: (options={}) ->
         return if @isNew()
 
-        storageOptions = Object.merge {eventName: 'fetch'}, options
-        promise = @storage 'read', null, storageOptions
+        apiOptions = Object.merge {eventName: 'fetch'}, options
+        promise = @api 'read', null, apiOptions
         promise.then (data) =>
             @set data, silent: true
             @_clearDirtyFields()
@@ -358,9 +358,9 @@ Model = new Class
             @_clearDirtyFields()
         setAttrFn() if options.dontWait
 
-        storageMethod = if @isNew() then "create" else "update"
-        storageOptions = Object.merge {eventName: 'save'}, options
-        promise = @storage storageMethod, data, storageOptions
+        apiMethod = if @isNew() then "create" else "update"
+        apiOptions = Object.merge {eventName: 'save'}, options
+        promise = @api apiMethod, data, apiOptions
         promise.then (data) =>
             setAttrFn() if not options.dontWait
             model = data or {}
@@ -368,7 +368,7 @@ Model = new Class
             @_clearDirtyFields()
             return this
 
-    # Deletes the model from storage
+    # Deletes the model from api
     destroy: (options={}) ->
         fireEvent = =>
             @fireEvent 'destroy' unless options.silent
@@ -380,8 +380,8 @@ Model = new Class
         if options.dontWait
             fireEvent()
 
-        storageOptions = Object.merge {eventName: 'destroy'}, options
-        promise = @storage 'delete', null, storageOptions
+        apiOptions = Object.merge {eventName: 'destroy'}, options
+        promise = @api 'delete', null, apiOptions
         promise.then (data) =>
             fireEvent() if not options.dontWait
             return this
