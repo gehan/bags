@@ -105,9 +105,15 @@ Api = new Class
             urlEncoded = true
             headers = {}
 
+        if method not in ['post', 'get']
+            requestMethod = method
+        else
+            requestMethod = 'post'
+            headers['X-HTTP-Method-Override'] = method.toUpperCase()
+
         new Request.JSON
             url: @_getUrl operation
-            method: method
+            method: requestMethod
             headers: headers
             data: requestData
             urlEncoded: urlEncoded
