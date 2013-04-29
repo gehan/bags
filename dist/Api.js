@@ -4,7 +4,7 @@ var Api, _methodDefinitions, _urlSchemes;
 Api = new Class({
   Implements: [Events],
   api: function(operation, data, options) {
-    var deferred, fail, fireEvent, headers, method, requestData, sendDataAsJson, urlEncoded,
+    var deferred, fail, fireEvent, headers, method, requestData, requestMethod, sendDataAsJson, urlEncoded,
       _this = this;
 
     if (data == null) {
@@ -42,9 +42,15 @@ Api = new Class({
       urlEncoded = true;
       headers = {};
     }
+    if (method === 'post' || method === 'get') {
+      requestMethod = method;
+    } else {
+      requestMethod = 'post';
+      headers['X-HTTP-Method-Override'] = method.toUpperCase();
+    }
     new Request.JSON({
       url: this._getUrl(operation),
-      method: method,
+      method: requestMethod,
       headers: headers,
       data: requestData,
       urlEncoded: urlEncoded,

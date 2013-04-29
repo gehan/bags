@@ -103,6 +103,30 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
     expect(req.requestHeaders['Content-type']).toBe('application/json');
     return expect(req.params).toBe(JSON.encode(model));
   });
+  it('sends get/post as get/post, no override headers', function() {
+    var request;
+
+    s.api('read');
+    request = mostRecentAjaxRequest();
+    expect(request.method).toBe('GET');
+    expect(request.requestHeaders['X-HTTP-Method-Override']).toBe(void 0);
+    s.api('create');
+    request = mostRecentAjaxRequest();
+    expect(request.method).toBe('POST');
+    return expect(request.requestHeaders['X-HTTP-Method-Override']).toBe(void 0);
+  });
+  it('sends other methods as post, with override headers', function() {
+    var request;
+
+    s.api('update');
+    request = mostRecentAjaxRequest();
+    expect(request.method).toBe('POST');
+    expect(request.requestHeaders['X-HTTP-Method-Override']).toBe('PUT');
+    s.api('delete');
+    request = mostRecentAjaxRequest();
+    expect(request.method).toBe('POST');
+    return expect(request.requestHeaders['X-HTTP-Method-Override']).toBe('DELETE');
+  });
   it('parses response data correctly on success', function() {
     var lastCall, response;
 
@@ -245,7 +269,7 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
     var req;
 
     s.isCollection = true;
-    s.api('read', {
+    s.api('list', {
       page: 1,
       action: 'A'
     });

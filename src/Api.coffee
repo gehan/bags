@@ -105,7 +105,7 @@ Api = new Class
             urlEncoded = true
             headers = {}
 
-        if method not in ['post', 'get']
+        if method in ['post', 'get']
             requestMethod = method
         else
             requestMethod = 'post'

@@ -81,6 +81,28 @@ describe "Api test", ->
         expect(req.requestHeaders['Content-type']).toBe 'application/json'
         expect(req.params).toBe JSON.encode(model)
 
+    it 'sends get/post as get/post, no override headers', ->
+        s.api 'read'
+        request = mostRecentAjaxRequest()
+        expect(request.method).toBe 'GET'
+        expect(request.requestHeaders['X-HTTP-Method-Override']).toBe undefined
+
+        s.api 'create'
+        request = mostRecentAjaxRequest()
+        expect(request.method).toBe 'POST'
+        expect(request.requestHeaders['X-HTTP-Method-Override']).toBe undefined
+
+    it 'sends other methods as post, with override headers', ->
+        s.api 'update'
+        request = mostRecentAjaxRequest()
+        expect(request.method).toBe 'POST'
+        expect(request.requestHeaders['X-HTTP-Method-Override']).toBe 'PUT'
+
+        s.api 'delete'
+        request = mostRecentAjaxRequest()
+        expect(request.method).toBe 'POST'
+        expect(request.requestHeaders['X-HTTP-Method-Override']).toBe 'DELETE'
+
     it 'parses response data correctly on success', ->
         response =
             status: 200
@@ -203,7 +225,7 @@ describe "Api test", ->
 
     it 'sends qs data to read command', ->
         s.isCollection = true
-        s.api 'read', page: 1, action: 'A'
+        s.api 'list', page: 1, action: 'A'
         req = mostRecentAjaxRequest()
         expect(req.url).toBe '/items/?page=1&action=A'
 
