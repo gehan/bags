@@ -1,13 +1,12 @@
-define(['bags/Collection', 'bags/Model'], function(Collection, Model){;describe("Collection test", function() {
+define(['bags/Collection', 'bags/Model'], function(Collection, Model){;
+describe("Collection test", function() {
   var col;
-
   col = null;
   beforeEach(function() {
     return col = new Collection();
   });
   it("listens to events on model and re-fires on collection", function() {
     var model, modelSpy;
-
     modelSpy = jasmine.createSpy('modelEvent');
     col.addEvent('modelEvent', modelSpy);
     col.add({
@@ -20,21 +19,18 @@ define(['bags/Collection', 'bags/Model'], function(Collection, Model){;describe(
   });
   it("separates sort and directioni ascending", function() {
     var descending, field, _ref;
-
     _ref = col._parseSort('hello'), field = _ref[0], descending = _ref[1];
     expect(field).toBe('hello');
     return expect(descending).toBe(false);
   });
   it("separates sort and direction descending", function() {
     var descending, field, _ref;
-
     _ref = col._parseSort('-hello'), field = _ref[0], descending = _ref[1];
     expect(field).toBe('hello');
     return expect(descending).toBe(true);
   });
   it('sorts collection on field, ascending', function() {
     var models;
-
     models = [
       {
         id: 1,
@@ -55,7 +51,6 @@ define(['bags/Collection', 'bags/Model'], function(Collection, Model){;describe(
   });
   return it('sorts collection on field, descending', function() {
     var models;
-
     models = [
       {
         id: 1,

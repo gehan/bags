@@ -1,7 +1,7 @@
 define(['bags/Views', 'bags/View', 'bags/Collection'],
-function(Views, View, Collection) {;describe("ViewCollection test", function() {
+function(Views, View, Collection) {;
+describe("ViewCollection test", function() {
   var EmptyView, View2, c, cv, listEl, v;
-
   cv = null;
   c = null;
   v = null;
@@ -19,7 +19,6 @@ function(Views, View, Collection) {;describe("ViewCollection test", function() {
       initialize: function() {
         var ret,
           _this = this;
-
         ret = this.parent.apply(this, arguments);
         this.model.addEvent('change', function() {
           return _this.render();
@@ -56,7 +55,6 @@ function(Views, View, Collection) {;describe("ViewCollection test", function() {
   });
   it('renders views into collection el', function() {
     var children, views;
-
     cv = new Views.CollectionView(c, listEl, View2);
     children = listEl.getChildren();
     views = children.retrieve('view');
@@ -66,7 +64,6 @@ function(Views, View, Collection) {;describe("ViewCollection test", function() {
   });
   it('adds new element into list in order', function() {
     var children, views;
-
     cv = new Views.CollectionView(c, listEl, View2);
     c.create({
       id: 4,
@@ -78,7 +75,6 @@ function(Views, View, Collection) {;describe("ViewCollection test", function() {
   });
   it('maintains order after model view render, e.g. save', function() {
     var children, id, model, view, views;
-
     cv = new Views.CollectionView(c, listEl, View2);
     children = listEl.getChildren();
     views = children.retrieve('view');
@@ -102,7 +98,6 @@ function(Views, View, Collection) {;describe("ViewCollection test", function() {
   });
   it('kills els on destroy', function() {
     var children, views;
-
     cv.destroy();
     children = listEl.getChildren();
     views = children.retrieve('view');
@@ -110,7 +105,6 @@ function(Views, View, Collection) {;describe("ViewCollection test", function() {
   });
   it('resorts collection on element render', function() {
     var children, m, views;
-
     cv = new Views.CollectionView(c, listEl, View2);
     children = listEl.getChildren();
     views = children.retrieve('view');
@@ -128,7 +122,6 @@ function(Views, View, Collection) {;describe("ViewCollection test", function() {
   });
   return it('shows emptyviewitem if collection empty', function() {
     var model;
-
     listEl = new Element('ul');
     c = new Collection([
       {

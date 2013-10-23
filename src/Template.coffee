@@ -65,9 +65,10 @@ new Class
     #           </script>
     #
     loadAllTemplates: ->
-        @_loadTemplate(k) for k in $$('script[type=text/html]').get('template')
+        for k in $$('script[type=text/html]')
+            t = k.get('template')
+            @_loadTemplate(t) if t
         @_loadTemplate(k) for k, v of @TEMPLATES
-
 
     # Delegates events from the top level node(s) of the passed in `els`.
     #

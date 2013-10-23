@@ -5,7 +5,6 @@ NullApi = new Class({
   Extends: Api,
   api: function(operation, data, options) {
     var deferred;
-
     if (options == null) {
       options = {};
     }

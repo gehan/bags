@@ -4,7 +4,6 @@ define(function() {
     refs: {},
     renderTemplate: function(templateName, data, events) {
       var els, rendered;
-
       if (data == null) {
         data = {};
       }
@@ -23,12 +22,14 @@ define(function() {
       }
     },
     loadAllTemplates: function() {
-      var k, v, _i, _len, _ref, _ref1, _results;
-
-      _ref = $$('script[type=text/html]').get('template');
+      var k, t, v, _i, _len, _ref, _ref1, _results;
+      _ref = $$('script[type=text/html]');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         k = _ref[_i];
-        this._loadTemplate(k);
+        t = k.get('template');
+        if (t) {
+          this._loadTemplate(t);
+        }
       }
       _ref1 = this.TEMPLATES;
       _results = [];
@@ -40,7 +41,6 @@ define(function() {
     },
     delegateEvents: function(els, events, stopPropagation, preventDefault) {
       var boundFn, eventKey, fnName, node, _results;
-
       if (stopPropagation == null) {
         stopPropagation = false;
       }
@@ -63,7 +63,6 @@ define(function() {
         boundFn = boundFn.bind(this, fnName);
         _results.push((function() {
           var _i, _len, _results1;
-
           _results1 = [];
           for (_i = 0, _len = els.length; _i < _len; _i++) {
             node = els[_i];
@@ -76,7 +75,6 @@ define(function() {
     },
     getRefs: function(els, ref) {
       var el, elRefName, refEl, refName, refs, _i, _j, _len, _len1, _ref, _ref1;
-
       if (ref == null) {
         ref = null;
       }
@@ -108,7 +106,6 @@ define(function() {
     },
     _renderDustTemplate: function(templateName, data) {
       var rendered;
-
       if (data == null) {
         data = {};
       }
@@ -123,7 +120,6 @@ define(function() {
     },
     _loadTemplate: function(templateName) {
       var compiled;
-
       if (dust.cache[templateName] == null) {
         compiled = dust.compile(this._getTemplate(templateName), templateName);
         return dust.loadSource(compiled);
@@ -131,7 +127,6 @@ define(function() {
     },
     _getTemplate: function(templateName) {
       var template;
-
       if (this.TEMPLATES != null) {
         template = this.TEMPLATES[templateName];
       }
@@ -146,7 +141,6 @@ define(function() {
     },
     _addDelegatedEvent: function(el, eventKey, fn) {
       var mtEvent;
-
       eventKey = eventKey.split(":");
       mtEvent = "" + eventKey[0] + ":relay(" + eventKey[1] + ")";
       return el.addEvent(mtEvent, fn);

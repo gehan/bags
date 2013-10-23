@@ -1,4 +1,5 @@
-define(['bags/Router', 'bags/View'], function(Router, View) {;Router.implement({
+define(['bags/Router', 'bags/View'], function(Router, View) {;
+Router.implement({
   routes: {
     'route-1/': 'route1',
     'route-2/': 'route2'
@@ -7,7 +8,6 @@ define(['bags/Router', 'bags/View'], function(Router, View) {;Router.implement({
 
 describe("Router test", function() {
   var r;
-
   r = null;
   beforeEach(function() {
     Router.implement({
@@ -18,7 +18,6 @@ describe("Router test", function() {
   });
   it('matches :param in route properly', function() {
     var match, notMatch, route, routeRegEx, str, _i, _j, _k, _l, _len, _len1, _len2, _len3, _results;
-
     route = 'page/:number/:param/gehan';
     routeRegEx = r._createRouteRegex(route);
     match = ['page/34/23/gehan', 'page/hd5eg?/asdas/gehan'];
@@ -48,7 +47,6 @@ describe("Router test", function() {
   });
   it('matches *splat in route properly', function() {
     var actual, expected, match, notMatch, route, routeRegEx, str, strMatch, _i, _j, _len, _len1, _results;
-
     route = 'page/*extra';
     routeRegEx = r._createRouteRegex(route);
     match = [['page/internet', ['page/internet', 'internet']], ['page/you/it', ['page/you/it', 'you/it']]];
@@ -68,7 +66,6 @@ describe("Router test", function() {
   });
   it('matches *splat and :param in route properly togeter', function() {
     var match, route, routeRegEx, str;
-
     route = 'page/:number/*stuff';
     routeRegEx = r._createRouteRegex(route);
     str = 'page/internet/fecker/balls/mate';
@@ -78,14 +75,12 @@ describe("Router test", function() {
   });
   it('remembers params', function() {
     var positions, route;
-
     route = 'page/:pageId/:section/*path';
     positions = r._extractParamPositions(route);
     return expect(flatten(positions)).toBe(flatten(['pageId', 'section', 'path']));
   });
   it('routes to correct function', function() {
     var found, routes;
-
     routes = {
       'page/:number/': 'someRoute',
       'page/:number/*stuff': 'someRoute'
@@ -109,7 +104,6 @@ describe("Router test", function() {
   });
   it('instantiates attached view class', function() {
     var a, element;
-
     element = new Element('div');
     a = {
       TestView: new Class
@@ -130,7 +124,6 @@ describe("Router test", function() {
   });
   return it('sets var for initalRoute', function() {
     var route1Initial, route2Initial;
-
     route1Initial = null;
     route2Initial = null;
     Router.implement({
@@ -151,7 +144,6 @@ describe("Router test", function() {
 
 describe("SubRouter test", function() {
   var r, sr1, sr2;
-
   r = null;
   sr1 = null;
   sr2 = null;
@@ -170,7 +162,6 @@ describe("SubRouter test", function() {
   });
   it('requires path to subrouter', function() {
     var err, errorThrown;
-
     errorThrown = false;
     try {
       r._subRoute(sr1, {}, {}, {});
@@ -182,7 +173,6 @@ describe("SubRouter test", function() {
   });
   it('calls subrouter with path', function() {
     var a, s;
-
     a = {
       sr1: sr1
     };
@@ -197,7 +187,6 @@ describe("SubRouter test", function() {
   });
   return it('destroys old subrouter when routing to new one', function() {
     var a, s1, s2;
-
     spyOn(r, 'getCurrentUri');
     a = {
       sr1: sr1,
@@ -222,7 +211,6 @@ describe("SubRouter test", function() {
 
 describe("SubView test", function() {
   var a, r;
-
   r = null;
   a = {};
   beforeEach(function() {
@@ -238,7 +226,6 @@ describe("SubView test", function() {
   });
   it('creates subview and injects inside container element', function() {
     var el, s1;
-
     el = new Element('div').adopt(new Element('div'));
     s1 = jasmine.createSpy();
     s1.inject = jasmine.createSpy();
@@ -251,7 +238,6 @@ describe("SubView test", function() {
   });
   return it('destroys old subview when creating another', function() {
     var el, s1, s2;
-
     el = new Element('div');
     s1 = jasmine.createSpy();
     s1.inject = jasmine.createSpy();

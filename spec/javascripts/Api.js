@@ -1,6 +1,6 @@
-define(['bags/Api'], function (Api) {;describe("Api test", function() {
+define(['bags/Api'], function (Api) {;
+describe("Api test", function() {
   var ApiClass, s;
-
   ApiClass = null;
   s = null;
   beforeEach(function() {
@@ -9,7 +9,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
       url: '/items',
       fetch: function(options) {
         var apiOptions;
-
         if (options == null) {
           options = {};
         }
@@ -23,13 +22,11 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('tries to get url from module', function() {
     var url;
-
     url = s._getUrl('create');
     return expect(url).toBe('/items');
   });
   it('tries to get url from collection', function() {
     var url;
-
     s.url = null;
     s.collection = {
       url: '/collection'
@@ -55,7 +52,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('throws error if no url found', function() {
     var err, errorThrown, url;
-
     errorThrown = false;
     s.url = null;
     try {
@@ -68,7 +64,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('adds /@id to other methods', function() {
     var url;
-
     s.id = 1;
     url = s._getUrl('delete');
     expect(url).toBe('/items/1');
@@ -79,21 +74,18 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('append operation name to url if unknown', function() {
     var url;
-
     s.id = 1;
     url = s._getUrl('archive');
     return expect(url).toBe('/items/1/archive');
   });
   it('doesnt add /@id to read for collections, adds /', function() {
     var url;
-
     s.isCollection = true;
     url = s._getUrl('read');
     return expect(url).toBe('/items/');
   });
   it('sends data across to server as json with correct content type', function() {
     var model, req;
-
     model = {
       text: 'internet',
       date: '2012-01-01'
@@ -105,7 +97,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('sends get/post as get/post, no override headers', function() {
     var request;
-
     s.api('read');
     request = mostRecentAjaxRequest();
     expect(request.method).toBe('GET');
@@ -117,7 +108,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('sends other methods as post, with override headers', function() {
     var request;
-
     s.api('update');
     request = mostRecentAjaxRequest();
     expect(request.method).toBe('POST');
@@ -129,7 +119,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('parses response data correctly on success', function() {
     var lastCall, response;
-
     response = {
       status: 200,
       responseText: flatten({
@@ -150,7 +139,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('executes success callback if passed through', function() {
     var promise, response, success;
-
     response = {
       status: 200,
       responseText: flatten({
@@ -172,7 +160,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
     });
     return runs(function() {
       var lastCall;
-
       lastCall = success.mostRecentCall.args[0];
       return expect(lastCall).toBeObject({
         id: 2
@@ -181,7 +168,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('executes failure callback if passed through', function() {
     var fail, promise, response;
-
     response = {
       status: 200,
       responseText: flatten({
@@ -205,7 +191,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('fires off events when request starts/completes/succeeds', function() {
     var completeSpy, readSpy, successSpy;
-
     setNextResponse({
       status: 200,
       responseText: flatten({
@@ -229,7 +214,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('fires off events when request fails', function() {
     var failSpy;
-
     setNextResponse({
       status: 404
     });
@@ -241,7 +225,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('fires off failure events with custom name', function() {
     var failSpy;
-
     setNextResponse({
       status: 404
     });
@@ -253,7 +236,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   it('fires no events if silent passed in', function() {
     var failSpy;
-
     setNextResponse({
       status: 404
     });
@@ -267,7 +249,6 @@ define(['bags/Api'], function (Api) {;describe("Api test", function() {
   });
   return it('sends qs data to read command', function() {
     var req;
-
     s.isCollection = true;
     s.api('list', {
       page: 1,

@@ -4,7 +4,6 @@ var ViewModel, pushHandler;
 
 pushHandler = function(event) {
   var element, href;
-
   element = event.target;
   event.preventDefault();
   href = element.get('href');
@@ -23,7 +22,6 @@ ko.bindingHandlers.pushState = {
 ko.bindingHandlers.editable = {
   init: function(element, valueAccessor, allBindingsAccessor) {
     var blurFn, editFn, options;
-
     options = allBindingsAccessor().jeditableOptions || {};
     if (!options.onblur) {
       options.onblur = 'submit';
@@ -49,7 +47,6 @@ ko.bindingHandlers.editable = {
   },
   update: function(element, valueAccessor) {
     var value;
-
     value = ko.utils.unwrapObservable(valueAccessor());
     return $(element).set('html', value);
   }
@@ -74,7 +71,6 @@ ViewModel = new Class({
   properties: function() {},
   initialize: function(element, options) {
     var el;
-
     this.element = element;
     this.setOptions(options);
     this.init();

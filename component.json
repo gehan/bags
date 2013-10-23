@@ -1,6 +1,6 @@
 {
     "name": "bags",
-    "version": "0.5.8",
+    "version": "0.5.9",
     "dependencies": {
         "q": "0.9.4",
         "knockout": "2.2.1"

@@ -52,7 +52,6 @@ Router = new Class({
   },
   _subRoute: function(routerClass, args, data, options) {
     var path;
-
     if (!instanceOf(this._subRouter, routerClass)) {
       if (this._subRouter != null) {
         this._subRouter.destroy();
@@ -91,7 +90,6 @@ Router = new Class({
   },
   _parseRoutes: function(routes) {
     var funcName, paramNames, route, routeRegEx, _results;
-
     if (routes == null) {
       routes = this.routes;
     }
@@ -106,7 +104,6 @@ Router = new Class({
   },
   _createRouteRegex: function(route) {
     var findRe, replaceWith, _ref;
-
     _ref = this._replaceRegex;
     for (replaceWith in _ref) {
       findRe = _ref[replaceWith];
@@ -116,7 +113,6 @@ Router = new Class({
   },
   _extractParamPositions: function(route) {
     var params, s;
-
     params = [];
     while ((s = reCombine.exec(route))) {
       params.push(s.slice(1).erase('').pick());
@@ -125,7 +121,6 @@ Router = new Class({
   },
   _startRoute: function(path, data) {
     var uri;
-
     uri = this.getCurrentUri();
     if (path == null) {
       path = uri.get('directory') + uri.get('file');
@@ -138,7 +133,6 @@ Router = new Class({
   },
   _route: function(path, data) {
     var args, funcName, match, paramNames, regEx, routerClass, _i, _len, _ref, _ref1;
-
     if (path.substr(0, 1) === '/') {
       path = path.substr(1);
     }
@@ -165,7 +159,6 @@ Router = new Class({
   },
   _getHtml4AtRoot: function() {
     var hash, href, u, uri;
-
     u = new URI();
     if (u.get('directory') + u.get('file') !== '/') {
       uri = this.getCurrentUri();

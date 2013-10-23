@@ -12,7 +12,6 @@ Class.Mutators.Collection = function(collectionDef) {
     collection: collectionDef,
     getCollection: function(models, options) {
       var col, copy, key, value;
-
       if (models == null) {
         models = [];
       }
@@ -58,7 +57,6 @@ Model = new Class({
   url: null,
   initialize: function(attributes, options) {
     var key, _i, _len, _ref;
-
     if (options == null) {
       options = {};
     }
@@ -79,7 +77,6 @@ Model = new Class({
   },
   get: (function(key) {
     var _value;
-
     _value = this._cloneField(key);
     if (this.properties[key] && this.properties[key].get) {
       return this.properties[key].get.call(this, _value);
@@ -89,7 +86,6 @@ Model = new Class({
   }).overloadGetter(),
   set: function(key, value, options) {
     var attrs, changed, curVal, dirtyVal, error, k, newVal, v, _attrs;
-
     if (options == null) {
       options = {};
     }
@@ -143,7 +139,6 @@ Model = new Class({
   },
   _set: function(key, value, options) {
     var _value;
-
     if (this._isCollection(key)) {
       _value = this._makeCollection(key, value);
     } else {
@@ -158,7 +153,6 @@ Model = new Class({
   },
   _validateField: function(key, value, options) {
     var result;
-
     if (options == null) {
       options = {};
     }
@@ -191,7 +185,6 @@ Model = new Class({
   },
   toJSON: function() {
     var attrs, key, value, _ref;
-
     attrs = {};
     _ref = this._attributes;
     for (key in _ref) {
@@ -203,7 +196,6 @@ Model = new Class({
   fetch: function(options) {
     var apiOptions, promise,
       _this = this;
-
     if (options == null) {
       options = {};
     }
@@ -228,7 +220,6 @@ Model = new Class({
   save: function(key, value, options) {
     var ModelClass, apiMethod, apiOptions, attrs, data, promise, setAttrFn, toUpdate,
       _this = this;
-
     if (options == null) {
       options = {};
     }
@@ -269,7 +260,6 @@ Model = new Class({
     promise = this.api(apiMethod, data, apiOptions);
     return promise.then(function(data) {
       var model;
-
       if (!options.dontWait) {
         setAttrFn();
       }
@@ -284,7 +274,6 @@ Model = new Class({
   destroy: function(options) {
     var apiOptions, fireEvent, promise,
       _this = this;
-
     if (options == null) {
       options = {};
     }
@@ -315,7 +304,6 @@ Model = new Class({
   _dirtyFields: {},
   _makeValue: function(key, value) {
     var item, type, val, _i, _len, _results;
-
     type = this._getType(key);
     if (typeOf(value) === 'array') {
       _results = [];
@@ -343,7 +331,6 @@ Model = new Class({
   },
   _getType: function(name) {
     var type;
-
     type = this.fields[name];
     if (typeOf(type) === "function") {
       return type();
@@ -355,19 +342,16 @@ Model = new Class({
   },
   _isCollection: function(key) {
     var type;
-
     type = this._getType(key);
     return (type != null) && type.prototype && type.prototype.isCollection;
   },
   _isModel: function(key) {
     var type;
-
     type = this._getType(key);
     return (type != null) && type.prototype && type.prototype.isModel;
   },
   _makeCollection: function(key, value) {
     var collectionClass;
-
     collectionClass = this._getType(key);
     return new collectionClass(value, {
       parentModel: this
@@ -385,7 +369,6 @@ Model = new Class({
   _setInitial: function(attributes) {
     var attrKeys, defaults,
       _this = this;
-
     if (attributes == null) {
       attributes = {};
     }
@@ -408,7 +391,6 @@ Model = new Class({
   },
   _cloneField: function(key) {
     var jsonValue, type, value, _value;
-
     value = this._attributes[key];
     type = this._getType(key);
     jsonValue = this._jsonKeyValue(key, value);
@@ -431,7 +413,6 @@ Model = new Class({
     } else if (typeOf(value) === 'array') {
       _value = _value.map(function(item, idx) {
         var orig;
-
         orig = value[0];
         if (typeOf(orig) === 'date') {
           return Date.parse(item);
@@ -446,7 +427,6 @@ Model = new Class({
   },
   _getDefault: function(key) {
     var def;
-
     def = this.defaults[key];
     if (typeOf(def) === 'function') {
       return def.call(this);
@@ -459,7 +439,6 @@ Model = new Class({
   },
   _jsonKeyValue: function(key, value) {
     var jsonFn, v, _i, _len, _results;
-
     jsonFn = "json" + (key.capitalize());
     if (this[jsonFn] != null) {
       return this[jsonFn](value);

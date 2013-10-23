@@ -1,6 +1,6 @@
-define(['bags/View'], function (View) {;describe("View test", function() {
+define(['bags/View'], function (View) {;
+describe("View test", function() {
   var v;
-
   v = null;
   beforeEach(function() {
     View.implement({
@@ -13,7 +13,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   it('renders template on init', function() {
     var el;
-
     View.implement({
       template: 'test1',
       TEMPLATES: {
@@ -26,7 +25,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   it('delegates events and saves refs on render', function() {
     var events;
-
     events = {
       "click:p": "someThing"
     };
@@ -45,7 +43,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   it('injects element into container if passed in', function() {
     var container;
-
     container = new Element('div.container');
     v = new View({
       injectTo: container
@@ -54,7 +51,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   it('replaces element reference when rendering again', function() {
     var container;
-
     container = new Element('div.container');
     v = new View({
       injectTo: container
@@ -64,7 +60,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   it('replaces element reference when rendering again, array', function() {
     var container;
-
     container = new Element('div.container');
     View.implement({
       template: 'test3',
@@ -81,7 +76,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   it('fires dom updated method if inserted into dom', function() {
     var container, elContainer;
-
     elContainer = null;
     document.addEvent('domupdated', function(_container) {
       return elContainer = _container;
@@ -98,7 +92,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   it('partially rerenders and keeps existing refs', function() {
     var ano, ayes, hello, what;
-
     View.implement({
       template: 'test4',
       TEMPLATES: {
@@ -125,7 +118,6 @@ define(['bags/View'], function (View) {;describe("View test", function() {
   });
   return it('allows customer parse functions for display', function() {
     var data;
-
     v.parsers = {
       fullName: function(data) {
         return data.firstName + ' ' + data.lastName;

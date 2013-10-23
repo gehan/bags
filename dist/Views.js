@@ -9,7 +9,6 @@ define(['./View'], function(View) {
       },
       initialize: function(collection, listEl, modelView, options) {
         var _this = this;
-
         this.collection = collection;
         this.listEl = listEl;
         this.modelView = modelView;
@@ -32,7 +31,6 @@ define(['./View'], function(View) {
       },
       getModelsView: function(model) {
         var view, views, _i, _len;
-
         views = this.getViews(this.listEl);
         for (_i = 0, _len = views.length; _i < _len; _i++) {
           view = views[_i];
@@ -43,7 +41,6 @@ define(['./View'], function(View) {
       },
       _removeModelsView: function(model) {
         var view;
-
         view = this.getModelsView(model);
         if (view != null) {
           return view.destroy();
@@ -66,7 +63,6 @@ define(['./View'], function(View) {
       },
       _createModelViews: function() {
         var model, _i, _len, _ref, _results;
-
         _ref = this.collection;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -78,7 +74,6 @@ define(['./View'], function(View) {
       _createModelView: function(model) {
         var options, view,
           _this = this;
-
         options = Object.clone(this.options.itemViewOptions);
         Object.append(options, {
           autoDestroyModel: true,

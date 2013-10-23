@@ -14,7 +14,6 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     initialize: function(options) {
       var key, _i, _len, _ref;
-
       if (options == null) {
         options = {};
       }
@@ -41,7 +40,6 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     render: function(data, options) {
       var container, el;
-
       if (data == null) {
         data = {};
       }
@@ -70,7 +68,6 @@ define(['./Template', './Events'], function(Template, Events) {
     rerender: function(refs, data, options) {
       var el,
         _this = this;
-
       if (data == null) {
         data = {};
       }
@@ -80,7 +77,6 @@ define(['./Template', './Events'], function(Template, Events) {
       el = this._render(data);
       Array.from(refs).each(function(ref) {
         var newEl, replaceThis;
-
         replaceThis = _this.refs[ref];
         if (!replaceThis) {
           throw "Cannot find ref " + ref + " in template " + _this.template;
@@ -109,13 +105,11 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     getViews: function(el) {
       var els;
-
       els = el.getChildren();
       return els.retrieve('view');
     },
     reorderViews: function(collection, rootEl) {
       var current, desiredIndex, dummy, swap, view, views, _i, _len, _results;
-
       views = this.getViews(rootEl);
       _results = [];
       for (_i = 0, _len = views.length; _i < _len; _i++) {
@@ -133,7 +127,6 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     destroyViews: function(el) {
       var views;
-
       views = this.getViews(el);
       if (views === null) {
         return;
@@ -152,7 +145,6 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     _replaceCurrentEl: function(el) {
       var _this = this;
-
       if (!instanceOf(el, Array)) {
         return this.el = el.replaces(this.el);
       } else {
@@ -163,7 +155,6 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     _render: function(data) {
       var el;
-
       if (data == null) {
         data = {};
       }
@@ -172,7 +163,6 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     _getTemplateData: function(data) {
       var fieldName, parser, _ref;
-
       if (data == null) {
         data = {};
       }
@@ -189,7 +179,6 @@ define(['./Template', './Events'], function(Template, Events) {
     },
     _checkDomUpdate: function(container) {
       var inDom, parent;
-
       inDom = false;
       parent = container;
       if (parent === document.body) {

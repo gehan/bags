@@ -11,7 +11,6 @@ BagsEvents = new Class({
   Extends: Events,
   fireEvent: function(type, args, delay, dontFireAny) {
     var eventName;
-
     if (dontFireAny == null) {
       dontFireAny = false;
     }

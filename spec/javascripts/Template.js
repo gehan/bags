@@ -1,7 +1,7 @@
-define(['bags/Template'], function (Template) {;describe("Template test", function() {
+define(['bags/Template'], function (Template) {;
+describe("Template test", function() {
   var t,
     _this = this;
-
   t = null;
   beforeEach(function() {
     t = new Template();
@@ -9,14 +9,12 @@ define(['bags/Template'], function (Template) {;describe("Template test", functi
   });
   it('find templates in TEMPLATES collection', function() {
     var tpl;
-
     t.TEMPLATES.test = "internet1";
     tpl = t._getTemplate('test');
     return expect(tpl).toBe('internet1');
   });
   it('find templates in script tags', function() {
     var tag, tpl;
-
     expect(dust.cache.test1).toBe(void 0);
     tag = new Element('script', {
       template: 'test2',
@@ -29,7 +27,6 @@ define(['bags/Template'], function (Template) {;describe("Template test", functi
   });
   it('renders a dust template', function() {
     var rendered;
-
     t.TEMPLATES.base1 = "<p>Hello there {internet}</p>";
     rendered = t._renderDustTemplate('base1', {
       internet: 'yes'
@@ -38,7 +35,6 @@ define(['bags/Template'], function (Template) {;describe("Template test", functi
   });
   it('renders a template into elements', function() {
     var expected, nodes;
-
     t.TEMPLATES.base2 = "<div>\n    <p>Hello there {internet}</p>\n    <p>You are the face</p>\n</div>";
     nodes = t.renderTemplate('base2', {
       internet: 'yes'
@@ -52,7 +48,6 @@ define(['bags/Template'], function (Template) {;describe("Template test", functi
   });
   it('loads all templates to render partials', function() {
     var nodes, tag;
-
     t.TEMPLATES.base4 = "<div>\n    <p>Yeah</p>\n    {>somePartial/}\n</div>";
     tag = new Element('script', {
       template: 'somePartial',
@@ -68,7 +63,6 @@ define(['bags/Template'], function (Template) {;describe("Template test", functi
   });
   it('extracts element references', function() {
     var nodes, refs;
-
     nodes = t.renderTemplate('base3', {
       internet: 'yes'
     });
@@ -79,7 +73,6 @@ define(['bags/Template'], function (Template) {;describe("Template test", functi
   });
   it('extracts single reference', function() {
     var nodes, ref1, refa;
-
     nodes = t.renderTemplate('base3', {
       internet: 'yes'
     });
@@ -90,7 +83,6 @@ define(['bags/Template'], function (Template) {;describe("Template test", functi
   });
   return it('delegates events to children', function() {
     var el, events, fired, hello, hello1;
-
     events = {
       "click:p.hello": "hello",
       "click:.hello1": "hello1"

@@ -1,6 +1,6 @@
-define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;describe("Model test", function() {
+define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;
+describe("Model test", function() {
   var m;
-
   m = null;
   beforeEach(function() {
     return m = new Model({}, {
@@ -16,7 +16,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('sets attributes silently', function() {
     var fired;
-
     fired = false;
     m.addEvent('change', function() {
       return fired = true;
@@ -36,7 +35,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('sets multiple attributes silently', function() {
     var fired;
-
     fired = false;
     m.addEvent('change', function() {
       return fired = true;
@@ -51,7 +49,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('gets/sets attributes', function() {
     var obj;
-
     obj = {
       k: 'val'
     };
@@ -62,7 +59,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('fires change event on attr change', function() {
     var changed, changedAKey;
-
     changed = {};
     m.addEvent('change', function(key, value) {
       return changed[key] = value;
@@ -81,7 +77,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('fires change event only if attr has changed value', function() {
     var changeSpy;
-
     changeSpy = jasmine.createSpy('change');
     m = new Model({
       field: 'value'
@@ -96,7 +91,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('sets defaults silently when initializing model', function() {
     var changeFired;
-
     Model.implement({
       defaults: {
         type: 'text',
@@ -189,7 +183,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('jsons basic key values', function() {
     var vals;
-
     vals = {
       key1: 'value1',
       key2: 'value2',
@@ -200,7 +193,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('calls toJSON function on jsonable object', function() {
     var s, vals;
-
     s = {
       toJSON: function() {}
     };
@@ -219,7 +211,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('calls key-specific json methos on toJSON', function() {
     var Mdl, vals;
-
     Mdl = new Class({
       Extends: Model,
       jsonName: function(value) {
@@ -238,7 +229,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('gives child model reference to itself', function() {
     var Mdl, mdl, subModel, vals;
-
     Mdl = new Class({
       Extends: Model,
       fields: {
@@ -258,7 +248,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('instantiates a collection if set as type, adds to collections', function() {
     var Cll, Mdl, addedCollection, addedKey, mdl, vals, values;
-
     Cll = new Class({
       Extends: Collection,
       model: Model
@@ -298,7 +287,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('sends create request to api', function() {
     var attrs, deferred, saved;
-
     attrs = {
       value1: 'key1',
       value2: 'key2'
@@ -319,7 +307,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
     });
     return runs(function() {
       var lastCall;
-
       expect(saved).toBe(true);
       lastCall = m.api.mostRecentCall.args;
       expect(lastCall).toBeObject([
@@ -332,7 +319,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('sends update request to api', function() {
     var attrs, deferred, lastCall, promise2;
-
     attrs = {
       id: 2,
       value1: 'key1',
@@ -352,7 +338,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('save accepts values, doesnt update until server response', function() {
     var changeCalledBeforeSave, req, requestData, saveCompleted;
-
     m.set('action', 'face');
     setNextResponse({
       status: 200,
@@ -380,7 +365,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('save accepts values, updates immediately if requested', function() {
     var changeCalled;
-
     changeCalled = false;
     m.addEvent('change', function(key, value) {
       return changeCalled = key === 'internet' && value === 'face';
@@ -398,7 +382,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('save accepts values, but keeps id if existing model', function() {
     var deferred, lastCall, promise2;
-
     m.set({
       id: 1
     });
@@ -419,7 +402,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('save accepts value obj', function() {
     var req, requestData;
-
     m.set('action', 'face');
     m.save({
       action: 'deleted',
@@ -434,7 +416,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('save works with types', function() {
     var Mdl, changeCalled, dte, req, requestData;
-
     Mdl = new Class({
       Implements: Model,
       url: '/items',
@@ -460,7 +441,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('save accepts callback for success', function() {
     var deferred, success;
-
     success = jasmine.createSpy('success callback');
     deferred = Q.defer();
     spyOn(m, 'api').andReturn(deferred.promise);
@@ -473,7 +453,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
     });
     return runs(function() {
       var calledWith;
-
       expect(success).toHaveBeenCalled();
       calledWith = flatten(success.mostRecentCall.args);
       return expect(calledWith).toBe(flatten([
@@ -485,7 +464,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('save accepts callback for failure', function() {
     var deferred, fail;
-
     fail = jasmine.createSpy('fail callback');
     deferred = Q.defer();
     spyOn(m, 'api').andReturn(deferred.promise);
@@ -500,7 +478,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('destroy send delete request to server', function() {
     var deferred, destroy, success;
-
     success = jasmine.createSpy('success callback');
     destroy = jasmine.createSpy('destroy event');
     m.id = 1;
@@ -514,7 +491,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
     });
     return runs(function() {
       var lastCall;
-
       lastCall = m.api.mostRecentCall.args;
       expect(lastCall).toBeObject([
         'delete', null, {
@@ -544,7 +520,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
       fullName: {
         set: function(value) {
           var split;
-
           split = value.split(" ");
           return this.set({
             firstName: split[0],
@@ -589,7 +564,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('fires events when validator fails', function() {
     var errorLoginSpy, errorSpy;
-
     m.validators = {
       login: function(value) {
         if (value.length < 4) {
@@ -611,7 +585,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('doesnt set any values if any field validations fail', function() {
     var result;
-
     m.fields = {
       collection: Collection
     };
@@ -650,7 +623,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('jsons dates with correct format, doesnt used own stupid internal method', function() {
     var json;
-
     m.fields = {
       date: Date
     };
@@ -676,7 +648,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('is clean after fetch', function() {
     var deferred, success;
-
     success = jasmine.createSpy();
     m = new Model({
       id: 1
@@ -694,7 +665,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('is clean after update', function() {
     var deferred, success;
-
     success = jasmine.createSpy();
     m = new Model({
       id: 1
@@ -720,7 +690,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('is clean after save', function() {
     var deferred, success;
-
     success = jasmine.createSpy();
     m = new Model({}, {
       url: '/items'
@@ -810,7 +779,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('provides dereferenced object on get, so updates dont affect model', function() {
     var val;
-
     m = new Model({
       id: 4,
       myField: {
@@ -827,7 +795,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('accepts models as argument', function() {
     var col, models, options;
-
     models = [
       {
         id: 1,
@@ -847,7 +814,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('when extending Model keeps Model.getCollection', function() {
     var ModelDef, col;
-
     ModelDef = new Class({
       Extends: Model,
       url: 'internet'
@@ -858,7 +824,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('allows overriding of Collection def in children', function() {
     var Collection2, ModelDef, col1, col2;
-
     Collection2 = new Class({
       Extends: Collection
     });
@@ -875,7 +840,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   it('implements extra methods specified in Collection, copies objects', function() {
     var ModelDef, col1, col2;
-
     ModelDef = new Class({
       Extends: Model,
       Collection: {
@@ -895,7 +859,6 @@ define(['Q', 'bags/Collection', 'bags/Model'], function(Q, Collection, Model){;d
   });
   return it('overrides parent Collection methods but keeps others', function() {
     var Collection2, ModelDef, ModelDef2, col;
-
     Collection2 = new Class({
       Extends: Collection
     });

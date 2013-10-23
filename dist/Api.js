@@ -6,7 +6,6 @@ Api = new Class({
   api: function(operation, data, options) {
     var deferred, fail, fireEvent, headers, method, requestData, requestMethod, sendDataAsJson, urlEncoded,
       _this = this;
-
     if (data == null) {
       data = {};
     }
@@ -25,7 +24,6 @@ Api = new Class({
     };
     fireEvent = function(event, args) {
       var eventName;
-
       eventName = "" + (options.eventName || operation) + (event.capitalize());
       if (!options.silent) {
         return _this.fireEvent(eventName, args);
@@ -65,7 +63,6 @@ Api = new Class({
       },
       onSuccess: function(response) {
         var reason;
-
         if (_this.isSuccess(response)) {
           data = _this.parseResponse(response);
           deferred.resolve(data);
@@ -89,7 +86,6 @@ Api = new Class({
   },
   _getUrl: function(operation) {
     var def, operationUrl, url, urlScheme;
-
     url = this.url;
     if ((url == null) && (this.collection != null)) {
       url = this.collection.url;
@@ -112,7 +108,6 @@ Api = new Class({
   },
   _getRequestMethod: function(operation) {
     var def;
-
     def = _methodDefinitions[operation];
     if (def != null) {
       return def.method;
@@ -122,7 +117,6 @@ Api = new Class({
   },
   _sendDataAsJson: function(operation) {
     var def;
-
     def = _methodDefinitions[operation];
     if (def != null) {
       return def.json || false;

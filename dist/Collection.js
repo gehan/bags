@@ -6,7 +6,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     url: null,
     initialize: function(models, options) {
       var key, _i, _len, _ref;
-
       if (models == null) {
         models = [];
       }
@@ -40,7 +39,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     fetch: function(filter, options) {
       var promise,
         _this = this;
-
       if (filter == null) {
         filter = {};
       }
@@ -62,7 +60,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     },
     reset: function(models, options) {
       var model;
-
       if (options == null) {
         options = {};
       }
@@ -80,7 +77,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     },
     add: function(model, options) {
       var added, m, _i, _j, _len, _len1, _ref, _results;
-
       if (options == null) {
         options = {};
       }
@@ -120,7 +116,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     },
     create: function(attributes, options) {
       var model;
-
       if (options == null) {
         options = {};
       }
@@ -130,7 +125,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     },
     get: function(field, value) {
       var obj, _i, _len;
-
       for (_i = 0, _len = this.length; _i < _len; _i++) {
         obj = this[_i];
         if (obj.get(field) === value) {
@@ -159,11 +153,9 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     },
     sortBy: function(field, options) {
       var descending, _ref;
-
       _ref = this._parseSort(field), field = _ref[0], descending = _ref[1];
       return this.sort(function(a, b) {
         var aVal, bVal, type;
-
         if (descending) {
           bVal = a.get(field);
           aVal = b.get(field);
@@ -190,7 +182,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
     },
     _makeModel: function(model) {
       var _this = this;
-
       if (!instanceOf(model, this.model)) {
         model = new this.model(model, {
           collection: this
@@ -204,7 +195,6 @@ define(['require', './Api', './Events'], function(require, Api, Events) {
         },
         destroy: function() {
           var index;
-
           index = _this.indexOf(model);
           _this.erase(model);
           return _this.fireEvent('remove', [model, index]);
