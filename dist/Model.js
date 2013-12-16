@@ -455,7 +455,7 @@ Model = new Class({
   },
   _jsonValue: function(value) {
     if (value && instanceOf(value, Date)) {
-      return value.format("%Y-%m-%dT%H:%M:%S.%LZ");
+      return value.format("%Y-%m-%dT%H:%M:%S.%L");
     } else if (value && typeOf(value.toJSON) === 'function') {
       return value.toJSON();
     } else {

@@ -506,7 +506,7 @@ Model = new Class
 
     _jsonValue: (value) ->
         if value and instanceOf value, Date
-            value.format "%Y-%m-%dT%H:%M:%S.%LZ"
+            value.format "%Y-%m-%dT%H:%M:%S.%L"
         else if value and typeOf(value.toJSON) == 'function'
             value.toJSON()
         else

@@ -1,6 +1,6 @@
 {
     "name": "bags",
-    "version": "0.5.9",
+    "version": "0.5.10",
     "description": "bags framework",
     "docco_husky": {
         "project_name": "bags",
